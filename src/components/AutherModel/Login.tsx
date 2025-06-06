@@ -10,11 +10,14 @@ import { Dropdown } from "primereact/dropdown";
 const Login = ({ visible, onHide }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [remember, setRemember] = useState(false);
-  const countries = [
-    { label: "+84", value: "+84" },
-    { label: "+1", value: "+1" },
-    { label: "+61", value: "+61" },
-  ];
+  const countries = [{ label: "+84", value: "+84" }];
+
+  const passwordPT: any = {
+    icon: {
+      className:
+        "absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg",
+    },
+  };
 
   return (
     <Dialog
@@ -24,13 +27,15 @@ const Login = ({ visible, onHide }) => {
       className="p-0 rounded-xl overflow-hidden bg-white"
       style={{ width: "420px" }}
       header={null}
+      modal
+      maskClassName="custom-blur-overlay"
     >
       <div className="px-6 pt-4 pb-6">
         {/* Header Logo + Title */}
         <div className="text-center mb-4">
           <img src="/logo.svg" alt="RoomieHub" className="h-8 mx-auto mb-1" />
           <h2 className="text-2xl font-semibold">Đăng nhập</h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 mt-5">
             Chào mừng bạn đã trở lại <span className="text-base">🖐️</span>
           </p>
         </div>
@@ -50,49 +55,82 @@ const Login = ({ visible, onHide }) => {
               <span
                 className={`${tabIndex === 0 ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-gray-500"} font-medium`}
               >
-                Số điện thoại
+                Tài khoản
               </span>
             }
           >
-            <div className="flex items-center gap-2 mb-3">
-              <Dropdown
+            <div className="flex items-center gap-2 mb-3 mt-10">
+              {/* <Dropdown
                 options={countries}
                 value={countries[0].value}
-                className="w-[100px] h-14 border border-gray-300 rounded-xl"
-              />
+                className="w-[100px]"
+                panelClassName="bg-white"
+                dropdownIcon="pi pi-chevron-down"
+                pt={{
+                  root: {
+                    className:
+                      "h-14 flex items-center border border-gray-300 rounded-xl bg-white",
+                  },
+                  input: { className: "text-base px-3 text-gray-800" },
+                  trigger: { className: "pr-3" }, // icon xuống
+                }}
+              /> */}
               <InputText
-                placeholder="Số điện thoại"
-                className="w-full h-14 border border-gray-300 rounded-xl"
+                placeholder="Tên tài khoản"
+                className="w-full mb-3 h-14 pl-4 border border-gray-300 rounded-xl"
               />
             </div>
             <Password
               placeholder="Nhập mật khẩu"
               toggleMask
               feedback={false}
-              className="w-full mb-3 h-14 border border-gray-300 rounded-xl"
-              inputClassName="h-full"
+              className="w-full mb-3 border border-gray-300 rounded-xl"
+              inputClassName="text-sm"
+              panelClassName="hidden"
+              pt={
+                {
+                  root: { className: "relative w-full" },
+                  input: { className: "w-86 h-14 pr-12 pl-4" },
+                  icon: {
+                    className:
+                      "absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg",
+                  },
+                } as any
+              }
             />
+
             <div className="flex justify-between items-center mb-3 text-sm">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 h-6">
                 <Checkbox
                   inputId="remember"
                   checked={remember}
                   onChange={(e) => setRemember(e.checked ?? false)}
+                  pt={{
+                    root: { className: "flex items-center" }, // đảm bảo icon nằm giữa
+                    box: { className: "w-5 h-5 border-gray-400 rounded" },
+                    icon: { className: "text-white text-xs" },
+                  }}
                 />
-                <label htmlFor="remember">Ghi nhớ đăng nhập</label>
+                <label
+                  htmlFor="remember"
+                  className="text-sm text-gray-800 cursor-pointer leading-none"
+                >
+                  Ghi nhớ đăng nhập
+                </label>
               </div>
+
               <a href="#" className="text-blue-600 hover:underline">
                 Quên mật khẩu?
               </a>
             </div>
             <Button
               label="Tiếp theo"
-              className="w-full bg-gray-100 text-gray-500 font-semibold border-none h-12 rounded-xl"
+              className="w-full bg-orange-500 border-orange-500 text-white font-semibold h-12 rounded-xl"
               disabled
             />
           </TabPanel>
 
-          <TabPanel
+          {/* <TabPanel
             header={
               <span
                 className={`${tabIndex === 1 ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-gray-500"} font-medium`}
@@ -116,7 +154,7 @@ const Login = ({ visible, onHide }) => {
               label="Tiếp theo"
               className="w-full bg-orange-500 border-orange-500 text-white font-semibold h-12 rounded-xl"
             />
-          </TabPanel>
+          </TabPanel> */}
         </TabView>
 
         {/* Đăng ký link */}
@@ -139,12 +177,14 @@ const Login = ({ visible, onHide }) => {
           <Button
             icon="pi pi-google"
             label="Google"
-            className="border border-gray-300 w-[160px] h-11 rounded-xl"
+            iconPos="left"
+            className="border border-gray-300 w-[160px] h-11 rounded-xl pl-3 gap-2"
           />
           <Button
             icon="pi pi-facebook"
             label="Facebook"
-            className="border border-gray-300 w-[160px] h-11 rounded-xl"
+            iconPos="left"
+            className="border border-gray-300 w-[160px] h-11 rounded-xl pl-3 gap-2"
           />
         </div>
 
@@ -153,7 +193,7 @@ const Login = ({ visible, onHide }) => {
           Bạn gặp khó khăn khi tạo tài khoản?
           <br />
           Vui lòng gọi tới số{" "}
-          <span className="font-semibold">028 62873344</span> (Giờ hành chính)
+          <span className="font-semibold">012 34567890</span> (Giờ hành chính)
         </p>
       </div>
     </Dialog>

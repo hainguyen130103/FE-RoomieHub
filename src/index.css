@@ -54,3 +54,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #ccc;
 }
+
+.custom-blur-overlay {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
