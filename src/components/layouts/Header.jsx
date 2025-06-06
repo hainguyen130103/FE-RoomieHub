@@ -1,110 +1,106 @@
-import { useState } from "react";
 import { Menubar } from "primereact/menubar";
-import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
+import { OverlayPanel } from "primereact/overlaypanel";
+import { useRef, useState } from "react";
 import logoImage from "../../assets/images/logo.svg";
+import Login from "../login/Login";
 
 const Header = () => {
-  const [selectedCity, setSelectedCity] = useState("Ho Chi Minh");
-
-  const cities = [
-    { label: "Hồ Chí Minh", value: "Ho Chi Minh" },
-    { label: "Hà Nội", value: "Ha Noi" },
-    { label: "Đà Nẵng", value: "Da Nang" },
-  ];
+  const op = useRef(null);
+  const [showModal, setShowModal] = useState(false);
 
   const items = [
     {
       label: "Công việc",
       icon: "pi pi-briefcase",
-      className: "text-gray-700",
+      className: "text-white font-medium",
     },
     {
       label: "Bất động sản",
       icon: "pi pi-home",
-      className: "text-gray-700",
+      className: "text-white font-medium",
     },
     {
-      label: "Khảo thí thức",
+      label: "Kho tri thức",
       icon: "pi pi-book",
-      className: "text-gray-700",
+      className: "text-white font-medium",
     },
     {
       label: "Tin mới nhất",
-      icon: "pi pi-bell",
-      className: "text-gray-700",
+      icon: "pi pi-clock",
+      className: "text-white font-medium",
     },
   ];
 
   const start = (
-    <div className="flex items-center">
-      <img src={logoImage} alt="ROOMIEHUB Logo" className="h-8 mr-4" />
+    <div className="flex items-center gap-2">
+      <img src={logoImage} alt="Logo" className="h-7 ml-20 mr-20" />
     </div>
   );
 
   const end = (
     <div className="flex items-center gap-3">
+      {/* Ngôn ngữ */}
+      <button className="w-9 h-9 flex items-center justify-center rounded-full border border-white text-white">
+        <i className="pi pi-globe text-lg"></i>
+      </button>
+
+      {/* Đăng tin */}
       <Button
         label="Đăng tin"
-        icon="pi pi-plus"
-        className="p-button-sm bg-orange-500 border-orange-500 hover:bg-orange-600 text-white rounded-md px-3 py-2"
+        icon="pi pi-pencil"
+        className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md"
       />
-      <div className="flex items-center ml-2 border border-gray-200 rounded-full px-3 py-1">
-        <i className="pi pi-user text-gray-600 mr-2 text-lg" />
-        <span className="text-sm text-gray-600">User</span>
+
+      {/* Avatar user with dropdown */}
+      <div>
+        <div
+          className="w-9 h-9 rounded-full bg-gray-500 flex items-center justify-center cursor-pointer"
+          onClick={(e) => op.current.toggle(e)}
+        >
+          <i className="pi pi-user text-white text-lg" />
+        </div>
+        <OverlayPanel ref={op} className="w-100 shadow-md rounded-md bg-white">
+          <ul className="p-2">
+            <li
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer"
+            >
+              <i className="pi pi-sign-in text-gray-500" />
+              <span>Đăng nhập</span>
+            </li>
+            <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
+              <i className="pi pi-user-plus text-gray-500" />
+              <span>Đăng ký</span>
+              <Login visible={showModal} onHide={() => setShowModal(false)} />
+            </li>
+            <hr className="my-2" />
+            <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
+              <i className="pi pi-pencil text-gray-500" />
+              <span>Đăng tin lên ROOMIEHUB</span>
+            </li>
+            <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
+              <i className="pi pi-question-circle text-gray-500" />
+              <span>Hỗ trợ</span>
+            </li>
+          </ul>
+        </OverlayPanel>
       </div>
     </div>
   );
 
   return (
-    <header className="bg-white shadow-md">
-      <div className="container mx-auto px-4">
-        <Menubar
-          model={items}
-          start={start}
-          end={end}
-          className="border-none py-2"
-          pt={{
-            menu: { className: "p-0" },
-            button: { className: "p-0" },
-            menuitem: { className: "mx-2" },
-          }}
-        />
-        <div className="flex flex-wrap items-center gap-2 p-3 bg-orange-500 rounded-b-lg text-white">
-          <div className="flex space-x-2">
-            <Button
-              label="Bất động sản"
-              icon="pi pi-home"
-              className="p-button-sm p-button-secondary bg-white text-orange-500 font-medium border-none hover:bg-gray-100"
-            />
-            <Button
-              label="Việc làm"
-              icon="pi pi-briefcase"
-              className="p-button-sm p-button-text text-white border border-white hover:bg-orange-600"
-            />
-          </div>
-          <div className="ml-auto flex items-center">
-            <Dropdown
-              value={selectedCity}
-              options={cities}
-              onChange={(e) => setSelectedCity(e.value)}
-              className="p-inputtext-sm bg-white text-gray-700 rounded-l-md border-none min-w-[120px]"
-              pt={{
-                root: { className: "h-[36px]" },
-                input: { className: "h-[36px] py-1 px-3" },
-              }}
-            />
-            <span className="p-input-icon-right bg-white rounded-r-md h-[36px]">
-              <i className="pi pi-search text-gray-500" />
-              <InputText
-                placeholder="Tìm kiếm..."
-                className="p-inputtext-sm border-none h-[36px] py-1 px-3"
-              />
-            </span>
-          </div>
-        </div>
-      </div>
+    <header className="sticky top-0 z-50 w-full bg-[#18181b] px-6 shadow-md">
+      <Menubar
+        model={items}
+        start={start}
+        end={end}
+        className="border-none bg-[#18181b] text-white h-[76px] items-center"
+        pt={{
+          menuitem: { className: "mx-3" },
+          icon: { className: "mr-2" },
+        }}
+      />
     </header>
   );
 };
