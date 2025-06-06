@@ -3,11 +3,13 @@ import { Button } from "primereact/button";
 import { OverlayPanel } from "primereact/overlaypanel";
 import { useRef, useState } from "react";
 import logoImage from "../../assets/images/logo.svg";
-import Login from "../login/Login";
+import Login from "../AutherModel/Login";
+import Register from "../AutherModel/Register";
 
 const Header = () => {
   const op = useRef(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   const items = [
     {
@@ -49,7 +51,7 @@ const Header = () => {
       <Button
         label="Đăng tin"
         icon="pi pi-pencil"
-        className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md"
+        className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md gap-2"
       />
 
       {/* Avatar user with dropdown */}
@@ -63,28 +65,40 @@ const Header = () => {
         <OverlayPanel ref={op} className="w-100 shadow-md rounded-md bg-white">
           <ul className="p-2">
             <li
-              onClick={() => setShowModal(true)}
+              onClick={() => setShowLogin(true)}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer"
             >
               <i className="pi pi-sign-in text-gray-500" />
               <span>Đăng nhập</span>
             </li>
-            <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
+
+            <li
+              onClick={() => setShowRegister(true)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer"
+            >
               <i className="pi pi-user-plus text-gray-500" />
               <span>Đăng ký</span>
-              <Login visible={showModal} onHide={() => setShowModal(false)} />
             </li>
+
             <hr className="my-2" />
+
             <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
               <i className="pi pi-pencil text-gray-500" />
               <span>Đăng tin lên ROOMIEHUB</span>
             </li>
+
             <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
               <i className="pi pi-question-circle text-gray-500" />
               <span>Hỗ trợ</span>
             </li>
           </ul>
         </OverlayPanel>
+
+        <Login visible={showLogin} onHide={() => setShowLogin(false)} />
+        <Register
+          visible={showRegister}
+          onHide={() => setShowRegister(false)}
+        />
       </div>
     </div>
   );
