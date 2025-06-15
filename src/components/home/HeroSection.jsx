@@ -105,7 +105,7 @@ const HeroSection = () => {
             <div className="rounded-lg overflow-hidden shadow-md h-60">
               <img
                 src={bannerSearch}
-                alt="FidoVN Banner"
+                alt="RoomieHUbRoomieHUb Banner"
                 className="w-full h-auto"
               />
             </div>
