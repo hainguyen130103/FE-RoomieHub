@@ -28,19 +28,19 @@ const FeatureSection = ({ title, type }) => {
       icon: "/src/assets/images/icon-vr.png",
       title: "Xem nhà bằng VR",
       description:
-        "Thay vì phải xem lần lượt từng hình ảnh hoặc video, FIDOVN giúp người dùng có thể quan sát toàn bộ không gian chỉ trong một lần chạm",
+        "Thay vì phải xem lần lượt từng hình ảnh hoặc video, ROOMIEHUB giúp người dùng có thể quan sát toàn bộ không gian chỉ trong một lần chạm",
     },
     {
       icon: "/src/assets/images/icon-filter.png",
       title: "Bộ lọc đa dạng",
       description:
-        "Với hơn 40+ bộ lọc và từ khóa tùy chỉnh, FIDOVN có thể giúp bạn dễ dàng tìm được căn hộ cho thuê dành cho bạn",
+        "Với hơn 40+ bộ lọc và từ khóa tùy chỉnh, ROOMIEHUB có thể giúp bạn dễ dàng tìm được căn hộ cho thuê dành cho bạn",
     },
     {
       icon: "https://ext.same-assets.com/662425795/3382098666.png",
       title: "Phù hợp mọi nhu cầu",
       description:
-        "FIDOVN cung cấp dữ liệu tin rao lớn với đa dạng loại hình bất động sản giúp bạn có những lựa chọn phù hợp với nhu cầu của mình",
+        "ROOMIEHUB cung cấp dữ liệu tin rao lớn với đa dạng loại hình bất động sản giúp bạn có những lựa chọn phù hợp với nhu cầu của mình",
     },
   ];
 
