@@ -10,7 +10,7 @@ const JobSection = () => {
     {
       id: 1,
       title: "Cần tuyển gấp Lập trình viên Mobile",
-      company: "Công Ty TNHH Fidovn",
+      company: "Công Ty TNHH RoomieHub",
       location: "Hồ Chí Minh",
       salary: "10 triệu-20 triệu /tháng",
       type: "Bán thời gian",
