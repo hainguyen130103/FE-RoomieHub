@@ -1,60 +1,32 @@
+import React, { useState, useEffect } from "react";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
+import { getAllApartmentsApi } from "../../services/Userservices";
+import { useNavigate } from "react-router-dom";
 
 const RealEstateSection = () => {
-  const properties = [
-    {
-      id: 1,
-      title:
-        "Cho thuê 2PN, nhà hoàn thiện có sẵn máy lạnh và máy nước nóng. giá tốt",
-      type: "Chung cư",
-      bedrooms: 2,
-      area: "67m²",
-      price: "5.5 triệu/Tháng",
-      location: "Bình Dương",
-      timeAgo: "2 ngày trước",
-      image: "/images/apartment1.jpg",
-      hasVR: true,
-    },
-    {
-      id: 2,
-      title:
-        "2 phòng ngủ, hướng đông, tầng cao mát mẻ, đầy đủ nội thất, ở ngay có",
-      type: "Chung cư",
-      bedrooms: 2,
-      area: "74m²",
-      price: "7.5 triệu/Tháng",
-      location: "Bình Dương",
-      timeAgo: "2 ngày trước",
-      image: "/images/apartment2.jpg",
-      hasVR: true,
-    },
-    {
-      id: 3,
-      title: "Cho thuê căn hộ dịch vụ diện tích lớn tại gò vấp",
-      type: "Phòng trọ",
-      bedrooms: 0,
-      area: "40m²",
-      price: "6.5 triệu/Tháng",
-      location: "Hồ Chí Minh",
-      timeAgo: "3 ngày trước",
-      image: "/images/apartment3.jpg",
-      hasVR: true,
-    },
-    {
-      id: 4,
-      title: "CHDV cho thuê đường quang trung gò vấp",
-      type: "Phòng trọ",
-      bedrooms: 0,
-      area: "40m²",
-      price: "6.5 triệu/Tháng",
-      location: "Hồ Chí Minh",
-      timeAgo: "3 ngày trước",
-      image: "/images/apartment4.jpg",
-      hasVR: true,
-    },
-  ];
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchApartments = async () => {
+      try {
+        const response = await getAllApartmentsApi();
+        // Assuming your API returns an array of apartments directly
+        setProperties(response.data);
+      } catch (err) {
+        setError("Failed to fetch apartments.");
+        console.error("Error fetching apartments:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApartments();
+  }, []);
 
   const categories = [
     { name: "Bất động sản thương mại cho thuê", icon: "pi pi-building" },
@@ -66,6 +38,26 @@ const RealEstateSection = () => {
     { name: "Nhà xưởng", icon: "pi pi-cog" },
     { name: "Cửa hàng", icon: "pi pi-shopping-cart" },
   ];
+
+  const handleCardClick = (propertyId) => {
+    navigate(`/real-estate/${propertyId}`);
+  };
+
+  if (loading) {
+    return (
+      <section className="py-12 bg-white text-center">
+        <div className="container mx-auto px-4">Loading properties...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-12 bg-white text-center">
+        <div className="container mx-auto px-4 text-red-500">{error}</div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 bg-white">
@@ -80,7 +72,8 @@ const RealEstateSection = () => {
           {properties.map((property) => (
             <Card
               key={property.id}
-              className="p-0 h-full hover:shadow-lg transition-shadow"
+              className="p-0 h-full hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => handleCardClick(property.id)}
             >
               <div className="relative">
                 <img
