@@ -16,7 +16,7 @@ const AccountInfo = () => {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
         });
-        setUserName(res.data); // API trả về plain string
+        setUserName(res.data);
       } catch (err) {
         setUserName("Không xác định");
       }
