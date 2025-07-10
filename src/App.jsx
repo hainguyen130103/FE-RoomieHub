@@ -3,6 +3,8 @@ import Header from "./components/layouts/Header.jsx";
 import Footer from "./components/layouts/Footer.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ApartmentDetail from "./pages/ApartmentDetail.jsx";
+import AccountInfo from "./pages/AccountInfo";
+
 
 function App() {
   return (
@@ -17,7 +19,7 @@ function App() {
             {/* Route for the Real Estate Detail Page */}
             {/* The ':id' is a URL parameter that will capture the apartment ID */}
             <Route path="/real-estate/:id" element={<ApartmentDetail />} />
-
+            <Route path="/account" element={<AccountInfo />} />
             {/* Add any other routes here */}
           </Routes>
         </main>

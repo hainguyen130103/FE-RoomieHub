@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import logoImage from "../../assets/images/logo.svg";
 import Login from "../AutherModel/Login";
 import Register from "../AutherModel/Register";
+import { Link } from "react-router-dom";
+
 
 const Header = () => {
   const op = useRef(null);
@@ -50,7 +52,13 @@ const Header = () => {
 
   const start = (
     <div className="flex items-center gap-2">
-      <img src={logoImage} alt="Logo" className="h-7 ml-20 mr-20" />
+      <Link to="/">
+        <img
+          src={logoImage}
+          alt="Logo"
+          className="h-7 ml-20 mr-20 cursor-pointer hover:scale-105 transition-transform"
+        />
+      </Link>
     </div>
   );
 
@@ -100,9 +108,15 @@ const Header = () => {
               </>
             ) : (
               <>
-                <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
-                  <i className="pi pi-user text-gray-500" />
-                  <span>Thông tin tài khoản</span>
+                <li>
+                  <Link
+                    to="/account"
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer text-gray-900"
+                    onClick={() => op.current?.hide()}
+                  >
+                    <i className="pi pi-user text-gray-500" />
+                    <span>Thông tin tài khoản</span>
+                  </Link>
                 </li>
               </>
             )}

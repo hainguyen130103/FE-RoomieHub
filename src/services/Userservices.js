@@ -81,3 +81,12 @@ export const getNearbyApartmentsApi = (locationParams) => {
   // Axios sẽ tự động chuyển nó thành query string: /api/apartments/nearby?lat=...&long=...
   return api.get("/api/apartments/nearby", { params: locationParams });
 };
+
+export const createSurveyApi = (surveyData, token) => {
+  return api.post("/api/surveys", surveyData, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+  });
+};
