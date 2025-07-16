@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createSurveyApi } from "../../services/Userservices"; // Sử dụng service giống RealEstateSection
+import { jwtDecode } from "jwt-decode";
 
 const defaultSurvey = {
   birthYear: "",
@@ -22,7 +23,7 @@ const defaultSurvey = {
   deposit: "",
   utilities: "BASIC",
   furniture: "BASIC",
-  location: ""
+  location: "",
 };
 
 const SurveyPopup = ({ visible, onClose }) => {
@@ -41,9 +42,21 @@ const SurveyPopup = ({ visible, onClose }) => {
     setLoading(true);
     setSuccess(false);
     setError("");
+
     try {
       const token = localStorage.getItem("accessToken");
-      // Dữ liệu mẫu giống Postman/cURL
+      if (!token) {
+        throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+      }
+
+      // Decode token để kiểm tra thông tin và thời hạn
+      const decoded = jwtDecode(token);
+      const now = Date.now() / 1000; // Thời gian hiện tại (giây)
+      if (decoded.exp && decoded.exp < now) {
+        throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+      }
+
+      // Gửi request API nếu token còn hạn
       const sampleData = {
         birthYear: 1073741824,
         userName: "string",
@@ -65,8 +78,9 @@ const SurveyPopup = ({ visible, onClose }) => {
         deposit: 0.1,
         utilities: "BASIC",
         furniture: "BASIC",
-        location: "string"
+        location: "string",
       };
+
       await createSurveyApi(sampleData, token);
       setSuccess(true);
       setSurvey(defaultSurvey);
@@ -82,6 +96,7 @@ const SurveyPopup = ({ visible, onClose }) => {
       setError(msg);
       console.error("Survey API error:", err);
     }
+
     setLoading(false);
   };
 
@@ -96,14 +111,21 @@ const SurveyPopup = ({ visible, onClose }) => {
         >
           ×
         </button>
-        <h3 className="text-xl font-bold mb-4 text-indigo-600">Khảo sát Roomie AI</h3>
+        <h3 className="text-xl font-bold mb-4 text-indigo-600">
+          Khảo sát Roomie AI
+        </h3>
         {success && (
-          <div className="mb-3 text-green-600 font-semibold">Gửi khảo sát thành công!</div>
+          <div className="mb-3 text-green-600 font-semibold">
+            Gửi khảo sát thành công!
+          </div>
         )}
         {error && (
           <div className="mb-3 text-red-600 whitespace-pre-line">{error}</div>
         )}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto"
+        >
           {/* Cột 1 */}
           <div className="space-y-3">
             <input

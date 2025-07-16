@@ -49,11 +49,12 @@ export const getAllApartmentsApi = () => {
 };
 
 // Tạo một căn hộ mới
-export const createApartmentApi = (apartmentData) => {
+export const createApartmentApi = (apartmentData, token) => {
   console.log("API Request Payload:", apartmentData);
   return api.post("/api/apartments", apartmentData, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };

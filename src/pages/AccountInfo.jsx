@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../axios"; // Đảm bảo đã có file src/axios.js export instance api
+import api from "../axios";
 import SurveyPopup from "../components/survey/SurveyPopup";
 
 const AccountInfo = () => {

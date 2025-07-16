@@ -4,7 +4,7 @@ import Footer from "./components/layouts/Footer.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import ApartmentDetail from "./pages/ApartmentDetail.jsx";
 import AccountInfo from "./pages/AccountInfo";
-
+import PostApartment from "./pages/AddApartment.jsx";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
             {/* The ':id' is a URL parameter that will capture the apartment ID */}
             <Route path="/real-estate/:id" element={<ApartmentDetail />} />
             <Route path="/account" element={<AccountInfo />} />
+            <Route path="/add-apartment" element={<PostApartment />} />
             {/* Add any other routes here */}
           </Routes>
         </main>

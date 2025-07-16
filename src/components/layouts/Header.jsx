@@ -7,7 +7,6 @@ import Login from "../AutherModel/Login";
 import Register from "../AutherModel/Register";
 import { Link } from "react-router-dom";
 
-
 const Header = () => {
   const op = useRef(null);
   const [showLogin, setShowLogin] = useState(false);
@@ -67,11 +66,13 @@ const Header = () => {
       <button className="w-9 h-9 flex items-center justify-center rounded-full border border-white text-white">
         <i className="pi pi-globe text-lg"></i>
       </button>
-      <Button
-        label="Đăng tin"
-        icon="pi pi-pencil"
-        className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md gap-2"
-      />
+      <Link to="/add-apartment">
+        <Button
+          label="Đăng tin"
+          icon="pi pi-pencil"
+          className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md gap-2"
+        />
+      </Link>
       <div>
         <div
           className="w-9 h-9 rounded-full bg-gray-500 flex items-center justify-center cursor-pointer"
