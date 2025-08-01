@@ -91,3 +91,19 @@ export const createSurveyApi = (surveyData, token) => {
     },
   });
 };
+
+export const getUserProfileApi = () => {
+  const token = localStorage.getItem('accessToken');
+  console.log('Current token:', token); // Debug token
+
+  return api.get("/api/surveys/me", {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': '*/*'
+    }
+  });
+};
+
+export const getUserInfo = () => {
+  return api.get("/api/user/me");
+};

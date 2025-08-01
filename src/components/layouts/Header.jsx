@@ -111,7 +111,7 @@ const Header = () => {
               <>
                 <li>
                   <Link
-                    to="/account"
+                    to="/profile"
                     className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer text-gray-900"
                     onClick={() => op.current?.hide()}
                   >
