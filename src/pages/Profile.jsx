@@ -17,23 +17,38 @@ const Profile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        // Fetch user name
-        const userResponse = await getUserInfo();
-        setUserName(userResponse.data);
+        const token = localStorage.getItem('accessToken');
+        console.log('Token in Profile:', token);
 
-        // Fetch user profile data
-        const profileResponse = await getUserProfileApi();
+        if (!token) {
+          navigate('/'); // Chuyển về trang chủ
+          return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        // Fetch user data
+        const [userResponse, profileResponse] = await Promise.all([
+          getUserInfo(),
+          getUserProfileApi()
+        ]);
+
+        if (userResponse.data) {
+          setUserName(userResponse.data.fullname || userResponse.data.email);
+        }
+
         if (profileResponse.data) {
           setUserInfo(profileResponse.data);
         }
+
       } catch (err) {
         console.error('Error fetching data:', err);
-        if (err.response?.status === 401) {
-          localStorage.removeItem('accessToken');
+        if (err.message.includes('Phiên đăng nhập đã hết hạn') || !localStorage.getItem('accessToken')) {
           navigate('/');
+          return;
         }
-        setError('Failed to fetch data: ' + (err.response?.data?.message || err.message));
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -54,9 +69,34 @@ const Profile = () => {
     { id: 'roommates', label: 'Nhóm ở ghép', icon: 'pi pi-users' },
   ];
 
+  const renderError = () => {
+    if (!error) return null;
+
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+        <div className="flex items-center">
+          <i className="pi pi-exclamation-circle mr-2" />
+          <span className="font-medium">Lỗi:</span>
+          <span className="ml-2">{error}</span>
+        </div>
+      </div>
+    );
+  };
+
   const renderProfileContent = () => {
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center p-8">
+          <i className="pi pi-spin pi-spinner mr-2" />
+          <span>Đang tải...</span>
+        </div>
+      );
+    }
+
+    // Hiển thị lỗi nếu có
+    if (error) {
+      return renderError();
+    }
 
     // Default empty values if userInfo is null
     const defaultUserInfo = {

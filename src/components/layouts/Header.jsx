@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import logoImage from "../../assets/images/logo.svg";
 import Login from "../AutherModel/Login";
 import Register from "../AutherModel/Register";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Thêm import này ở đầu file
 
 const Header = () => {
   const op = useRef(null);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate(); // Thêm hook này
 
   // Cập nhật trạng thái login khi mount
   useEffect(() => {
@@ -20,10 +21,28 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    setIsLoggedIn(false);
-    op.current?.hide();
-    alert("Đã đăng xuất");
+    try {
+      // Clear storage
+      localStorage.removeItem("accessToken");
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Update state
+      setIsLoggedIn(false);
+      op.current?.hide();
+
+      // Debug log
+      console.log("Logged out - Storage cleared");
+
+      // Alert user
+      alert("Đã đăng xuất");
+
+      // Redirect to homepage
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Có lỗi xảy ra khi đăng xuất");
+    }
   };
 
   const items = [

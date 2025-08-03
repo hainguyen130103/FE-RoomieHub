@@ -1,14 +1,42 @@
 import api from "../axios";
 
-export const loginApi = (email, password) => {
+export const loginApi = async (email, password) => {
   const payload = { email, password };
-  console.log("API Request payload: ", payload);
+  
+  try {
+    // Clear any existing token before login
+    localStorage.removeItem("accessToken");
 
-  return api.post("/api/auth/login", payload, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+    const response = await api.post("/api/auth/login", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    console.log('Login response:', response.data); // Debug response
+    
+    const token = response.data.token;
+    if (!token) {
+      throw new Error('Token không được tìm thấy trong response');
+    }
+    
+    // Save new token
+    localStorage.setItem("accessToken", token);
+    
+    // Verify token saved correctly
+    const savedToken = localStorage.getItem('accessToken');
+    console.log('Saved token:', savedToken);
+    
+    // Verify token format
+    if (!savedToken.startsWith('ey')) {
+      throw new Error('Token format không hợp lệ');
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
 };
 
 export const registerApi = (email, password, fullname) => {
@@ -92,18 +120,48 @@ export const createSurveyApi = (surveyData, token) => {
   });
 };
 
-export const getUserProfileApi = () => {
+export const getUserProfileApi = async () => {
   const token = localStorage.getItem('accessToken');
-  console.log('Current token:', token); // Debug token
+  if (!token) {
+    throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
+  }
 
-  return api.get("/api/surveys/me", {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': '*/*'
+  try {
+    const response = await api.get("/api/surveys/me", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('Error in getUserProfileApi:', error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('accessToken');
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
     }
-  });
+    throw error;
+  }
 };
 
-export const getUserInfo = () => {
-  return api.get("/api/user/me");
+export const getUserInfo = async () => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
+  }
+  
+  try {
+    const response = await api.get("/api/user/me", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('Error in getUserInfo:', error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('accessToken');
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+    throw error;
+  }
 };
