@@ -143,21 +143,22 @@ export const getUserProfileApi = async () => {
   }
 };
 
-export const getUserInfo = async () => {
+export const updateUserSurvey = async (surveyData) => {
   const token = localStorage.getItem('accessToken');
   if (!token) {
     throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
   }
-  
+
   try {
-    const response = await api.get("/api/user/me", {
+    const response = await api.put("/api/surveys/me", surveyData, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
       }
     });
     return response;
   } catch (error) {
-    console.error('Error in getUserInfo:', error);
+    console.error('Error in updateUserSurvey:', error);
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('accessToken');
       throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
