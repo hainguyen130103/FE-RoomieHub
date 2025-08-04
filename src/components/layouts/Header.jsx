@@ -89,7 +89,7 @@ const Header = () => {
         <Button
           label="Đăng tin"
           icon="pi pi-pencil"
-          className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md gap-2"
+          className="border-2 border-orange-600 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold px-5 py-2 rounded-xl shadow-md transition-all duration-200 gap-2"
         />
       </Link>
       <div>
