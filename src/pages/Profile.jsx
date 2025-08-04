@@ -3,6 +3,8 @@ import { Card } from 'primereact/card';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import { getUserProfileApi, updateUserSurvey } from '../services/Userservices';
+import GoogleMapPicker from '../components/GoogleMapPicker';
+
 
 class Profile extends Component {
   constructor(props) {
@@ -14,7 +16,8 @@ class Profile extends Component {
       error: null,
       isEditing: false,
       showPreferences: false, // Riêng cho phần sở thích
-      showApartmentInfo: false // Riêng cho phần căn hộ
+      showApartmentInfo: false, // Riêng cho phần căn hộ
+      showMapPicker: false // Cho Google Maps picker
     };
   }
 
@@ -60,6 +63,15 @@ class Profile extends Component {
 
   setActiveTab = (tab) => {
     this.setState({ activeTab: tab });
+    if (tab === 'profile') {
+      window.location.href = '/profile';
+    } else if (tab === 'packages') {
+      window.location.href = '/packages';
+    } else if (tab === 'posts') {
+      window.location.href = '/posts';
+    } else if (tab === 'roommates') {
+      window.location.href = '/roommates';
+    }
   }
 
   setIsEditing = (editing) => {
@@ -72,6 +84,17 @@ class Profile extends Component {
 
   setShowApartmentInfo = (show) => {
     this.setState({ showApartmentInfo: show });
+  }
+
+  setShowMapPicker = (show) => {
+    this.setState({ showMapPicker: show });
+  }
+
+  handleLocationSelect = (locationData) => {
+    this.updateUserInfo({
+      currentLatitude: locationData.latitude,
+      currentLongitude: locationData.longitude
+    });
   }
 
   updateUserInfo = (updates) => {
@@ -603,25 +626,55 @@ class Profile extends Component {
 
             <div>
               <label className="block text-gray-600 mb-2">Vị trí hiện tại</label>
-              <div className="grid grid-cols-2 gap-4">
-                <input 
-                  type="number"
-                  step="0.000001"
-                  placeholder="Latitude"
-                  value={userData.currentLatitude}
-                  onChange={(e) => this.updateUserInfo({ currentLatitude: parseFloat(e.target.value) })}
-                  disabled={!isEditing}
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-                />
-                <input 
-                  type="number"
-                  step="0.000001"
-                  placeholder="Longitude"
-                  value={userData.currentLongitude}
-                  onChange={(e) => this.updateUserInfo({ currentLongitude: parseFloat(e.target.value) })}
-                  disabled={!isEditing}
-                  className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
-                />
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    label="Chọn vị trí trên bản đồ"
+                    icon="pi pi-map-marker"
+                    className="border-2 border-blue-600 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-200 gap-2"
+                    onClick={() => this.setShowMapPicker(true)}
+                    disabled={!isEditing}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-500 text-sm mb-1">Latitude</label>
+                    <input 
+                      type="number"
+                      step="0.000001"
+                      placeholder="Latitude"
+                      value={userData.currentLatitude || ''}
+                      onChange={(e) => this.updateUserInfo({ currentLatitude: parseFloat(e.target.value) })}
+                      disabled={!isEditing}
+                      className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500 bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 text-sm mb-1">Longitude</label>
+                    <input 
+                      type="number"
+                      step="0.000001"
+                      placeholder="Longitude"
+                      value={userData.currentLongitude || ''}
+                      onChange={(e) => this.updateUserInfo({ currentLongitude: parseFloat(e.target.value) })}
+                      disabled={!isEditing}
+                      className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500 bg-gray-50"
+                    />
+                  </div>
+                </div>
+                
+                {(userData.currentLatitude && userData.currentLongitude) && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 text-blue-700">
+                      <i className="pi pi-map-marker text-blue-500" />
+                      <span className="text-sm font-medium">Vị trí đã chọn:</span>
+                    </div>
+                    <div className="text-sm text-blue-600 mt-1">
+                      {userData.currentLatitude.toFixed(6)}, {userData.currentLongitude.toFixed(6)}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -645,7 +698,7 @@ class Profile extends Component {
   }
 
   render() {
-    const { activeTab, userInfo } = this.state;
+    const { activeTab, userInfo, showMapPicker } = this.state;
 
     return (
       <div className="min-h-screen bg-[#f4f5f6]">
@@ -677,25 +730,19 @@ class Profile extends Component {
                       <li key={item.id}>
                         <button
                           onClick={() => this.setActiveTab(item.id)}
-                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm transition-colors
-                            ${activeTab === item.id 
-                              ? 'bg-orange-50 text-orange-500 font-medium' 
-                              : 'hover:bg-gray-50 text-gray-700'}`}
+                          className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
+                            activeTab === item.id
+                              ? 'bg-orange-500 text-white'
+                              : 'text-gray-600 hover:bg-gray-100'
+                          }`}
                         >
-                          <i className={item.icon}></i>
-                          <span>{item.label}</span>
+                          <div className="flex items-center gap-2">
+                            <i className={item.icon} />
+                            <span>{item.label}</span>
+                          </div>
                         </button>
                       </li>
                     ))}
-                    <li>
-                      <button
-                        onClick={this.handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm text-red-600 hover:bg-red-50"
-                      >
-                        <i className="pi pi-sign-out"></i>
-                        <span>Đăng xuất</span>
-                      </button>
-                    </li>
                   </ul>
                 </nav>
               </div>
@@ -703,10 +750,23 @@ class Profile extends Component {
 
             {/* Main Content */}
             <div className="flex-1">
-              {this.renderContent()}
+              <div className="bg-white rounded-lg shadow">
+                <div className="p-6">
+                  {this.renderContent()}
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Google Maps Picker */}
+        <GoogleMapPicker
+          isVisible={showMapPicker}
+          onHide={() => this.setShowMapPicker(false)}
+          onLocationSelect={this.handleLocationSelect}
+          currentLat={userInfo?.currentLatitude}
+          currentLng={userInfo?.currentLongitude}
+        />
       </div>
     );
   }
