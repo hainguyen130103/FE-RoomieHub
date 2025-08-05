@@ -4,7 +4,7 @@ import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import { getUserProfileApi, updateUserSurvey } from '../services/Userservices';
 import GoogleMapPicker from '../components/GoogleMapPicker';
-
+import SidebarNav from '../components/layouts/SidebarNav';
 
 class Profile extends Component {
   constructor(props) {
@@ -101,6 +101,220 @@ class Profile extends Component {
     this.setState(prevState => ({
       userInfo: { ...prevState.userInfo, ...updates }
     }));
+  }
+
+  // Helper function to format birthday for display
+  formatBirthdayForDisplay = (birthYear) => {
+    if (!birthYear) return '';
+    
+    // If it's already in dd/mm/yyyy format, return as is
+    if (typeof birthYear === 'string' && birthYear.includes('/')) {
+      return birthYear;
+    }
+    
+    // If it's a number or string with 4 digits, assume it's a year
+    if (typeof birthYear === 'number' || (typeof birthYear === 'string' && birthYear.length === 4)) {
+      const year = parseInt(birthYear);
+      if (year && year > 1900 && year <= new Date().getFullYear()) {
+        return `01/01/${year}`;
+      }
+    }
+    
+    // If it's a string with 7-8 digits, convert to dd/mm/yyyy
+    if (typeof birthYear === 'string' && (birthYear.length === 7 || birthYear.length === 8)) {
+      let paddedBirthYear = birthYear;
+      
+      // If 7 digits, add leading zero
+      if (birthYear.length === 7) {
+        paddedBirthYear = '0' + birthYear;
+      }
+      
+      // Ensure it's 8 digits
+      if (paddedBirthYear.length === 8) {
+        const day = paddedBirthYear.substring(0, 2);
+        const month = paddedBirthYear.substring(2, 4);
+        const year = paddedBirthYear.substring(4, 8);
+        
+        // Validate date
+        const dayNum = parseInt(day);
+        const monthNum = parseInt(month);
+        const yearNum = parseInt(year);
+        
+        if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= new Date().getFullYear()) {
+          return `${day}/${month}/${year}`;
+        }
+      }
+    }
+    
+    // If it's any other string with numbers, try to format it
+    if (typeof birthYear === 'string' && /^\d+$/.test(birthYear)) {
+      let paddedBirthYear = birthYear;
+      
+      // If less than 8 digits, pad with zeros
+      if (birthYear.length < 8) {
+        paddedBirthYear = birthYear.padStart(8, '0');
+      } else if (birthYear.length > 8) {
+        paddedBirthYear = birthYear.substring(0, 8);
+      }
+      
+      if (paddedBirthYear.length === 8) {
+        const day = paddedBirthYear.substring(0, 2);
+        const month = paddedBirthYear.substring(2, 4);
+        const year = paddedBirthYear.substring(4, 8);
+        
+        // Validate date
+        const dayNum = parseInt(day);
+        const monthNum = parseInt(month);
+        const yearNum = parseInt(year);
+        
+        if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900 && yearNum <= new Date().getFullYear()) {
+          return `${day}/${month}/${year}`;
+        }
+      }
+    }
+    
+    return birthYear || '';
+  }
+
+  // Helper function to parse birthday from input
+  parseBirthdayFromInput = (inputValue) => {
+    if (!inputValue) return '';
+    
+    // Remove all non-digit characters
+    const numbersOnly = inputValue.replace(/\D/g, '');
+    
+    // If we have 7 digits, add leading zero
+    if (numbersOnly.length === 7) {
+      return '0' + numbersOnly;
+    }
+    
+    // If we have 8 digits, return as is
+    if (numbersOnly.length === 8) {
+      return numbersOnly;
+    }
+    
+    // If we have 4 digits, assume it's a year
+    if (numbersOnly.length === 4) {
+      const year = parseInt(numbersOnly);
+      if (year >= 1900 && year <= new Date().getFullYear()) {
+        return `0101${year}`;
+      }
+    }
+    
+    // If we have less than 8 digits, pad with zeros
+    if (numbersOnly.length < 8) {
+      return numbersOnly.padEnd(8, '0');
+    }
+    
+    // If we have more than 8 digits, take first 8
+    if (numbersOnly.length > 8) {
+      return numbersOnly.substring(0, 8);
+    }
+    
+    return numbersOnly;
+  }
+
+  // New function to handle birthday input with cursor position
+  handleBirthdayChange = (e) => {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
+    const value = input.value;
+    
+    // Remove all non-digit characters
+    const numbersOnly = value.replace(/\D/g, '');
+    
+    // Format as dd/mm/yyyy
+    let formattedValue = '';
+    if (numbersOnly.length > 0) {
+      const day = numbersOnly.substring(0, 2);
+      const month = numbersOnly.substring(2, 4);
+      const year = numbersOnly.substring(4, 8);
+      
+      if (day) formattedValue += day;
+      if (month) formattedValue += `/${month}`;
+      if (year) formattedValue += `/${year}`;
+    }
+    
+    // Update the input value
+    input.value = formattedValue;
+    
+    // Calculate new cursor position
+    let newCursorPosition = cursorPosition;
+    const originalLength = value.length;
+    const newLength = formattedValue.length;
+    
+    // Adjust cursor position based on formatting changes
+    if (newLength > originalLength) {
+      // Added slashes, move cursor forward
+      const addedSlashes = (formattedValue.match(/\//g) || []).length - (value.match(/\//g) || []).length;
+      newCursorPosition += addedSlashes;
+    } else if (newLength < originalLength) {
+      // Removed characters, adjust cursor
+      newCursorPosition = Math.min(cursorPosition, formattedValue.length);
+    }
+    
+    // Set cursor position
+    setTimeout(() => {
+      input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }, 0);
+    
+    // Update state with numbers only (ensure 8 digits)
+    let stateValue = numbersOnly;
+    if (numbersOnly.length === 7) {
+      stateValue = '0' + numbersOnly;
+    } else if (numbersOnly.length < 8) {
+      stateValue = numbersOnly.padEnd(8, '0');
+    } else if (numbersOnly.length > 8) {
+      stateValue = numbersOnly.substring(0, 8);
+    }
+    
+    this.updateUserInfo({ birthYear: stateValue });
+  }
+
+  // Function to get formatted birthday for display
+  getFormattedBirthday = () => {
+    const { userInfo } = this.state;
+    if (!userInfo || !userInfo.birthYear) return '';
+    
+    const birthYear = userInfo.birthYear.toString();
+    
+    // If it's already in dd/mm/yyyy format, return as is
+    if (birthYear.includes('/')) {
+      return birthYear;
+    }
+    
+    // If it's 7 digits, add leading zero
+    if (birthYear.length === 7) {
+      const padded = '0' + birthYear;
+      return `${padded.substring(0, 2)}/${padded.substring(2, 4)}/${padded.substring(4, 8)}`;
+    }
+    
+    // If it's 8 digits, format directly
+    if (birthYear.length === 8) {
+      return `${birthYear.substring(0, 2)}/${birthYear.substring(2, 4)}/${birthYear.substring(4, 8)}`;
+    }
+    
+    // If it's 4 digits, assume it's a year
+    if (birthYear.length === 4) {
+      const year = parseInt(birthYear);
+      if (year >= 1900 && year <= new Date().getFullYear()) {
+        return `01/01/${year}`;
+      }
+    }
+    
+    // For any other case, try to pad and format
+    let padded = birthYear;
+    if (padded.length < 8) {
+      padded = padded.padStart(8, '0');
+    } else if (padded.length > 8) {
+      padded = padded.substring(0, 8);
+    }
+    
+    if (padded.length === 8) {
+      return `${padded.substring(0, 2)}/${padded.substring(2, 4)}/${padded.substring(4, 8)}`;
+    }
+    
+    return birthYear;
   }
 
   navItems = [
@@ -596,11 +810,12 @@ class Profile extends Component {
                 </select>
               </div>
               <div>
-                <label className="block text-gray-600 mb-2">Năm sinh</label>
+                <label className="block text-gray-600 mb-2">Ngày sinh</label>
                 <input 
-                  type="number"
-                  value={userData.birthYear}
-                  onChange={(e) => this.updateUserInfo({ birthYear: parseInt(e.target.value) })}
+                  type="text"
+                  placeholder="dd/mm/yyyy"
+                  defaultValue={this.getFormattedBirthday()}
+                  onChange={this.handleBirthdayChange}
                   disabled={!isEditing}
                   className="w-full p-3 border rounded-lg focus:outline-none focus:border-blue-500"
                 />
@@ -698,76 +913,27 @@ class Profile extends Component {
   }
 
   render() {
-    const { activeTab, userInfo, showMapPicker } = this.state;
+    const { showMapPicker } = this.state;
 
     return (
-      <div className="min-h-screen bg-[#f4f5f6]">
-        <div className="container mx-auto py-6 px-4">
-          <div className="flex gap-6">
-            {/* Left Sidebar */}
-            <div className="w-64">
-              {/* User Info */}
-              <div className="bg-white rounded-lg p-4 mb-4 shadow">
-                <div className="flex items-center gap-3">
-                  <Avatar 
-                    size="large"
-                    shape="circle"
-                    icon="pi pi-user"
-                    className="bg-orange-500"
-                  />
-                  <div>
-                    <h3 className="font-semibold">{userInfo?.userName || 'Loading...'}</h3>
-                    <p className="text-sm text-gray-500">{userInfo?.hometown}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Navigation */}
-              <div className="bg-white rounded-lg shadow">
-                <nav className="p-2">
-                  <ul className="space-y-1">
-                    {this.navItems.map(item => (
-                      <li key={item.id}>
-                        <button
-                          onClick={() => this.setActiveTab(item.id)}
-                          className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                            activeTab === item.id
-                              ? 'bg-orange-500 text-white'
-                              : 'text-gray-600 hover:bg-gray-100'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <i className={item.icon} />
-                            <span>{item.label}</span>
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="bg-white rounded-lg shadow">
-                <div className="p-6">
-                  {this.renderContent()}
-                </div>
-              </div>
+      <>
+        <SidebarNav>
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6">
+              {this.renderContent()}
             </div>
           </div>
-        </div>
+        </SidebarNav>
 
         {/* Google Maps Picker */}
         <GoogleMapPicker
           isVisible={showMapPicker}
           onHide={() => this.setShowMapPicker(false)}
           onLocationSelect={this.handleLocationSelect}
-          currentLat={userInfo?.currentLatitude}
-          currentLng={userInfo?.currentLongitude}
+          currentLat={this.state.userInfo?.currentLatitude}
+          currentLng={this.state.userInfo?.currentLongitude}
         />
-      </div>
+      </>
     );
   }
 }

@@ -166,3 +166,51 @@ export const updateUserSurvey = async (surveyData) => {
     throw error;
   }
 };
+
+// Lấy danh sách bài đăng của user
+export const getMyApartmentsApi = async () => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
+  }
+
+  try {
+    const response = await api.get("/api/apartments/my", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('Error in getMyApartmentsApi:', error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('accessToken');
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+    throw error;
+  }
+};
+
+// Lấy số lượng bài đăng của user
+export const getMyApartmentsCountApi = async () => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) {
+    throw new Error('Không tìm thấy token. Vui lòng đăng nhập lại.');
+  }
+
+  try {
+    const response = await api.get("/api/apartments/my/count", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error('Error in getMyApartmentsCountApi:', error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('accessToken');
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+    throw error;
+  }
+};
