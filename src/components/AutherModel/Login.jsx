@@ -8,20 +8,22 @@ import { Button } from "primereact/button";
 import Register from "./Register";
 import { loginApi } from "../../services/Userservices";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-const Login = ({ visible, onHide }) => {
+const Login = ({ visible, onHide, onLoginSuccess }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [remember, setRemember] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     try {
       setLoading(true);
-
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
@@ -30,7 +32,16 @@ const Login = ({ visible, onHide }) => {
       if (res.data && res.data.token) {
         localStorage.setItem("accessToken", res.data.token);
         message.success("Đăng nhập thành công!", 3);
-        onHide?.();
+
+        const decoded = jwtDecode(res.data.token);
+        if (decoded.role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+
+        onLoginSuccess?.(); // ✅ Thông báo login thành công
+        onHide?.(); // ✅ Ẩn dialog sau login
       } else {
         throw new Error("Token not received from server");
       }
@@ -147,13 +158,14 @@ const Login = ({ visible, onHide }) => {
 
         <div className="text-center text-sm mt-4">
           Bạn chưa có tài khoản?{" "}
-          <a
+          <span
             onClick={() => setShowRegister(true)}
             className="text-orange-500 font-semibold cursor-pointer"
           >
             Đăng ký ngay
-          </a>
+          </span>
         </div>
+
         <Register
           visible={showRegister}
           onHide={() => setShowRegister(false)}
