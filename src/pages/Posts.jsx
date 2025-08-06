@@ -100,7 +100,7 @@ const Posts = () => {
           <Button
             label="Chi tiết"
             icon="pi pi-eye"
-            className="p-button-outlined"
+            className="border-2 border-orange-500 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-200"
             onClick={() => handleViewDetail(post)}
           />
         </div>
@@ -110,15 +110,20 @@ const Posts = () => {
 
   const renderDetailDialog = () => (
     <Dialog
-      header="Chi tiết bài đăng"
+      header={
+        <div className="flex items-center justify-between px-4 py-3">
+          <span className="text-2xl font-bold text-orange-600 tracking-wide uppercase">Chi tiết bài đăng</span>
+        </div>
+      }
       visible={showDetailDialog}
       onHide={() => setShowDetailDialog(false)}
       style={{ width: '90vw', maxWidth: '800px' }}
       modal
-      className="p-fluid"
+      className="p-fluid bg-white rounded-2xl shadow-2xl border border-gray-200"
+      closeIcon={<i className="pi pi-times text-2xl text-gray-500 hover:text-red-500 transition-colors" style={{marginRight: '12px', marginTop: '8px'}} />}
     >
       {selectedPost && (
-        <div className="space-y-6">
+        <div className="space-y-6 bg-white rounded-xl p-4">
           {/* Images */}
           {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 && (
             <div>
@@ -222,7 +227,7 @@ const Posts = () => {
             <Button
               label="Tạo bài đăng mới"
               icon="pi pi-plus"
-              className="p-button-primary"
+              className="border-2 border-green-600 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-200"
               onClick={() => window.location.href = '/add-apartment'}
             />
           </div>
@@ -255,7 +260,7 @@ const Posts = () => {
               <Button
                 label="Tạo bài đăng"
                 icon="pi pi-plus"
-                className="p-button-primary"
+                className="border-2 border-green-600 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold px-4 py-2 rounded-xl shadow-md transition-all duration-200"
                 onClick={() => window.location.href = '/add-apartment'}
               />
             </div>
