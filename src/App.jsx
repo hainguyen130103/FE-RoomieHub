@@ -2,12 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/layouts/Header.jsx";
 import Footer from "./components/layouts/Footer.jsx";
 import HomePage from "./pages/HomePage.jsx";
-import ApartmentDetail from "./pages/ApartmentDetail.jsx";
-import PostApartment from "./pages/AddApartment.jsx";
+import ApartmentDetail from "./components/Apartment/ApartmentDetail.jsx";
+import PostApartment from "./components/Apartment/AddApartment.jsx";
 import Profile from "./pages/Profile";
 import Package from "./components/package/Package";
 import Posts from "./pages/Posts";
 import Roommates from "./pages/Roommates";
+import AllApartmentsPage from "./components/Apartment/AllApartmentsPage.jsx";
+import RoommatePosts from "./components/Roommate/RoommatePosts.jsx";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
             <Route path="/packages" element={<Package />} />
             <Route path="/posts" element={<Posts />} />
             <Route path="/roommates" element={<Roommates />} />
+            <Route path="/real-estate" element={<AllApartmentsPage />} />
+            <Route path="/roommates-post" element={<RoommatePosts />} />
           </Routes>
         </main>
         <Footer />

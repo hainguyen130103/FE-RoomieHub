@@ -6,6 +6,7 @@ import logoImage from "../../assets/images/logo.svg";
 import Login from "../AutherModel/Login";
 import Register from "../AutherModel/Register";
 import { Link, useNavigate } from "react-router-dom"; // Thêm import này ở đầu file
+import { message } from "antd";
 
 const Header = () => {
   const op = useRef(null);
@@ -22,39 +23,34 @@ const Header = () => {
 
   const handleLogout = () => {
     try {
-      // Clear storage
       localStorage.removeItem("accessToken");
       localStorage.clear();
       sessionStorage.clear();
 
-      // Update state
       setIsLoggedIn(false);
       op.current?.hide();
 
-      // Debug log
-      console.log("Logged out - Storage cleared");
+      message.success("Đã đăng xuất", 3); // ✅ dùng message thay alert
 
-      // Alert user
-      alert("Đã đăng xuất");
-
-      // Redirect to homepage
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
-      alert("Có lỗi xảy ra khi đăng xuất");
+      message.error("Có lỗi xảy ra khi đăng xuất", 3); // ✅ dùng message thay alert
     }
   };
 
   const items = [
     {
-      label: "Công việc",
-      icon: "pi pi-briefcase",
-      className: "text-white font-medium",
-    },
-    {
       label: "Bất động sản",
       icon: "pi pi-home",
       className: "text-white font-medium",
+      command: () => navigate("/real-estate"),
+    },
+    {
+      label: "Tìm bạn ở ghép",
+      icon: "pi pi-user",
+      className: "text-white font-medium",
+      command: () => navigate("/roommates-post"),
     },
     {
       label: "Kho tri thức",

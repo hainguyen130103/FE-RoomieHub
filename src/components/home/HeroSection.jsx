@@ -3,21 +3,37 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import "primeicons/primeicons.css";
 import bannerSearch from "../../assets/images/banner-search.png";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const navigate = useNavigate();
 
   const shortcutItems = [
-    { icon: "pi pi-eye", label: "Xem nhà bằng VR", color: "#C23AFA" },
-    { icon: "pi pi-file", label: "Tạo CV bằng AI", color: "#ED7902" },
     {
-      icon: "pi pi-building",
-      label: "Doanh nghiệp xuất sắc",
-      color: "#FF4646",
+      icon: "pi pi-eye",
+      label: "Xem nhà bằng VR",
+      color: "#C23AFA",
+      command: () => navigate("/real-estate"),
     },
-    { icon: "pi pi-home", label: "Bất động sản hot", color: "#0FC0B5" },
-    { icon: "pi pi-users", label: "Cộng đồng", color: "#3B82F6" },
-    { icon: "pi pi-calendar", label: "Tôi là chủ nhà", color: "#C23AFA" },
+    {
+      icon: "pi pi-home",
+      label: "Bất động sản hot",
+      color: "#0FC0B5",
+      command: () => navigate("/real-estate"),
+    },
+    {
+      icon: "pi pi-users",
+      label: "Cộng đồng",
+      color: "#3B82F6",
+      command: () => navigate("/roommates-post"),
+    },
+    {
+      icon: "pi pi-calendar",
+      label: "Tôi là chủ nhà",
+      color: "#C23AFA",
+      command: () => navigate("/add-apartment"),
+    },
     {
       icon: "pi pi-book",
       label: "Kho tri thức",
@@ -33,7 +49,11 @@ const HeroSection = () => {
           <div className="w-full lg:w-1/4">
             <div className="bg-white p-4 rounded-lg shadow space-y-4">
               {shortcutItems.map((item, idx) => (
-                <a key={idx} href="#" className="flex items-center gap-3 group">
+                <div
+                  key={idx}
+                  onClick={item.command}
+                  className="flex items-center gap-3 group cursor-pointer hover:bg-gray-100 p-2 rounded"
+                >
                   <div
                     className="w-10 h-10 flex items-center justify-center rounded-lg text-white"
                     style={{ background: item.color }}
@@ -43,7 +63,7 @@ const HeroSection = () => {
                   <span className="text-sm font-medium text-gray-800 group-hover:underline">
                     {item.label}
                   </span>
-                </a>
+                </div>
               ))}
             </div>
           </div>
@@ -65,8 +85,7 @@ const HeroSection = () => {
               <div className="flex justify-center gap-3 mb-4">
                 {[
                   { label: "Bất động sản", icon: "pi pi-home", index: 0 },
-                  { label: "Việc làm", icon: "pi pi-briefcase", index: 1 },
-                  { label: "Kho tri thức", icon: "pi pi-book", index: 2 },
+                  { label: "Kho tri thức", icon: "pi pi-book", index: 1 },
                 ].map((tab) => (
                   <Button
                     key={tab.index}
@@ -101,11 +120,11 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Banner image (placeholder or carousel if needed) */}
+            {/* Banner image */}
             <div className="rounded-lg overflow-hidden shadow-md h-60">
               <img
                 src={bannerSearch}
-                alt="RoomieHUbRoomieHUb Banner"
+                alt="RoomieHUb Banner"
                 className="w-full h-auto"
               />
             </div>

@@ -10,11 +10,11 @@ const HomePage = () => {
   return (
     <div className="font-sans">
       <HeroSection />
-      <FeatureSection
+      {/* <FeatureSection
         title="ROOMIEHUB sẽ giúp bạn tìm việc thế nào?"
         type="job"
-      />
-      <JobSection />
+      /> */}
+      {/* <JobSection /> */}
       <FeatureSection
         title="ROOMIEHUB sẽ giúp bạn tìm nhà thế nào?"
         type="realestate"

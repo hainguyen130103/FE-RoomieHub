@@ -7,6 +7,7 @@ import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import Register from "./Register";
 import { loginApi } from "../../services/Userservices";
+import { message } from "antd";
 
 const Login = ({ visible, onHide }) => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -26,21 +27,16 @@ const Login = ({ visible, onHide }) => {
 
       const res = await loginApi(trimmedEmail, trimmedPassword);
 
-      // Debug response
-      console.log("Login response:", res.data);
-
       if (res.data && res.data.token) {
         localStorage.setItem("accessToken", res.data.token);
-        // Verify token was saved
-        console.log("Token saved:", localStorage.getItem("accessToken"));
-        alert("Đăng nhập thành công!");
+        message.success("Đăng nhập thành công!", 3);
         onHide?.();
       } else {
         throw new Error("Token not received from server");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      message.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.", 3);
     } finally {
       setLoading(false);
     }
