@@ -1,10 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   HomeOutlined,
   UserOutlined,
   FileTextOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { message } from "antd";
 
 const menuItems = [
   { label: "Dashboard", icon: <HomeOutlined />, to: "/admin" },
@@ -13,6 +14,14 @@ const menuItems = [
 ];
 
 export default function AdminSidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    message.success("Đã đăng xuất!");
+    navigate("/"); // chuyển về trang chủ
+  };
+
   return (
     <div className="bg-gray-800 text-white w-60 min-h-screen fixed left-0 top-0 shadow-lg z-50">
       <div className="text-2xl font-bold px-6 py-4 border-b border-gray-700">
@@ -34,7 +43,10 @@ export default function AdminSidebar() {
           </li>
         ))}
         <li>
-          <button className="flex items-center px-6 py-3 w-full hover:bg-gray-700">
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-6 py-3 w-full hover:bg-gray-700"
+          >
             <LogoutOutlined className="mr-3" />
             Đăng xuất
           </button>
