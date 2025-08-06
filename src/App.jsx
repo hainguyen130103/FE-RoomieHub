@@ -10,6 +10,11 @@ import Posts from "./pages/Posts";
 import Roommates from "./pages/Roommates";
 import AllApartmentsPage from "./components/Apartment/AllApartmentsPage.jsx";
 import RoommatePosts from "./components/Roommate/RoommatePosts.jsx";
+import AdminLayout from "./components/Admin/AdminLayout.jsx";
+import UserManagement from "./components/Admin/managePage/UserManagement.jsx";
+import PostManagement from "./components/Admin/managePage/PostManagement.jsx";
+import Dashboard from "./components/Admin/managePage/Dashboard.jsx";
+import ProtectedAdminRoute from "./components/middleware/ProtectedAdminRoute.jsx";
 
 function App() {
   return (
@@ -27,6 +32,39 @@ function App() {
             <Route path="/roommates" element={<Roommates />} />
             <Route path="/real-estate" element={<AllApartmentsPage />} />
             <Route path="/roommates-post" element={<RoommatePosts />} />
+            {/* Admin page */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminLayout>
+                    <Dashboard />
+                  </AdminLayout>
+                </ProtectedAdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminLayout>
+                    <UserManagement />
+                  </AdminLayout>
+                </ProtectedAdminRoute>
+              }
+            />
+
+            <Route
+              path="/admin/posts"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminLayout>
+                    <PostManagement />
+                  </AdminLayout>
+                </ProtectedAdminRoute>
+              }
+            />
           </Routes>
         </main>
         <Footer />

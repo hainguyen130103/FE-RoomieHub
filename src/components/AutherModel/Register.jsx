@@ -5,6 +5,7 @@ import { Password } from "primereact/password";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Button } from "primereact/button";
 import { registerApi } from "../../services/Userservices";
+import { message } from "antd";
 
 const Register = ({ visible, onHide }) => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -16,9 +17,10 @@ const Register = ({ visible, onHide }) => {
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
-      alert("Mật khẩu không khớp");
+      message.error("Mật khẩu không khớp!");
       return;
     }
+
     try {
       setLoading(true);
       const res = await registerApi(
@@ -26,11 +28,12 @@ const Register = ({ visible, onHide }) => {
         password.trim(),
         fullname.trim()
       );
-      console.log("Register success:", res);
-      onHide?.();
+
+      message.success("Đăng ký thành công!", 3);
+      onHide?.(); // Ẩn modal sau đăng ký
     } catch (error) {
       console.error("Register failed:", error?.response?.data || error.message);
-      alert("Đăng ký thất bại. Vui lòng thử lại.");
+      message.error("Đăng ký thất bại. Vui lòng thử lại.", 3);
     } finally {
       setLoading(false);
     }
@@ -69,7 +72,11 @@ const Register = ({ visible, onHide }) => {
           <TabPanel
             header={
               <span
-                className={`${tabIndex === 0 ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-gray-500"} font-medium`}
+                className={`${
+                  tabIndex === 0
+                    ? "text-orange-500 border-b-2 border-orange-500 pb-1"
+                    : "text-gray-500"
+                } font-medium`}
               >
                 Tài khoản
               </span>
@@ -81,12 +88,14 @@ const Register = ({ visible, onHide }) => {
               onChange={(e) => setFullname(e.target.value)}
               className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl mt-10"
             />
+
             <InputText
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl"
             />
+
             <Password
               placeholder="Nhập mật khẩu"
               value={password}
@@ -105,6 +114,7 @@ const Register = ({ visible, onHide }) => {
                 },
               }}
             />
+
             <Password
               placeholder="Nhập lại mật khẩu"
               value={confirmPassword}
@@ -148,9 +158,9 @@ const Register = ({ visible, onHide }) => {
 
         <div className="text-center text-sm mt-4">
           Bạn đã có tài khoản?{" "}
-          <a href="#" className="text-orange-500 font-semibold">
+          <span className="text-orange-500 font-semibold cursor-pointer">
             Đăng nhập ngay
-          </a>
+          </span>
         </div>
 
         <div className="flex items-center gap-2 my-5">

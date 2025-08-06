@@ -163,10 +163,8 @@ const Header = () => {
 
         <Login
           visible={showLogin}
-          onHide={() => {
-            setShowLogin(false);
-            setIsLoggedIn(true); // update sau khi login thành công
-          }}
+          onHide={() => setShowLogin(false)}
+          onLoginSuccess={() => setIsLoggedIn(true)} // ✅ chỉ khi login thành công mới set
         />
         <Register
           visible={showRegister}
