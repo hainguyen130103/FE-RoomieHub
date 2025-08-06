@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import logoImage from "../../assets/images/logo.svg";
 import Login from "../AutherModel/Login";
 import Register from "../AutherModel/Register";
+import { Link, useNavigate } from "react-router-dom"; // Thêm import này ở đầu file
 
 const Header = () => {
   const op = useRef(null);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate(); // Thêm hook này
 
   // Cập nhật trạng thái login khi mount
   useEffect(() => {
@@ -19,10 +21,28 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    setIsLoggedIn(false);
-    op.current?.hide();
-    alert("Đã đăng xuất");
+    try {
+      // Clear storage
+      localStorage.removeItem("accessToken");
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Update state
+      setIsLoggedIn(false);
+      op.current?.hide();
+
+      // Debug log
+      console.log("Logged out - Storage cleared");
+
+      // Alert user
+      alert("Đã đăng xuất");
+
+      // Redirect to homepage
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Có lỗi xảy ra khi đăng xuất");
+    }
   };
 
   const items = [
@@ -50,7 +70,13 @@ const Header = () => {
 
   const start = (
     <div className="flex items-center gap-2">
-      <img src={logoImage} alt="Logo" className="h-7 ml-20 mr-20" />
+      <Link to="/">
+        <img
+          src={logoImage}
+          alt="Logo"
+          className="h-7 ml-20 mr-20 cursor-pointer hover:scale-105 transition-transform"
+        />
+      </Link>
     </div>
   );
 
@@ -59,11 +85,13 @@ const Header = () => {
       <button className="w-9 h-9 flex items-center justify-center rounded-full border border-white text-white">
         <i className="pi pi-globe text-lg"></i>
       </button>
-      <Button
-        label="Đăng tin"
-        icon="pi pi-pencil"
-        className="bg-orange-500 hover:bg-orange-600 border-none text-white font-semibold px-4 py-2 rounded-md gap-2"
-      />
+      <Link to="/add-apartment">
+        <Button
+          label="Đăng tin"
+          icon="pi pi-pencil"
+          className="border-2 border-orange-600 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold px-5 py-2 rounded-xl shadow-md transition-all duration-200 gap-2"
+        />
+      </Link>
       <div>
         <div
           className="w-9 h-9 rounded-full bg-gray-500 flex items-center justify-center cursor-pointer"
@@ -100,9 +128,15 @@ const Header = () => {
               </>
             ) : (
               <>
-                <li className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
-                  <i className="pi pi-user text-gray-500" />
-                  <span>Thông tin tài khoản</span>
+                <li>
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer text-gray-900"
+                    onClick={() => op.current?.hide()}
+                  >
+                    <i className="pi pi-user text-gray-500" />
+                    <span>Thông tin tài khoản</span>
+                  </Link>
                 </li>
               </>
             )}

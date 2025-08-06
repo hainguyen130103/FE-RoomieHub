@@ -24,20 +24,22 @@ const Login = ({ visible, onHide }) => {
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
 
-      console.log("Gửi:", {
-        email: JSON.stringify(trimmedEmail),
-        password: JSON.stringify(trimmedPassword),
-      });
-
       const res = await loginApi(trimmedEmail, trimmedPassword);
 
-      const token = res.data.token;
-      localStorage.setItem("accessToken", token);
+      // Debug response
+      console.log("Login response:", res.data);
 
-      alert("Đăng nhập thành công!");
-      onHide?.();
+      if (res.data && res.data.token) {
+        localStorage.setItem("accessToken", res.data.token);
+        // Verify token was saved
+        console.log("Token saved:", localStorage.getItem("accessToken"));
+        alert("Đăng nhập thành công!");
+        onHide?.();
+      } else {
+        throw new Error("Token not received from server");
+      }
     } catch (error) {
-      console.error("Login failed:", error?.response?.data || error.message);
+      console.error("Login failed:", error);
       alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
     } finally {
       setLoading(false);
