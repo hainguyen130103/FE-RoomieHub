@@ -26,7 +26,7 @@ const FeatureSection = ({ title, type }) => {
   const realEstateFeatures = [
     {
       icon: "/src/assets/images/icon-vr.png",
-      title: "Xem nhà bằng VR",
+      title: "Xem nhà bằng nhanh",
       description:
         "Thay vì phải xem lần lượt từng hình ảnh hoặc video, ROOMIEHUB giúp người dùng có thể quan sát toàn bộ không gian chỉ trong một lần chạm",
     },

@@ -28,7 +28,7 @@ const TestimonialsSection = () => {
       role: "Real Estate Agent",
       rating: 5,
       comment:
-        "Tính năng xem nhà bằng VR thực sự hữu ích. Tôi đã tiết kiệm rất nhiều thời gian khi tìm kiếm bất động sản.",
+        "Tính năng xem nhà thực sự hữu ích. Tôi đã tiết kiệm rất nhiều thời gian khi tìm kiếm bất động sản.",
       image: "https://ext.same-assets.com/662425795/8720322.png",
     },
   ];

@@ -12,7 +12,7 @@ const HeroSection = () => {
   const shortcutItems = [
     {
       icon: "pi pi-eye",
-      label: "Xem nhà bằng VR",
+      label: "Xem nhà bằng nhanh",
       color: "#C23AFA",
       command: () => navigate("/real-estate"),
     },
