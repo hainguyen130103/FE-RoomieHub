@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createApartmentApi } from "../../services/Userservices";
-import { message } from "antd";
+import { message, Modal } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const PostApartment = () => {
   const [form, setForm] = useState({
@@ -22,6 +23,7 @@ const PostApartment = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +57,7 @@ const PostApartment = () => {
         area: parseFloat(form.area),
       };
       const res = await createApartmentApi(payload, token);
+
       if (res.status === 201 || res.status === 200) {
         message.success("Đăng tin thành công!");
         setForm({
@@ -79,7 +82,22 @@ const PostApartment = () => {
       }
     } catch (err) {
       console.error(err);
-      message.error("Lỗi khi gửi dữ liệu.");
+      if (
+        err.response &&
+        err.response.status === 400 &&
+        err.response.data?.code === "NO_ACTIVE_PACKAGE"
+      ) {
+        Modal.error({
+          title: "Chưa có gói đăng bài hợp lệ",
+          content:
+            err.response.data?.message ||
+            "Vui lòng đăng ký gói đăng bài để tiếp tục.",
+          okText: "Đăng ký ngay",
+          onOk: () => navigate("/packages"),
+        });
+      } else {
+        message.error("Lỗi khi gửi dữ liệu.");
+      }
     } finally {
       setLoading(false);
     }
@@ -258,7 +276,11 @@ const PostApartment = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 text-white font-semibold rounded ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}
+            className={`w-full py-3 text-white font-semibold rounded ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-orange-500 hover:bg-orange-600"
+            }`}
           >
             {loading ? "Đang đăng..." : "Đăng tin ngay"}
           </button>

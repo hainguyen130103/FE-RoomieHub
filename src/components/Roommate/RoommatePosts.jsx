@@ -20,6 +20,7 @@ import {
 } from "../../services/Userservices";
 import { jwtDecode } from "jwt-decode";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
@@ -33,6 +34,7 @@ export default function RoommatePosts() {
   const [form] = Form.useForm();
   const [imageUrls, setImageUrls] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const navigate = useNavigate();
 
   const fetchPosts = async (filterPayload) => {
     try {
@@ -54,23 +56,27 @@ export default function RoommatePosts() {
       const profile = await getUserProfileApi(decoded.id);
 
       const payload = {
-        address: profile.location || undefined,
-        minArea: profile.area || undefined,
-        maxPrice: profile.price || undefined,
-        dob: profile.birthYear
-          ? dayjs().year(profile.birthYear).format("YYYY-MM-DD")
-          : undefined,
-        gender: profile.gender || undefined,
-        occupation: profile.occupation || undefined,
-        personality: profile.preferredPersonality || undefined,
-        canCook: profile.cookFrequency === "OFTEN" ? "YES" : "NO",
-        isNightOwl: profile.sleepHabit === "NIGHT_OWL" ? "YES" : "NO",
-        hasPet: profile.pets || undefined,
-        smokes: profile.smoking || undefined,
-        bringsFriends: profile.inviteFriends || undefined,
+        gender: profile.gender || undefined, // MALE, FEMALE, ANY
+        occupation: profile.occupation || undefined, // STUDENT, OFFICE_WORKER, FREELANCER, OTHER
+        // personality: profile.preferredPersonality || undefined, // nếu API có
+        canCook:
+          profile.cookFrequency === "OFTEN"
+            ? "YES"
+            : profile.cookFrequency === "NEVER"
+              ? "NO"
+              : undefined,
+        isNightOwl:
+          profile.sleepHabit === "NIGHT_OWL"
+            ? "YES"
+            : profile.sleepHabit === "EARLY_SLEEPER"
+              ? "NO"
+              : undefined,
+        hasPet: profile.pets || undefined, // YES, NO
+        smokes: profile.smoking || undefined, // YES, NO
+        bringsFriends: profile.inviteFriends || undefined, // YES, NO
       };
 
-      console.log("Payload gửi đi:", payload);
+      console.log("Payload filter:", payload);
       await fetchPosts(payload);
     } catch (err) {
       message.error("Không thể lọc theo hồ sơ cá nhân");
@@ -84,34 +90,52 @@ export default function RoommatePosts() {
   const handleCreatePost = async (values) => {
     try {
       const token = localStorage.getItem("accessToken");
+      const decoded = jwtDecode(token);
+      const profile = await getUserProfileApi(decoded.id);
+
       const roommatePreference = {
-        name: userProfile.userName,
-        dateOfBirth: dayjs().year(userProfile.birthYear).format("YYYY-MM-DD"),
-        gender: userProfile.gender,
-        occupation: userProfile.occupation,
-        description: "Tìm bạn ở ghép phù hợp",
-        preferredPersonality: userProfile.preferredPersonality,
-        canCook: userProfile.cookFrequency === "OFTEN" ? "YES" : "NO",
-        isNightOwl: userProfile.sleepHabit === "LATE_SLEEPER" ? "YES" : "NO",
-        hasPet: userProfile.pets,
-        smokes: userProfile.smoking,
-        oftenBringsFriendsOver: userProfile.inviteFriends,
+        name: profile.userName || "",
+        dateOfBirth: profile.birthYear
+          ? dayjs(`${profile.birthYear}-01-01`).format("YYYY-MM-DD")
+          : null,
+        gender: profile.gender || "ANY",
+        occupation: profile.occupation || "OTHER",
+        description: profile.description || "",
+        preferredPersonality: profile.preferredPersonality || "QUIET",
+        canCook:
+          profile.cookFrequency === "OFTEN"
+            ? "YES"
+            : profile.cookFrequency === "NEVER"
+              ? "NO"
+              : "NO",
+        isNightOwl:
+          profile.sleepHabit === "NIGHT_OWL"
+            ? "YES"
+            : profile.sleepHabit === "EARLY_SLEEPER"
+              ? "NO"
+              : "NO",
+        hasPet: profile.pets || "NO",
+        smokes: profile.smoking || "NO",
+        oftenBringsFriendsOver: profile.inviteFriends || "NO",
       };
 
-      await createRoommatePostApi(
-        {
-          ...values,
-          imageUrls,
-          roommatePreferences: [roommatePreference],
-        },
-        token
-      );
+      const payload = {
+        address: values.address,
+        areaSquareMeters: parseFloat(values.areaSquareMeters),
+        monthlyRentPrice: parseFloat(values.monthlyRentPrice),
+        description: values.description,
+        imageUrls: imageUrls,
+        roommatePreferences: [roommatePreference],
+      };
+
+      await createRoommatePostApi(payload); // Không truyền token nữa
       message.success("Đăng bài thành công");
       setOpenModal(false);
       form.resetFields();
       setImageUrls([]);
       fetchFilteredPostsByUserProfile();
     } catch (err) {
+      console.error("Error creating post:", err);
       message.error("Lỗi khi đăng bài");
     }
   };
@@ -194,52 +218,54 @@ export default function RoommatePosts() {
       >
         <Form layout="vertical" form={form} onFinish={handleCreatePost}>
           <Form.Item
-            label="Tên người đăng"
-            name="ownerPost"
-            rules={[{ required: true }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
             label="Địa chỉ"
             name="address"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             label="Diện tích (m²)"
             name="areaSquareMeters"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Vui lòng nhập diện tích" }]}
           >
             <Input type="number" />
           </Form.Item>
           <Form.Item
             label="Giá thuê mỗi tháng"
             name="monthlyRentPrice"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Vui lòng nhập giá thuê" }]}
           >
             <Input type="number" />
           </Form.Item>
           <Form.Item
             label="Mô tả"
             name="description"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
           >
             <TextArea rows={3} />
           </Form.Item>
-          <Form.Item label="Ảnh minh họa">
-            <Upload
-              listType="picture"
-              maxCount={3}
-              beforeUpload={(file) => {
-                const url = URL.createObjectURL(file);
-                setImageUrls((prev) => [...prev, url]);
-                return false;
+          <Form.Item label="Link ảnh (URL)">
+            <Input
+              placeholder="Nhập URL ảnh và nhấn Enter"
+              onPressEnter={(e) => {
+                const url = e.target.value.trim();
+                if (url) {
+                  setImageUrls((prev) => [...prev, url]);
+                  e.target.value = "";
+                }
               }}
-            >
-              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-            </Upload>
+            />
+            <div className="mt-2 flex flex-wrap gap-2">
+              {imageUrls.map((url, idx) => (
+                <img
+                  key={idx}
+                  src={url}
+                  alt="preview"
+                  className="w-20 h-20 object-cover rounded"
+                />
+              ))}
+            </div>
           </Form.Item>
         </Form>
       </Modal>
@@ -265,6 +291,80 @@ export default function RoommatePosts() {
             <br />
             <Paragraph>{selectedPost.description}</Paragraph>
             <Text type="secondary">Ngày đăng: {selectedPost.createdDate}</Text>
+            {/* Thông tin người đăng */}
+            {selectedPost.roommatePreferences &&
+              selectedPost.roommatePreferences.length > 0 && (
+                <>
+                  <Title level={5} className="mt-4">
+                    Thông tin người đăng
+                  </Title>
+                  {selectedPost.roommatePreferences.map((pref, idx) => (
+                    <div
+                      key={idx}
+                      className="border rounded p-3 mb-3 bg-gray-50"
+                    >
+                      <p>
+                        <strong>Tên:</strong> {pref.name}
+                      </p>
+                      <p>
+                        <strong>Năm sinh:</strong> {pref.dateOfBirth}
+                      </p>
+                      <p>
+                        <strong>Giới tính:</strong>{" "}
+                        {pref.gender === "MALE"
+                          ? "Nam"
+                          : pref.gender === "FEMALE"
+                            ? "Nữ"
+                            : "Không yêu cầu"}
+                      </p>
+                      <p>
+                        <strong>Nghề nghiệp:</strong>{" "}
+                        {pref.occupation === "STUDENT"
+                          ? "Sinh viên"
+                          : pref.occupation === "OFFICE_WORKER"
+                            ? "Nhân viên văn phòng"
+                            : pref.occupation === "FREELANCER"
+                              ? "Freelancer"
+                              : pref.occupation === "OTHER"
+                                ? "Khác"
+                                : "Không rõ"}
+                      </p>
+                      <p>
+                        <strong>Biết nấu ăn:</strong>{" "}
+                        {pref.canCook === "YES" ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <strong>Cú đêm:</strong>{" "}
+                        {pref.isNightOwl === "YES" ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <strong>Nuôi thú cưng:</strong>{" "}
+                        {pref.hasPet === "YES" ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <strong>Hút thuốc:</strong>{" "}
+                        {pref.smokes === "YES" ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <strong>Thường rủ bạn về:</strong>{" "}
+                        {pref.oftenBringsFriendsOver === "YES" ? "Có" : "Không"}
+                      </p>
+                    </div>
+                  ))}
+                </>
+              )}
+            <Button
+              type="primary"
+              className="bg-orange-500 border-orange-500 mt-4"
+              block
+              onClick={() =>
+                navigate("/roommates", {
+                  state: { chatWith: selectedPost.userId },
+                })
+              }
+            >
+              Liên hệ ngay
+            </Button>
           </div>
         )}
       </Modal>

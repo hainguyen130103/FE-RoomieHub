@@ -251,36 +251,51 @@ export const getPaymentByOrderCodeApi = (orderCode) => {
 
 // ===================== ROOMMATE POST CONTROLLER =====================
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("accessToken");
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    : { "Content-Type": "application/json" };
+};
+
 // Lấy bài đăng theo ID
 export const getRoommatePostByIdApi = (id) => {
-  return api.get(`/api/roommate-posts/${id}`);
+  return api.get(`/api/roommate-posts/${id}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
 // Cập nhật bài đăng
 export const updateRoommatePostApi = (id, postData) => {
   return api.put(`/api/roommate-posts/${id}`, postData, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
   });
 };
 
 // Xoá bài đăng
 export const deleteRoommatePostApi = (id) => {
-  return api.delete(`/api/roommate-posts/${id}`);
+  return api.delete(`/api/roommate-posts/${id}`, {
+    headers: getAuthHeaders(),
+  });
 };
 
 // Lấy tất cả bài đăng
 export const getAllRoommatePostsApi = () => {
-  return api.get("/api/roommate-posts");
+  return api.get("/api/roommate-posts", {
+    headers: getAuthHeaders(),
+  });
 };
 
 // Tạo bài đăng mới
-export const createRoommatePostApi = (postData, token) => {
+export const createRoommatePostApi = (postData) => {
+  const token = localStorage.getItem("accessToken");
   return api.post("/api/roommate-posts", postData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 };
@@ -288,13 +303,13 @@ export const createRoommatePostApi = (postData, token) => {
 // Lọc bài đăng
 export const filterRoommatePostsApi = (filterCriteria) => {
   return api.post("/api/roommate-posts/filter", filterCriteria, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getAuthHeaders(),
   });
 };
 
 // Lấy bài đăng của người dùng hiện tại
 export const getMyRoommatePostsApi = () => {
-  return api.get("/api/roommate-posts/my-posts");
+  return api.get("/api/roommate-posts/my-posts", {
+    headers: getAuthHeaders(),
+  });
 };
