@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SidebarNav from "../layouts/SidebarNav";
-import { createPaymentApi } from "../../services/Userservices";
+import { createPaymentApi, getMyPackagesApi } from "../../services/Userservices";
 
 const packageDetails = {
   BASIC: {
@@ -42,6 +42,26 @@ const Package = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [countdown, setCountdown] = useState(0);
+  const [userPackages, setUserPackages] = useState([]);
+  const [packagesLoading, setPackagesLoading] = useState(true);
+  const [showPackagesModal, setShowPackagesModal] = useState(false);
+
+  useEffect(() => {
+    fetchUserPackages();
+  }, []);
+
+  const fetchUserPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const response = await getMyPackagesApi();
+      setUserPackages(response.data || []);
+    } catch (err) {
+      console.error('Error fetching user packages:', err);
+      // Don't show error for packages, just keep empty array
+    } finally {
+      setPackagesLoading(false);
+    }
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -89,7 +109,25 @@ const Package = () => {
       setCountdown(0);
     } finally {
       setLoading(prev => ({ ...prev, [packageType]: false }));
+      // Refresh packages after successful purchase attempt
+      setTimeout(() => {
+        fetchUserPackages();
+      }, 2000);
     }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('vi-VN');
+  };
+
+  const getPackageStatus = (expiredAt) => {
+    const now = new Date();
+    const expireDate = new Date(expiredAt);
+    const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
+    
+    if (daysLeft <= 0) return { status: 'Đã hết hạn', color: 'text-red-600 bg-red-100' };
+    if (daysLeft <= 7) return { status: `Còn ${daysLeft} ngày`, color: 'text-yellow-600 bg-yellow-100' };
+    return { status: `Còn ${daysLeft} ngày`, color: 'text-green-600 bg-green-100' };
   };
 
   return (
@@ -100,9 +138,26 @@ const Package = () => {
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
               Gói Dịch Vụ RoomieHub
             </h2>
-            <p className="text-gray-600 mb-10">
+            <p className="text-gray-600 mb-6">
               Lựa chọn gói phù hợp với nhu cầu đăng bài của bạn
             </p>
+
+            {/* Button to show current packages */}
+            {!packagesLoading && userPackages.length > 0 && (
+              <div className="mb-8">
+                <button
+                  onClick={() => setShowPackagesModal(true)}
+                  className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-2">📦</span>
+                    Xem gói hiện tại ({userPackages.length})
+                  </div>
+                </button>
+              </div>
+            )}
+
+            
 
             {/* Success/Error Messages */}
             {success && (
@@ -124,6 +179,10 @@ const Package = () => {
                 {error}
               </div>
             )}
+
+            <h3 className="text-2xl font-bold mb-6 text-gray-800">
+              🛒 Mua thêm gói mới
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
               {Object.entries(packageDetails).map(([packageType, pkg]) => (
@@ -260,6 +319,128 @@ const Package = () => {
           </div>
         </div>
       </div>
+
+      {/* Packages Modal */}
+      {showPackagesModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 flex justify-between items-center">
+              <h2 className="text-2xl font-bold flex items-center">
+                <span className="text-3xl mr-2">📦</span>
+                Gói hiện tại của bạn
+              </h2>
+              <button
+                onClick={() => setShowPackagesModal(false)}
+                className="text-white hover:text-gray-200 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+              {packagesLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                </div>
+              ) : userPackages.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-6xl mb-4">📭</div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    Bạn chưa có gói nào
+                  </h3>
+                  <p className="text-gray-600">
+                    Hãy mua gói để bắt đầu đăng bài!
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {userPackages.map((userPackage) => {
+                    const status = getPackageStatus(userPackage.expiredAt);
+                    const packageInfo = packageDetails[userPackage.packageName];
+                    
+                    return (
+                      <div
+                        key={userPackage.packageId}
+                        className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg shadow-lg p-6 border-l-4 border-orange-500"
+                      >
+                        {/* Package Header */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center">
+                            <span className="text-4xl mr-3">
+                              {packageInfo?.icon || '📦'}
+                            </span>
+                            <div>
+                              <h4 className="text-2xl font-bold text-gray-800">
+                                {userPackage.packageName}
+                              </h4>
+                              <p className="text-gray-600 text-sm">
+                                ID: #{userPackage.packageId}
+                              </p>
+                            </div>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${status.color}`}>
+                            {status.status}
+                          </span>
+                        </div>
+
+                        {/* Package Stats */}
+                        <div className="bg-white rounded-lg p-4 mb-4">
+                          <div className="grid grid-cols-1 gap-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Bài đăng còn lại:</span>
+                              <div className="flex items-center">
+                                <span className="text-2xl font-bold text-orange-600 mr-2">
+                                  {userPackage.remainingPosts}
+                                </span>
+                                <span className="text-orange-500">📝</span>
+                              </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Ngày bắt đầu:</span>
+                              <span className="font-bold text-gray-800">
+                                📅 {formatDate(userPackage.startDate)}
+                              </span>
+                            </div>
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 font-medium">Ngày hết hạn:</span>
+                              <span className="font-bold text-gray-800">
+                                ⏰ {formatDate(userPackage.expiredAt)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Package Description */}
+                        {packageInfo && (
+                          <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                            <p className="text-gray-700 text-sm">
+                              {packageInfo.description}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 p-4 flex justify-end">
+              <button
+                onClick={() => setShowPackagesModal(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </SidebarNav>
   );
 };

@@ -374,9 +374,7 @@ export const getPaymentStatisticsByPeriodApi = async (month, year) => {
   }
 };
 
-// ===================== ADMIN MANAGEMENT APIs =====================
 
-// Lấy danh sách tất cả users (cần API từ backend)
 export const getAllUsersApi = async () => {
   const token = localStorage.getItem("accessToken");
   if (!token) {
@@ -392,6 +390,30 @@ export const getAllUsersApi = async () => {
     return response;
   } catch (error) {
     console.error("Error in getAllUsersApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+// Lấy thông tin chi tiết users (API mới)
+export const getUsersInfoApi = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/admin/users-info", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getUsersInfoApi:", error);
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("accessToken");
       throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
@@ -428,4 +450,30 @@ export const updateUserRoleApi = async (email, role) => {
 // Lấy số lượng apartments
 export const getApartmentsCountApi = () => {
   return api.get("/api/apartments/count");
+};
+
+// ===================== USER PACKAGES CONTROLLER =====================
+
+// Lấy danh sách gói của user hiện tại
+export const getMyPackagesApi = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/user/my-packages", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getMyPackagesApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
 };

@@ -22,12 +22,11 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
-  // Load PrimeReact CSS only when Dashboard mounts and remove when unmounts
+  
   React.useEffect(() => {
-    // We'll use scoped CSS instead of loading external stylesheets
-    // This prevents global CSS conflicts
+    
     return () => {
-      // Cleanup any dashboard-specific styles
+      
       const dashboardStyles = document.querySelectorAll('[data-dashboard-scoped]');
       dashboardStyles.forEach(style => {
         if (style.parentNode) {
@@ -37,7 +36,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Generate months and years options
+  
   const monthOptions = [
     { label: 'Tháng 1', value: 1 },
     { label: 'Tháng 2', value: 2 },
@@ -58,7 +57,7 @@ export default function Dashboard() {
     yearOptions.push({ label: `Năm ${year}`, value: year });
   }
 
-  // Add CSS for pulse animation and scoped PrimeReact styles
+  
   React.useEffect(() => {
     const style = document.createElement('style');
     style.setAttribute('data-dashboard-scoped', 'true');
