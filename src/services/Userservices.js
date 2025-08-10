@@ -373,3 +373,59 @@ export const getPaymentStatisticsByPeriodApi = async (month, year) => {
     throw error;
   }
 };
+
+// ===================== ADMIN MANAGEMENT APIs =====================
+
+// Lấy danh sách tất cả users (cần API từ backend)
+export const getAllUsersApi = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/admin/users", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getAllUsersApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+// Cập nhật role user (USER/ADMIN)
+export const updateUserRoleApi = async (email, role) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.put("/api/admin/payments/user/update-role", null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { email, role }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in updateUserRoleApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+// Lấy số lượng apartments
+export const getApartmentsCountApi = () => {
+  return api.get("/api/apartments/count");
+};
