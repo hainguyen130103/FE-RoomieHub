@@ -22,32 +22,106 @@ export default function AdminSidebar() {
     navigate("/"); // chuyển về trang chủ
   };
 
+  const sidebarStyle = {
+    background: "linear-gradient(180deg, #ff8c00, #ff6600)",
+    color: "white",
+    width: "240px",
+    minHeight: "100vh",
+    position: "fixed",
+    left: 0,
+    top: 0,
+    boxShadow: "0 4px 20px rgba(255,140,0,0.4)",
+    zIndex: 50
+  };
+
+  const headerStyle = {
+    fontSize: "24px",
+    fontWeight: "bold",
+    padding: "20px 24px",
+    borderBottom: "2px solid rgba(255,255,255,0.3)",
+    background: "rgba(0,0,0,0.1)",
+    textAlign: "center",
+    textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+  };
+
+  const menuItemStyle = {
+    display: "flex",
+    alignItems: "center",
+    padding: "15px 24px",
+    textDecoration: "none",
+    color: "white",
+    transition: "all 0.3s ease",
+    borderLeft: "4px solid transparent",
+    fontWeight: "500"
+  };
+
+  const activeMenuItemStyle = {
+    ...menuItemStyle,
+    background: "rgba(255,255,255,0.2)",
+    borderLeft: "4px solid white",
+    boxShadow: "inset 0 0 10px rgba(0,0,0,0.2)"
+  };
+
+  const buttonStyle = {
+    display: "flex",
+    alignItems: "center",
+    padding: "15px 24px",
+    width: "100%",
+    border: "none",
+    background: "transparent",
+    color: "white",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    fontSize: "14px",
+    fontWeight: "500",
+    textAlign: "left"
+  };
+
   return (
-    <div className="bg-gray-800 text-white w-60 min-h-screen fixed left-0 top-0 shadow-lg z-50">
-      <div className="text-2xl font-bold px-6 py-4 border-b border-gray-700">
+    <div style={sidebarStyle}>
+      <div style={headerStyle}>
         Admin Panel
       </div>
-      <ul className="mt-4">
+      <ul style={{ marginTop: "16px", listStyle: "none", padding: 0 }}>
         {menuItems.map((item) => (
           <li key={item.to}>
             <NavLink
               to={item.to}
-              className={({ isActive }) =>
-                `flex items-center px-6 py-3 hover:bg-gray-700 ${
-                  isActive ? "bg-gray-700" : ""
-                }`
+              style={({ isActive }) => 
+                isActive ? activeMenuItemStyle : menuItemStyle
               }
+              onMouseEnter={(e) => {
+                if (!e.target.closest('a').classList.contains('active')) {
+                  e.target.closest('a').style.background = "rgba(255,255,255,0.1)";
+                  e.target.closest('a').style.transform = "translateX(5px)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!e.target.closest('a').classList.contains('active')) {
+                  e.target.closest('a').style.background = "transparent";
+                  e.target.closest('a').style.transform = "translateX(0)";
+                }
+              }}
             >
-              <span className="mr-3">{item.icon}</span> {item.label}
+              <span style={{ marginRight: "12px", fontSize: "16px" }}>{item.icon}</span> 
+              {item.label}
             </NavLink>
           </li>
         ))}
-        <li>
+        <li style={{ marginTop: "20px", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: "20px" }}>
           <button
             onClick={handleLogout}
-            className="flex items-center px-6 py-3 w-full hover:bg-gray-700"
+            style={buttonStyle}
+            onMouseEnter={(e) => {
+              e.target.style.background = "rgba(255,0,0,0.2)";
+              e.target.style.transform = "translateX(5px)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "transparent";
+              e.target.style.transform = "translateX(0)";
+            }}
           >
-            <LogoutOutlined className="mr-3" />
+            <LogoutOutlined style={{ marginRight: "12px", fontSize: "16px" }} />
             Đăng xuất
           </button>
         </li>
