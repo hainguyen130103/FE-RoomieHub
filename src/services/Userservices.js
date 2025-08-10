@@ -298,3 +298,78 @@ export const filterRoommatePostsApi = (filterCriteria) => {
 export const getMyRoommatePostsApi = () => {
   return api.get("/api/roommate-posts/my-posts");
 };
+
+// ===================== ADMIN PAYMENT STATS APIs =====================
+
+// Lấy thống kê users đã trả phí
+export const getPaymentStatsApi = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/admin/payments/stats", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getPaymentStatsApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+// Lấy thống kê tổng doanh thu
+export const getPaymentStatisticsApi = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/admin/payments/statistics", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getPaymentStatisticsApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+// Lấy thống kê theo thời gian
+export const getPaymentStatisticsByPeriodApi = async (month, year) => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  try {
+    const response = await api.get("/api/admin/payments/statistics/period", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: { month, year }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getPaymentStatisticsByPeriodApi:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
