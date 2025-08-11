@@ -2,12 +2,27 @@ import AdminSidebar from "./AdminSidebar";
 import AdminNavbar from "./AdminNavbar";
 
 export default function AdminLayout({ children }) {
+  const layoutStyle = {
+    display: "flex"
+  };
+
+  const mainContentStyle = {
+    marginLeft: "240px",
+    width: "100%"
+  };
+
+  const mainStyle = {
+    padding: "24px",
+    background: "linear-gradient(135deg, #fff5f0, #ffe4d6)",
+    minHeight: "100vh"
+  };
+
   return (
-    <div className="flex">
+    <div style={layoutStyle}>
       <AdminSidebar />
-      <div className="ml-60 w-full">
+      <div style={mainContentStyle}>
         <AdminNavbar />
-        <main className="p-6 bg-gray-100 min-h-screen">{children}</main>
+        <main style={mainStyle}>{children}</main>
       </div>
     </div>
   );

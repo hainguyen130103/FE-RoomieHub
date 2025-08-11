@@ -15,6 +15,8 @@ import UserManagement from "./components/Admin/managePage/UserManagement.jsx";
 import PostManagement from "./components/Admin/managePage/PostManagement.jsx";
 import Dashboard from "./components/Admin/managePage/Dashboard.jsx";
 import ProtectedAdminRoute from "./components/middleware/ProtectedAdminRoute.jsx";
+import PaymentSuccess from "./components/payment/PaymentSuccess.jsx";
+import PaymentCancel from "./components/payment/PaymentCancel.jsx";
 
 function App() {
   return (
@@ -36,10 +38,13 @@ function App() {
                   <Route path="/add-apartment" element={<PostApartment />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/packages" element={<Package />} />
+                  <Route path="/package" element={<Package />} />
                   <Route path="/posts" element={<Posts />} />
                   <Route path="/roommates" element={<Roommates />} />
                   <Route path="/real-estate" element={<AllApartmentsPage />} />
                   <Route path="/roommates-post" element={<RoommatePosts />} />
+                  <Route path="/payment/success" element={<PaymentSuccess />} />
+                  <Route path="/payment/cancel" element={<PaymentCancel />} />
                 </Routes>
               </main>
               <Footer />
