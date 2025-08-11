@@ -15,6 +15,42 @@ export default function CreateRoommatePostModal({
   const handleCreatePost = async (values) => {
     try {
       const token = localStorage.getItem("accessToken");
+      
+      // Debug token
+      console.log("Token from localStorage:", token);
+      
+      if (!token) {
+        message.error("Vui lòng đăng nhập lại");
+        return;
+      }
+
+      // Kiểm tra token có hết hạn không
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log("Token payload:", payload);
+        console.log("Token expires at:", new Date(payload.exp * 1000));
+        console.log("Current time:", new Date());
+        
+        if (Date.now() > payload.exp * 1000) {
+          message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+          localStorage.removeItem("accessToken");
+          return;
+        }
+      } catch (e) {
+        console.error("Cannot parse token:", e);
+        message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
+        return;
+      }
+
+      // Test với payload đơn giản giống curl
+      const testPayload = {
+        address: "test address",
+        areaSquareMeters: 50.5,
+        monthlyRentPrice: 1000.0,
+        description: "test description", 
+        imageUrls: ["https://example.com/image.jpg"],
+        roommatePreferences: []
+      };
 
       const payload = {
         address: values.address,
@@ -25,7 +61,17 @@ export default function CreateRoommatePostModal({
         roommatePreferences: values.roommatePreferences || [],
       };
 
-      await createRoommatePostApi(payload, token);
+      console.log("=== FRONTEND DEBUG ===");
+      console.log("Test payload:", JSON.stringify(testPayload, null, 2));
+      console.log("Actual payload:", JSON.stringify(payload, null, 2));
+      console.log("Payload keys:", Object.keys(payload));
+      console.log("roommatePreferences type:", typeof payload.roommatePreferences);
+      console.log("roommatePreferences length:", payload.roommatePreferences.length);
+      console.log("=== END DEBUG ===");
+
+      // Tạm thời dùng testPayload để debug
+      console.log("Using test payload for debugging...");
+      await createRoommatePostApi(testPayload);
       message.success("Đăng bài thành công");
       form.resetFields();
       setImageUrls([]);
@@ -33,7 +79,26 @@ export default function CreateRoommatePostModal({
       if (onPostCreated) onPostCreated();
     } catch (err) {
       console.error("Error creating post:", err);
-      message.error("Lỗi khi đăng bài");
+      
+      // Xử lý lỗi cụ thể
+      if (err.response) {
+        console.error("Response data:", err.response.data);
+        console.error("Response status:", err.response.status);
+        console.error("Response headers:", err.response.headers);
+        
+        if (err.response.status === 401) {
+          message.error("Không có quyền truy cập. Vui lòng đăng nhập lại.");
+          localStorage.removeItem("accessToken");
+        } else if (err.response.status === 403) {
+          message.error("Không có quyền thực hiện thao tác này.");
+        } else {
+          message.error(err.response.data?.message || "Lỗi khi đăng bài");
+        }
+      } else if (err.message) {
+        message.error(err.message);
+      } else {
+        message.error("Lỗi kết nối. Vui lòng thử lại.");
+      }
     }
   };
 

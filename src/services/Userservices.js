@@ -77,12 +77,17 @@ export const getAllApartmentsApi = () => {
 };
 
 // Tạo một căn hộ mới
-export const createApartmentApi = (apartmentData, token) => {
+export const createApartmentApi = (apartmentData) => {
+  const token = localStorage.getItem("accessToken");
   console.log("API Request Payload:", apartmentData);
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
   return api.post("/api/apartments", apartmentData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
@@ -111,11 +116,16 @@ export const getNearbyApartmentsApi = (locationParams) => {
   return api.get("/api/apartments/nearby", { params: locationParams });
 };
 
-export const createSurveyApi = (surveyData, token) => {
+export const createSurveyApi = (surveyData) => {
+  const token = localStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
   return api.post("/api/surveys", surveyData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
@@ -261,34 +271,47 @@ export const getRoommatePostByIdApi = (id) => {
 };
 
 // Tạo bài đăng mới
-export const createRoommatePostApi = (postData, token) => {
+export const createRoommatePostApi = (postData) => {
+  const token = localStorage.getItem("accessToken");
   console.log("API Request Payload:", postData);
+  console.log("Token from localStorage:", token ? "Token exists" : "No token");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.post("/api/roommate-posts", postData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
 
 // Cập nhật bài đăng
-export const updateRoommatePostApi = (id, postData, token) => {
+export const updateRoommatePostApi = (id, postData) => {
+  const token = localStorage.getItem("accessToken");
   console.log("API Update Payload:", postData);
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
   return api.put(`/api/roommate-posts/${id}`, postData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
 
 // Xóa bài đăng
-export const deleteRoommatePostApi = (id, token) => {
-  return api.delete(`/api/roommate-posts/${id}`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-  });
+export const deleteRoommatePostApi = (id) => {
+  const token = localStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
+  return api.delete(`/api/roommate-posts/${id}`);
 };
 
 // Lọc bài đăng
@@ -302,21 +325,25 @@ export const filterRoommatePostsApi = (filterCriteria) => {
 };
 
 // Lấy bài đăng của user hiện tại
-export const getMyRoommatePostsApi = (token) => {
-  return api.get("/api/roommate-posts/my-posts", {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-  });
+export const getMyRoommatePostsApi = () => {
+  const token = localStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
+  return api.get("/api/roommate-posts/my-posts");
 };
 
 // Lấy số lượng bài đăng của user
-export const getMyRoommatePostsCountApi = (token) => {
-  return api.get("/api/roommate-posts/my-posts/count", {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-  });
+export const getMyRoommatePostsCountApi = () => {
+  const token = localStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+  
+  return api.get("/api/roommate-posts/my-posts/count");
 };
 
 // ===================== ADMIN PAYMENT STATS APIs =====================

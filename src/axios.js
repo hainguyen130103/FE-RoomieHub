@@ -18,11 +18,13 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token.trim()}`;
     }
 
-    // Debug request
+    // Debug request - More detailed
     console.groupCollapsed("🚀 API Request");
     console.log("URL:", `${config.baseURL}${config.url}`);
     console.log("Method:", config.method?.toUpperCase());
-    console.log("Authorization:", !!token ? "Bearer ***" : "None");
+    console.log("Headers:", config.headers);
+    console.log("Data:", config.data);
+    console.log("Token:", token ? `${token.substring(0, 20)}...` : "None");
     console.groupEnd();
 
     return config;
