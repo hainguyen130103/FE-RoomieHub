@@ -3,34 +3,51 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { TabView, TabPanel } from "primereact/tabview";
+import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
-import { registerApi } from "../../services/Userservices";
+import Register from "./Register";
+import { loginApi } from "../../services/Userservices";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-const Register = ({ visible, onHide }) => {
+const Login = ({ visible, onHide, onLoginSuccess }) => {
   const [tabIndex, setTabIndex] = useState(0);
+  const [remember, setRemember] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [email, setEmail] = useState("");
-  const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      alert("Mật khẩu không khớp");
-      return;
-    }
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
     try {
       setLoading(true);
-      const res = await registerApi(
-        email.trim(),
-        password.trim(),
-        fullname.trim()
-      );
-      console.log("Register success:", res);
-      onHide?.();
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+
+      const res = await loginApi(trimmedEmail, trimmedPassword);
+
+      if (res.data && res.data.token) {
+        localStorage.setItem("accessToken", res.data.token);
+        message.success("Đăng nhập thành công!", 3);
+
+        const decoded = jwtDecode(res.data.token);
+        if (decoded.role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+
+        onLoginSuccess?.(); // ✅ Thông báo login thành công
+        onHide?.(); // ✅ Ẩn dialog sau login
+      } else {
+        throw new Error("Token not received from server");
+      }
     } catch (error) {
-      console.error("Register failed:", error?.response?.data || error.message);
-      alert("Đăng ký thất bại. Vui lòng thử lại.");
+      console.error("Login failed:", error);
+      message.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.", 3);
     } finally {
       setLoading(false);
     }
@@ -50,10 +67,9 @@ const Register = ({ visible, onHide }) => {
       <div className="px-6 pt-4 pb-6">
         <div className="text-center mb-4">
           <img src="/logo.svg" alt="RoomieHub" className="h-8 mx-auto mb-1" />
-          <h2 className="text-2xl font-semibold">Đăng ký</h2>
+          <h2 className="text-2xl font-semibold">Đăng nhập</h2>
           <p className="text-sm text-gray-600 mt-5">
-            Chào mừng bạn đến với chúng tôi{" "}
-            <span className="text-base">🖐️</span>
+            Chào mừng bạn đã trở lại <span className="text-base">🖐️</span>
           </p>
         </div>
 
@@ -69,24 +85,25 @@ const Register = ({ visible, onHide }) => {
           <TabPanel
             header={
               <span
-                className={`${tabIndex === 0 ? "text-orange-500 border-b-2 border-orange-500 pb-1" : "text-gray-500"} font-medium`}
+                className={`${
+                  tabIndex === 0
+                    ? "text-orange-500 border-b-2 border-orange-500 pb-1"
+                    : "text-gray-500"
+                } font-medium`}
               >
                 Tài khoản
               </span>
             }
           >
-            <InputText
-              placeholder="Tên đầy đủ"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-              className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl mt-10"
-            />
-            <InputText
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl"
-            />
+            <div className="flex items-center gap-2 mb-3 mt-10">
+              <InputText
+                placeholder="Tên tài khoản (email)"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full mb-3 h-14 pl-4 border border-gray-300 rounded-xl"
+              />
+            </div>
+
             <Password
               placeholder="Nhập mật khẩu"
               value={password}
@@ -105,53 +122,54 @@ const Register = ({ visible, onHide }) => {
                 },
               }}
             />
-            <Password
-              placeholder="Nhập lại mật khẩu"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              toggleMask
-              feedback={false}
-              className="w-full mb-3 border border-gray-300 rounded-xl"
-              inputClassName="text-sm"
-              panelClassName="hidden"
-              pt={{
-                root: { className: "relative w-full" },
-                input: { className: "w-86 h-14 pr-12 pl-4" },
-                icon: {
-                  className:
-                    "absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg",
-                },
-              }}
-            />
 
-            <div className="text-center text-sm mt-4 mb-5">
-              <p>Bằng việc đăng ký bạn đã đồng ý với</p>
-              <a href="#" className="text-orange-500 font-semibold">
-                Điều khoản và điều kiện
-              </a>{" "}
-              và{" "}
-              <a href="#" className="text-orange-500 font-semibold">
-                Chính sách bảo mật
+            <div className="flex justify-between items-center mb-3 text-sm">
+              <div className="flex items-center gap-2 h-6">
+                <Checkbox
+                  inputId="remember"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.checked ?? false)}
+                  pt={{
+                    root: { className: "flex items-center" },
+                    box: { className: "w-5 h-5 border-gray-400 rounded" },
+                    icon: { className: "text-white text-xs" },
+                  }}
+                />
+                <label
+                  htmlFor="remember"
+                  className="text-sm text-gray-800 cursor-pointer leading-none"
+                >
+                  Ghi nhớ đăng nhập
+                </label>
+              </div>
+              <a href="#" className="text-blue-600 hover:underline">
+                Quên mật khẩu?
               </a>
             </div>
 
             <Button
               label={loading ? "Đang xử lý..." : "Tiếp theo"}
-              onClick={handleRegister}
               className="w-full bg-orange-500 border-orange-500 text-white font-semibold h-12 rounded-xl"
-              disabled={
-                !email || !fullname || !password || !confirmPassword || loading
-              }
+              onClick={handleLogin}
+              disabled={!email || !password || loading}
             />
           </TabPanel>
         </TabView>
 
         <div className="text-center text-sm mt-4">
-          Bạn đã có tài khoản?{" "}
-          <a href="#" className="text-orange-500 font-semibold">
-            Đăng nhập ngay
-          </a>
+          Bạn chưa có tài khoản?{" "}
+          <span
+            onClick={() => setShowRegister(true)}
+            className="text-orange-500 font-semibold cursor-pointer"
+          >
+            Đăng ký ngay
+          </span>
         </div>
+
+        <Register
+          visible={showRegister}
+          onHide={() => setShowRegister(false)}
+        />
 
         <div className="flex items-center gap-2 my-5">
           <div className="flex-grow h-px bg-gray-300"></div>
@@ -185,4 +203,4 @@ const Register = ({ visible, onHide }) => {
   );
 };
 
-export default Register;
+export default Login;

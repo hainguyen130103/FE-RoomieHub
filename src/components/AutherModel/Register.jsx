@@ -3,44 +3,37 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { TabView, TabPanel } from "primereact/tabview";
-import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
-import Register from "./Register";
-import { loginApi } from "../../services/Userservices";
+import { registerApi } from "../../services/Userservices";
+import { message } from "antd";
 
-const Login = ({ visible, onHide }) => {
+const Register = ({ visible, onHide }) => {
   const [tabIndex, setTabIndex] = useState(0);
-  const [remember, setRemember] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-
   const [email, setEmail] = useState("");
+  const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      message.error("Mật khẩu không khớp!");
+      return;
+    }
+
     try {
       setLoading(true);
+      const res = await registerApi(
+        email.trim(),
+        password.trim(),
+        fullname.trim()
+      );
 
-      const trimmedEmail = email.trim();
-      const trimmedPassword = password.trim();
-
-      const res = await loginApi(trimmedEmail, trimmedPassword);
-
-      // Debug response
-      console.log("Login response:", res.data);
-
-      if (res.data && res.data.token) {
-        localStorage.setItem("accessToken", res.data.token);
-        // Verify token was saved
-        console.log("Token saved:", localStorage.getItem("accessToken"));
-        alert("Đăng nhập thành công!");
-        onHide?.();
-      } else {
-        throw new Error("Token not received from server");
-      }
+      message.success("Đăng ký thành công!", 3);
+      onHide?.(); // Ẩn modal sau đăng ký
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+      console.error("Register failed:", error?.response?.data || error.message);
+      message.error("Đăng ký thất bại. Vui lòng thử lại.", 3);
     } finally {
       setLoading(false);
     }
@@ -60,9 +53,10 @@ const Login = ({ visible, onHide }) => {
       <div className="px-6 pt-4 pb-6">
         <div className="text-center mb-4">
           <img src="/logo.svg" alt="RoomieHub" className="h-8 mx-auto mb-1" />
-          <h2 className="text-2xl font-semibold">Đăng nhập</h2>
+          <h2 className="text-2xl font-semibold">Đăng ký</h2>
           <p className="text-sm text-gray-600 mt-5">
-            Chào mừng bạn đã trở lại <span className="text-base">🖐️</span>
+            Chào mừng bạn đến với chúng tôi{" "}
+            <span className="text-base">🖐️</span>
           </p>
         </div>
 
@@ -88,14 +82,19 @@ const Login = ({ visible, onHide }) => {
               </span>
             }
           >
-            <div className="flex items-center gap-2 mb-3 mt-10">
-              <InputText
-                placeholder="Tên tài khoản (email)"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full mb-3 h-14 pl-4 border border-gray-300 rounded-xl"
-              />
-            </div>
+            <InputText
+              placeholder="Tên đầy đủ"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl mt-10"
+            />
+
+            <InputText
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full mb-3 text-sm h-14 pl-4 border border-gray-300 rounded-xl"
+            />
 
             <Password
               placeholder="Nhập mật khẩu"
@@ -116,52 +115,53 @@ const Login = ({ visible, onHide }) => {
               }}
             />
 
-            <div className="flex justify-between items-center mb-3 text-sm">
-              <div className="flex items-center gap-2 h-6">
-                <Checkbox
-                  inputId="remember"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.checked ?? false)}
-                  pt={{
-                    root: { className: "flex items-center" },
-                    box: { className: "w-5 h-5 border-gray-400 rounded" },
-                    icon: { className: "text-white text-xs" },
-                  }}
-                />
-                <label
-                  htmlFor="remember"
-                  className="text-sm text-gray-800 cursor-pointer leading-none"
-                >
-                  Ghi nhớ đăng nhập
-                </label>
-              </div>
-              <a href="#" className="text-blue-600 hover:underline">
-                Quên mật khẩu?
+            <Password
+              placeholder="Nhập lại mật khẩu"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              toggleMask
+              feedback={false}
+              className="w-full mb-3 border border-gray-300 rounded-xl"
+              inputClassName="text-sm"
+              panelClassName="hidden"
+              pt={{
+                root: { className: "relative w-full" },
+                input: { className: "w-86 h-14 pr-12 pl-4" },
+                icon: {
+                  className:
+                    "absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg",
+                },
+              }}
+            />
+
+            <div className="text-center text-sm mt-4 mb-5">
+              <p>Bằng việc đăng ký bạn đã đồng ý với</p>
+              <a href="#" className="text-orange-500 font-semibold">
+                Điều khoản và điều kiện
+              </a>{" "}
+              và{" "}
+              <a href="#" className="text-orange-500 font-semibold">
+                Chính sách bảo mật
               </a>
             </div>
 
             <Button
               label={loading ? "Đang xử lý..." : "Tiếp theo"}
+              onClick={handleRegister}
               className="w-full bg-orange-500 border-orange-500 text-white font-semibold h-12 rounded-xl"
-              onClick={handleLogin}
-              disabled={!email || !password || loading}
+              disabled={
+                !email || !fullname || !password || !confirmPassword || loading
+              }
             />
           </TabPanel>
         </TabView>
 
         <div className="text-center text-sm mt-4">
-          Bạn chưa có tài khoản?{" "}
-          <a
-            onClick={() => setShowRegister(true)}
-            className="text-orange-500 font-semibold cursor-pointer"
-          >
-            Đăng ký ngay
-          </a>
+          Bạn đã có tài khoản?{" "}
+          <span className="text-orange-500 font-semibold cursor-pointer">
+            Đăng nhập ngay
+          </span>
         </div>
-        <Register
-          visible={showRegister}
-          onHide={() => setShowRegister(false)}
-        />
 
         <div className="flex items-center gap-2 my-5">
           <div className="flex-grow h-px bg-gray-300"></div>
@@ -195,4 +195,4 @@ const Login = ({ visible, onHide }) => {
   );
 };
 
-export default Login;
+export default Register;
