@@ -35,7 +35,9 @@ const Roommates = () => {
     margin: "1rem",
     padding: "1.5rem",
     color: "black",
-    transition: "transform 0.3s ease",
+
+    transition: "transform 0.3s ease"
+
   };
 
   const buttonStyle = {
@@ -48,7 +50,9 @@ const Roommates = () => {
     textTransform: "uppercase",
     boxShadow: "0 4px 15px rgba(255,140,0,0.4)",
     transition: "all 0.3s ease",
-    cursor: "pointer",
+
+    cursor: "pointer"
+
   };
 
   const dialogStyle = {
@@ -59,7 +63,9 @@ const Roommates = () => {
     borderRadius: "20px",
     border: "3px solid #ff8c00",
     boxShadow: "0 10px 40px rgba(255,140,0,0.4)",
-    overflow: "hidden",
+
+    overflow: "hidden"
+
   };
 
   const dialogContentStyle = {
@@ -70,7 +76,9 @@ const Roommates = () => {
     boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
     maxHeight: "75vh",
     overflowY: "auto",
-    border: "1px solid #ffcc99",
+
+    border: "1px solid #ffcc99"
+
   };
 
   const closeButtonStyle = {
@@ -91,194 +99,88 @@ const Roommates = () => {
     justifyContent: "center",
     boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
     transition: "all 0.3s ease",
-    zIndex: 1000,
+
+    zIndex: 1000
+
   };
 
   const renderDialogContent = () => {
     if (!selectedPost) return null;
     return (
       <div style={dialogContentStyle}>
-        <div
-          style={{
-            borderBottom: "3px solid #ff8c00",
-            paddingBottom: "20px",
-            marginBottom: "25px",
-          }}
-        >
-          <h3
-            style={{
-              color: "#ff8c00",
-              margin: "0",
-              fontSize: "20px",
-              textAlign: "center",
-            }}
-          >
-            Thông tin cơ bản
-          </h3>
+
+        <div style={{ borderBottom: "3px solid #ff8c00", paddingBottom: "20px", marginBottom: "25px" }}>
+          <h3 style={{ color: "#ff8c00", margin: "0", fontSize: "20px", textAlign: "center" }}>Thông tin cơ bản</h3>
         </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "15px",
-            marginBottom: "25px",
-          }}
-        >
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Tên chủ trọ:</strong>
-            </p>
-            <p
-              style={{ color: "#ff6600", fontWeight: "bold", margin: "5px 0" }}
-            >
-              {selectedPost.ownerPost}
-            </p>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Tên chủ trọ:</strong></p>
+            <p style={{ color: "#ff6600", fontWeight: "bold", margin: "5px 0" }}>{selectedPost.ownerPost}</p>
           </div>
-
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Giá thuê:</strong>
-            </p>
-            <p
-              style={{
-                color: "#ff6600",
-                fontWeight: "bold",
-                fontSize: "16px",
-                margin: "5px 0",
-              }}
-            >
-              {selectedPost.monthlyRentPrice} VND/tháng
-            </p>
+          
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Giá thuê:</strong></p>
+            <p style={{ color: "#ff6600", fontWeight: "bold", fontSize: "16px", margin: "5px 0" }}>{selectedPost.monthlyRentPrice} VND/tháng</p>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "15px",
-            marginBottom: "25px",
-          }}
-        >
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Diện tích:</strong>
-            </p>
-            <p style={{ color: "#333", margin: "5px 0" }}>
-              {selectedPost.areaSquareMeters} m²
-            </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Diện tích:</strong></p>
+            <p style={{ color: "#333", margin: "5px 0" }}>{selectedPost.areaSquareMeters} m²</p>
           </div>
+          
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Ngày tạo:</strong></p>
+            <p style={{ color: "#333", margin: "5px 0" }}>{selectedPost.createdDate}</p>
 
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Ngày tạo:</strong>
-            </p>
-            <p style={{ color: "#333", margin: "5px 0" }}>
-              {selectedPost.createdDate}
-            </p>
           </div>
         </div>
 
         <div style={{ marginBottom: "25px" }}>
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Địa chỉ:</strong>
-            </p>
-            <p style={{ color: "#333", margin: "5px 0" }}>
-              {selectedPost.address}
-            </p>
+
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Địa chỉ:</strong></p>
+            <p style={{ color: "#333", margin: "5px 0" }}>{selectedPost.address}</p>
+
           </div>
         </div>
 
         <div style={{ marginBottom: "25px" }}>
-          <div
-            style={{
-              padding: "15px",
-              background: "#fff8f0",
-              borderRadius: "8px",
-              border: "1px solid #ffcc99",
-            }}
-          >
-            <p style={{ margin: "5px 0" }}>
-              <strong style={{ color: "#333" }}>Mô tả:</strong>
-            </p>
-            <p style={{ color: "#333", margin: "5px 0", lineHeight: "1.5" }}>
-              {selectedPost.description}
-            </p>
+
+          <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+            <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Mô tả:</strong></p>
+            <p style={{ color: "#333", margin: "5px 0", lineHeight: "1.5" }}>{selectedPost.description}</p>
+
           </div>
         </div>
 
         {/* Hiển thị hình ảnh trong phần thông tin cơ bản */}
         {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 && (
           <div style={{ marginBottom: "25px" }}>
-            <div
-              style={{
-                padding: "15px",
-                background: "#fff8f0",
-                borderRadius: "8px",
-                border: "1px solid #ffcc99",
-              }}
-            >
-              <p style={{ margin: "5px 0 15px 0" }}>
-                <strong style={{ color: "#333" }}>Hình ảnh:</strong>
-              </p>
+
+            <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+              <p style={{ margin: "5px 0 15px 0" }}><strong style={{ color: "#333" }}>Hình ảnh:</strong></p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                 {selectedPost.imageUrls.map((imageUrl, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderRadius: "8px",
-                      overflow: "hidden",
-                      boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
-                      border: "2px solid #ffcc99",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <img
-                      src={imageUrl}
+                  <div key={index} style={{ 
+                    borderRadius: "8px", 
+                    overflow: "hidden", 
+                    boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
+                    border: "2px solid #ffcc99",
+                    flexShrink: 0
+                  }}>
+                    <img 
+                      src={imageUrl} 
                       alt={`Hình ảnh ${index + 1}`}
-                      style={{
-                        width: "100px",
-                        height: "100px",
+                      style={{ 
+                        width: "100px", 
+                        height: "100px", 
                         objectFit: "cover",
                         transition: "transform 0.3s ease",
-                        cursor: "pointer",
+                        cursor: "pointer"
+
                       }}
                       onMouseEnter={(e) => {
                         e.target.style.transform = "scale(1.1)";
@@ -287,8 +189,9 @@ const Roommates = () => {
                         e.target.style.transform = "scale(1)";
                       }}
                       onError={(e) => {
-                        e.target.src =
-                          "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
+
+                        e.target.src = "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
+
                         e.target.alt = "Không thể tải hình ảnh";
                       }}
                     />
@@ -302,249 +205,80 @@ const Roommates = () => {
         {selectedPost.roommatePreferences &&
           selectedPost.roommatePreferences.length > 0 && (
             <div>
-              <div
-                style={{
-                  borderBottom: "3px solid #ff8c00",
-                  paddingBottom: "20px",
-                  marginBottom: "25px",
-                }}
-              >
-                <h3
-                  style={{
-                    color: "#ff8c00",
-                    margin: "0",
-                    fontSize: "20px",
-                    textAlign: "center",
-                  }}
-                >
-                  Thông tin Roommate
-                </h3>
+              <div style={{ borderBottom: "3px solid #ff8c00", paddingBottom: "20px", marginBottom: "25px" }}>
+                <h3 style={{ color: "#ff8c00", margin: "0", fontSize: "20px", textAlign: "center" }}>Thông tin Roommate</h3>
               </div>
               {selectedPost.roommatePreferences.map((pref) => (
-                <div
-                  key={pref.id}
-                  style={{
-                    marginBottom: "25px",
-                    padding: "20px",
-                    background: "linear-gradient(135deg, #fff5f0, #ffe8d6)",
-                    borderRadius: "12px",
-                    border: "2px solid #ffcc99",
-                    boxShadow: "0 4px 10px rgba(255,140,0,0.2)",
-                  }}
-                >
+                <div key={pref.id} style={{ 
+                  marginBottom: "25px", 
+                  padding: "20px", 
+                  background: "linear-gradient(135deg, #fff5f0, #ffe8d6)", 
+                  borderRadius: "12px",
+                  border: "2px solid #ffcc99",
+                  boxShadow: "0 4px 10px rgba(255,140,0,0.2)"
+                }}>
                   <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                    <h4
-                      style={{
-                        color: "#ff6600",
-                        margin: "0",
-                        fontSize: "18px",
-                      }}
-                    >
-                      {pref.name}
-                    </h4>
+                    <h4 style={{ color: "#ff6600", margin: "0", fontSize: "18px" }}>{pref.name}</h4>
                   </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "15px",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "10px",
-                        borderRadius: "6px",
-                      }}
-                    >
+                  
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "15px" }}>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "10px", borderRadius: "6px" }}>
                       <strong style={{ color: "#333" }}>Ngày sinh:</strong>
-                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>
-                        {pref.dateOfBirth}
-                      </p>
+                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>{pref.dateOfBirth}</p>
                     </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "10px",
-                        borderRadius: "6px",
-                      }}
-                    >
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "10px", borderRadius: "6px" }}>
                       <strong style={{ color: "#333" }}>Giới tính:</strong>
-                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>
-                        {pref.gender === "MALE" ? "Nam" : "Nữ"}
-                      </p>
+                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>{pref.gender === 'MALE' ? 'Nam' : 'Nữ'}</p>
                     </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "10px",
-                        borderRadius: "6px",
-                      }}
-                    >
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "10px", borderRadius: "6px" }}>
                       <strong style={{ color: "#333" }}>Nghề nghiệp:</strong>
-                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>
-                        {pref.occupation}
-                      </p>
+                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>{pref.occupation}</p>
                     </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "10px",
-                        borderRadius: "6px",
-                      }}
-                    >
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "10px", borderRadius: "6px" }}>
                       <strong style={{ color: "#333" }}>Tính cách:</strong>
-                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>
-                        {pref.preferredPersonality === "QUIET"
-                          ? "Yên tĩnh"
-                          : pref.preferredPersonality}
+                      <p style={{ margin: "5px 0 0 0", color: "#555" }}>{pref.preferredPersonality === 'QUIET' ? 'Yên tĩnh' : pref.preferredPersonality}</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "15px" }}>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
+                      <strong style={{ color: "#333", fontSize: "14px" }}>Nấu ăn:</strong>
+                      <p style={{ margin: "5px 0 0 0", color: pref.canCook === 'YES' ? '#28a745' : '#dc3545', fontWeight: "bold" }}>
+                        {pref.canCook === 'YES' ? '✓ Có' : '✗ Không'}
+                      </p>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
+                      <strong style={{ color: "#333", fontSize: "14px" }}>Thức khuya:</strong>
+                      <p style={{ margin: "5px 0 0 0", color: pref.isNightOwl === 'YES' ? '#28a745' : '#dc3545', fontWeight: "bold" }}>
+                        {pref.isNightOwl === 'YES' ? '✓ Có' : '✗ Không'}
+                      </p>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
+                      <strong style={{ color: "#333", fontSize: "14px" }}>Nuôi thú cưng:</strong>
+                      <p style={{ margin: "5px 0 0 0", color: pref.hasPet === 'YES' ? '#28a745' : '#dc3545', fontWeight: "bold" }}>
+                        {pref.hasPet === 'YES' ? '✓ Có' : '✗ Không'}
+                      </p>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
+                      <strong style={{ color: "#333", fontSize: "14px" }}>Hút thuốc:</strong>
+                      <p style={{ margin: "5px 0 0 0", color: pref.smokes === 'YES' ? '#dc3545' : '#28a745', fontWeight: "bold" }}>
+                        {pref.smokes === 'YES' ? '✗ Có' : '✓ Không'}
+                      </p>
+                    </div>
+                    <div style={{ background: "rgba(255,255,255,0.7)", padding: "8px", borderRadius: "6px", textAlign: "center", gridColumn: "span 2" }}>
+                      <strong style={{ color: "#333", fontSize: "14px" }}>Mời bạn bè:</strong>
+                      <p style={{ margin: "5px 0 0 0", color: pref.oftenBringsFriendsOver === 'YES' ? '#ffc107' : '#28a745', fontWeight: "bold" }}>
+                        {pref.oftenBringsFriendsOver === 'YES' ? '⚠ Thường xuyên' : '✓ Ít khi'}
+
                       </p>
                     </div>
                   </div>
 
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr 1fr",
-                      gap: "10px",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        textAlign: "center",
-                      }}
-                    >
-                      <strong style={{ color: "#333", fontSize: "14px" }}>
-                        Nấu ăn:
-                      </strong>
-                      <p
-                        style={{
-                          margin: "5px 0 0 0",
-                          color: pref.canCook === "YES" ? "#28a745" : "#dc3545",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pref.canCook === "YES" ? "✓ Có" : "✗ Không"}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        textAlign: "center",
-                      }}
-                    >
-                      <strong style={{ color: "#333", fontSize: "14px" }}>
-                        Thức khuya:
-                      </strong>
-                      <p
-                        style={{
-                          margin: "5px 0 0 0",
-                          color:
-                            pref.isNightOwl === "YES" ? "#28a745" : "#dc3545",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pref.isNightOwl === "YES" ? "✓ Có" : "✗ Không"}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        textAlign: "center",
-                      }}
-                    >
-                      <strong style={{ color: "#333", fontSize: "14px" }}>
-                        Nuôi thú cưng:
-                      </strong>
-                      <p
-                        style={{
-                          margin: "5px 0 0 0",
-                          color: pref.hasPet === "YES" ? "#28a745" : "#dc3545",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pref.hasPet === "YES" ? "✓ Có" : "✗ Không"}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        textAlign: "center",
-                      }}
-                    >
-                      <strong style={{ color: "#333", fontSize: "14px" }}>
-                        Hút thuốc:
-                      </strong>
-                      <p
-                        style={{
-                          margin: "5px 0 0 0",
-                          color: pref.smokes === "YES" ? "#dc3545" : "#28a745",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pref.smokes === "YES" ? "✗ Có" : "✓ Không"}
-                      </p>
-                    </div>
-                    <div
-                      style={{
-                        background: "rgba(255,255,255,0.7)",
-                        padding: "8px",
-                        borderRadius: "6px",
-                        textAlign: "center",
-                        gridColumn: "span 2",
-                      }}
-                    >
-                      <strong style={{ color: "#333", fontSize: "14px" }}>
-                        Mời bạn bè:
-                      </strong>
-                      <p
-                        style={{
-                          margin: "5px 0 0 0",
-                          color:
-                            pref.oftenBringsFriendsOver === "YES"
-                              ? "#ffc107"
-                              : "#28a745",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {pref.oftenBringsFriendsOver === "YES"
-                          ? "⚠ Thường xuyên"
-                          : "✓ Ít khi"}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div
-                    style={{
-                      background: "rgba(255,255,255,0.8)",
-                      padding: "15px",
-                      borderRadius: "8px",
-                      border: "1px solid #ffcc99",
-                    }}
-                  >
+                  <div style={{ background: "rgba(255,255,255,0.8)", padding: "15px", borderRadius: "8px", border: "1px solid #ffcc99" }}>
                     <strong style={{ color: "#333" }}>Mô tả chi tiết:</strong>
-                    <p
-                      style={{
-                        margin: "10px 0 0 0",
-                        color: "#555",
-                        lineHeight: "1.6",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {pref.description}
-                    </p>
+                    <p style={{ margin: "10px 0 0 0", color: "#555", lineHeight: "1.6", fontStyle: "italic" }}>{pref.description}</p>
+
                   </div>
                 </div>
               ))}
@@ -559,21 +293,15 @@ const Roommates = () => {
   return (
     <SidebarNav>
       <div style={{ margin: "2rem" }}>
-        <h1
-          style={{
-            color: "#ff8c00",
-            textAlign: "center",
-            marginBottom: "2rem",
-          }}
-        >
-          Bài đăng Roommate của tôi
-        </h1>
 
+        <h1 style={{ color: "#ff8c00", textAlign: "center", marginBottom: "2rem" }}>Bài đăng Roommate của tôi</h1>
+        
         <div className="p-grid">
           {currentPosts.map((post) => (
             <div key={post.id} className="p-col-12 p-md-6 p-lg-3">
-              <Card
-                title={post.ownerPost}
+              <Card 
+                title={post.ownerPost} 
+
                 style={cardStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-5px)";
@@ -582,46 +310,38 @@ const Roommates = () => {
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
-                <div
-                  style={{ display: "flex", gap: "15px", alignItems: "center" }}
-                >
+
+                <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
                   {/* Hình ảnh nhỏ ở bên trái */}
                   {post.imageUrls && post.imageUrls.length > 0 && (
                     <div style={{ flexShrink: 0 }}>
-                      <img
-                        src={post.imageUrls[0]}
+                      <img 
+                        src={post.imageUrls[0]} 
                         alt="Hình ảnh phòng"
-                        style={{
-                          width: "80px",
-                          height: "80px",
+                        style={{ 
+                          width: "80px", 
+                          height: "80px", 
                           objectFit: "cover",
                           borderRadius: "8px",
                           border: "2px solid #ffcc99",
-                          boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
+                          boxShadow: "0 2px 8px rgba(255,140,0,0.3)"
                         }}
                         onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/80x80/fff5f0/ff8c00?text=No+Image";
+                          e.target.src = "https://via.placeholder.com/80x80/fff5f0/ff8c00?text=No+Image";
+
                           e.target.alt = "Không có hình ảnh";
                         }}
                       />
                     </div>
                   )}
 
+                  
                   {/* Thông tin ở giữa */}
                   <div style={{ flex: 1 }}>
-                    <p>
-                      <strong>Địa chỉ:</strong> {post.address}
-                    </p>
-                    <p>
-                      <strong>Giá thuê:</strong>{" "}
-                      <span style={{ color: "#ff6600", fontWeight: "bold" }}>
-                        {post.monthlyRentPrice}
-                      </span>
-                    </p>
-                    <p>
-                      <strong>Mô tả:</strong> {post.description}
-                    </p>
+                    <p><strong>Địa chỉ:</strong> {post.address}</p>
+                    <p><strong>Giá thuê:</strong> <span style={{ color: "#ff6600", fontWeight: "bold" }}>{post.monthlyRentPrice}</span></p>
+                    <p><strong>Mô tả:</strong> {post.description}</p>
+
                   </div>
 
                   {/* Nút chi tiết ở bên phải */}
@@ -630,13 +350,13 @@ const Roommates = () => {
                       style={buttonStyle}
                       onMouseEnter={(e) => {
                         e.target.style.transform = "scale(1.05)";
-                        e.target.style.boxShadow =
-                          "0 6px 20px rgba(255,140,0,0.6)";
+
+                        e.target.style.boxShadow = "0 6px 20px rgba(255,140,0,0.6)";
                       }}
                       onMouseLeave={(e) => {
                         e.target.style.transform = "scale(1)";
-                        e.target.style.boxShadow =
-                          "0 4px 15px rgba(255,140,0,0.4)";
+                        e.target.style.boxShadow = "0 4px 15px rgba(255,140,0,0.4)";
+
                       }}
                       onClick={() => {
                         setSelectedPost(post);
@@ -665,7 +385,9 @@ const Roommates = () => {
                 background: "#fff5f0",
                 border: "1px solid #ff8c00",
                 borderRadius: "8px",
-                padding: "10px",
+
+                padding: "10px"
+
               }}
             />
           </div>
@@ -676,7 +398,9 @@ const Roommates = () => {
           visible={display}
           style={{
             ...dialogStyle,
-            position: "relative",
+
+            position: "relative"
+
           }}
           onHide={() => setDisplay(false)}
           modal
@@ -687,35 +411,40 @@ const Roommates = () => {
             padding: "0",
             border: "none",
             borderRadius: "20px",
-            overflow: "hidden",
+
+            overflow: "hidden"
           }}
           maskStyle={{
-            backgroundColor: "rgba(0,0,0,0.6)",
+            backgroundColor: "rgba(0,0,0,0.6)"
+
           }}
         >
           <div style={{ position: "relative" }}>
             {/* Header tùy chỉnh với nút đóng */}
-            <div
-              style={{
-                background: "linear-gradient(45deg, #ff8c00, #ff6600)",
-                color: "white",
-                padding: "25px 70px 25px 25px",
-                margin: "0",
-                borderRadius: "20px 20px 0 0",
-                textAlign: "center",
-                fontSize: "22px",
-                fontWeight: "bold",
-                position: "relative",
-                boxShadow: "0 2px 10px rgba(255,140,0,0.3)",
-              }}
-            >
+
+            <div style={{ 
+              background: "linear-gradient(45deg, #ff8c00, #ff6600)", 
+              color: "white", 
+              padding: "25px 70px 25px 25px",
+              margin: "0",
+              borderRadius: "20px 20px 0 0",
+              textAlign: "center",
+              fontSize: "22px",
+              fontWeight: "bold",
+              position: "relative",
+              boxShadow: "0 2px 10px rgba(255,140,0,0.3)"
+            }}>
               Chi tiết bài đăng
+              
+
               {/* Nút đóng tùy chỉnh */}
               <button
                 style={{
                   ...closeButtonStyle,
                   top: "20px",
-                  right: "20px",
+
+                  right: "20px"
+
                 }}
                 onMouseEnter={(e) => {
                   e.target.style.background = "rgba(255, 0, 0, 1)";
