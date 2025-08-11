@@ -81,6 +81,7 @@ export default function ApartmentDetail() {
 
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
+            {/* Ảnh lớn */}
             <div className="relative bg-black rounded-lg shadow-xl overflow-hidden aspect-w-16 aspect-h-9">
               {propertyData.imageUrls && propertyData.imageUrls.length > 0 ? (
                 <img
@@ -111,6 +112,7 @@ export default function ApartmentDetail() {
                 </div>
               )}
 
+              {/* Nút chuyển VR/Hình ảnh */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-gray-900 bg-opacity-70 p-1 rounded-full flex space-x-1">
                 <button
                   onClick={() => setViewMode("vr")}
@@ -126,6 +128,25 @@ export default function ApartmentDetail() {
                 </button>
               </div>
             </div>
+
+            {/* Thumbnails */}
+            {propertyData.imageUrls?.length > 1 && (
+              <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
+                {propertyData.imageUrls.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    className={`w-24 h-20 object-cover rounded cursor-pointer border-2 transition ${
+                      idx === currentImageIndex
+                        ? "border-blue-500"
+                        : "border-transparent"
+                    }`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-1 space-y-6">

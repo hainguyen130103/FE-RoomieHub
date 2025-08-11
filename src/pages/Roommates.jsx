@@ -264,42 +264,45 @@ const Roommates = () => {
                 <strong style={{ color: "#333" }}>Hình ảnh:</strong>
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {selectedPost.imageUrls.map((imageUrl, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      borderRadius: "8px",
-                      overflow: "hidden",
-                      boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
-                      border: "2px solid #ffcc99",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <img
-                      src={imageUrl}
-                      alt={`Hình ảnh ${index + 1}`}
+                {selectedPost.imageUrls
+                  .filter((url) => url && url.trim() !== "")
+                  .map((imageUrl, index) => (
+                    <div
+                      key={index}
                       style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                        transition: "transform 0.3s ease",
-                        cursor: "pointer",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
+                        border: "2px solid #ffcc99",
+                        flexShrink: 0,
                       }}
-                      onMouseEnter={(e) => {
-                        e.target.style.transform = "scale(1.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.transform = "scale(1)";
-                      }}
-                      onError={(e) => {
-                        e.target.src =
-                          "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={`Hình ảnh ${index + 1}`}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                          transition: "transform 0.3s ease",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "scale(1.1)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "scale(1)";
+                        }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
 
-                        e.target.alt = "Không thể tải hình ảnh";
-                      }}
-                    />
-                  </div>
-                ))}
+                          e.target.alt = "Không thể tải hình ảnh";
+                        }}
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>

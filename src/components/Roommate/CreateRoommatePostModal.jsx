@@ -10,15 +10,15 @@ export default function CreateRoommatePostModal({
   onPostCreated,
 }) {
   const [form] = Form.useForm();
-  const [imageUrls, setImageUrls] = useState([]);
+  const [imageBase64List, setimageBase64List] = useState([]);
 
   const handleCreatePost = async (values) => {
     try {
       const token = localStorage.getItem("accessToken");
-      
+
       // Debug token
       console.log("Token from localStorage:", token);
-      
+
       if (!token) {
         message.error("Vui lòng đăng nhập lại");
         return;
@@ -26,11 +26,11 @@ export default function CreateRoommatePostModal({
 
       // Kiểm tra token có hết hạn không
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = JSON.parse(atob(token.split(".")[1]));
         console.log("Token payload:", payload);
         console.log("Token expires at:", new Date(payload.exp * 1000));
         console.log("Current time:", new Date());
-        
+
         if (Date.now() > payload.exp * 1000) {
           message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
           localStorage.removeItem("accessToken");
@@ -42,50 +42,46 @@ export default function CreateRoommatePostModal({
         return;
       }
 
-      // Test với payload đơn giản giống curl
-      const testPayload = {
-        address: "test address",
-        areaSquareMeters: 50.5,
-        monthlyRentPrice: 1000.0,
-        description: "test description", 
-        imageUrls: ["https://example.com/image.jpg"],
-        roommatePreferences: []
-      };
-
       const payload = {
         address: values.address,
         areaSquareMeters: parseFloat(values.areaSquareMeters),
         monthlyRentPrice: parseFloat(values.monthlyRentPrice),
         description: values.description,
-        imageUrls: imageUrls,
+        imageBase64List: imageBase64List,
         roommatePreferences: values.roommatePreferences || [],
       };
 
       console.log("=== FRONTEND DEBUG ===");
-      console.log("Test payload:", JSON.stringify(testPayload, null, 2));
+      console.log("Test payload:", JSON.stringify(payload, null, 2));
       console.log("Actual payload:", JSON.stringify(payload, null, 2));
       console.log("Payload keys:", Object.keys(payload));
-      console.log("roommatePreferences type:", typeof payload.roommatePreferences);
-      console.log("roommatePreferences length:", payload.roommatePreferences.length);
+      console.log(
+        "roommatePreferences type:",
+        typeof payload.roommatePreferences
+      );
+      console.log(
+        "roommatePreferences length:",
+        payload.roommatePreferences.length
+      );
       console.log("=== END DEBUG ===");
 
       // Tạm thời dùng testPayload để debug
       console.log("Using test payload for debugging...");
-      await createRoommatePostApi(testPayload);
+      await createRoommatePostApi(payload);
       message.success("Đăng bài thành công");
       form.resetFields();
-      setImageUrls([]);
+      setimageBase64List([]);
       onClose();
       if (onPostCreated) onPostCreated();
     } catch (err) {
       console.error("Error creating post:", err);
-      
+
       // Xử lý lỗi cụ thể
       if (err.response) {
         console.error("Response data:", err.response.data);
         console.error("Response status:", err.response.status);
         console.error("Response headers:", err.response.headers);
-        
+
         if (err.response.status === 401) {
           message.error("Không có quyền truy cập. Vui lòng đăng nhập lại.");
           localStorage.removeItem("accessToken");
@@ -149,13 +145,13 @@ export default function CreateRoommatePostModal({
             onPressEnter={(e) => {
               const url = e.target.value.trim();
               if (url) {
-                setImageUrls((prev) => [...prev, url]);
+                setimageBase64List((prev) => [...prev, url]);
                 e.target.value = "";
               }
             }}
           />
           <div className="mt-2 flex flex-wrap gap-2">
-            {imageUrls.map((url, idx) => (
+            {imageBase64List.map((url, idx) => (
               <img
                 key={idx}
                 src={url}

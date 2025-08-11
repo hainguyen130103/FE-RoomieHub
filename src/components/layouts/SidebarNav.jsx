@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Avatar } from 'primereact/avatar';
-import { getUserProfileApi } from '../../services/Userservices';
+import { Avatar } from "primereact/avatar";
+import { getUserProfileApi } from "../../services/Userservices";
 
 const navItems = [
-  { id: 'profile', label: 'Thông tin cá nhân', icon: 'pi pi-user', path: '/profile' },
-  { id: 'packages', label: 'Gói dịch vụ', icon: 'pi pi-box', path: '/packages' },
-  { id: 'posts', label: 'Bài đăng', icon: 'pi pi-file', path: '/posts' },
-  { id: 'roommates', label: 'Nhóm ở ghép', icon: 'pi pi-users', path: '/roommates' },
+  {
+    id: "profile",
+    label: "Thông tin cá nhân",
+    icon: "pi pi-user",
+    path: "/profile",
+  },
+  {
+    id: "packages",
+    label: "Gói dịch vụ",
+    icon: "pi pi-box",
+    path: "/packages",
+  },
+  { id: "posts", label: "Bài đăng", icon: "pi pi-file", path: "/posts" },
+  {
+    id: "roommates",
+    label: "Nhóm ở ghép",
+    icon: "pi pi-users",
+    path: "/roommates",
+  },
+  { id: "chat", label: "Chat", icon: "pi pi-comments", path: "/chat" },
 ];
 
 const SidebarNav = ({ children }) => {
@@ -20,7 +36,7 @@ const SidebarNav = ({ children }) => {
         const response = await getUserProfileApi();
         setUserInfo(response.data);
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error("Error fetching user info:", error);
         setUserInfo(null);
       } finally {
         setLoading(false);
@@ -47,18 +63,18 @@ const SidebarNav = ({ children }) => {
             {/* User Info */}
             <div className="bg-white rounded-lg p-4 mb-4 shadow">
               <div className="flex items-center gap-3">
-                <Avatar 
-                  size="large" 
-                  shape="circle" 
-                  icon="pi pi-user" 
-                  className="bg-orange-500" 
+                <Avatar
+                  size="large"
+                  shape="circle"
+                  icon="pi pi-user"
+                  className="bg-orange-500"
                 />
                 <div>
                   <h3 className="font-semibold">
-                    {loading ? 'Loading...' : (userInfo?.userName || 'Guest')}
+                    {loading ? "Loading..." : userInfo?.userName || "Guest"}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {userInfo?.hometown || ''}
+                    {userInfo?.hometown || ""}
                   </p>
                 </div>
               </div>
@@ -68,14 +84,14 @@ const SidebarNav = ({ children }) => {
             <div className="bg-white rounded-lg shadow">
               <nav className="p-2">
                 <ul className="space-y-1">
-                  {navItems.map(item => (
+                  {navItems.map((item) => (
                     <li key={item.id}>
                       <button
                         onClick={() => handleNavigation(item.path)}
                         className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
                           currentPath === item.path
-                            ? 'bg-orange-500 text-white'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? "bg-orange-500 text-white"
+                            : "text-gray-600 hover:bg-gray-100"
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -91,13 +107,11 @@ const SidebarNav = ({ children }) => {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
-            {children}
-          </div>
+          <div className="flex-1">{children}</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SidebarNav; 
+export default SidebarNav;

@@ -104,186 +104,197 @@ const PostApartment = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow border mt-10">
+    <div className="max-w-7xl mx-auto bg-white p-8 rounded-lg shadow border mt-10">
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
         Đăng tin cho thuê căn hộ
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Thông tin phòng */}
-        <fieldset className="border border-gray-300 rounded p-4">
-          <legend className="text-lg font-semibold">Thông tin phòng</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              placeholder="Tiêu đề"
-              className="p-3 border rounded"
-            />
-            <input
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              placeholder="Giá (VND)"
-              type="number"
-              className="p-3 border rounded"
-            />
-            <input
-              name="area"
-              value={form.area}
-              onChange={handleChange}
-              placeholder="Diện tích (m²)"
-              type="number"
-              className="p-3 border rounded"
-            />
-            <input
-              name="genderRequirement"
-              value={form.genderRequirement}
-              onChange={handleChange}
-              placeholder="Yêu cầu giới tính"
-              className="p-3 border rounded"
-            />
-            <input
-              name="deposit"
-              value={form.deposit}
-              onChange={handleChange}
-              placeholder="Tiền cọc"
-              className="p-3 border rounded"
-            />
-          </div>
-        </fieldset>
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-8"
+      >
+        {/* Cột trái */}
+        <div className="space-y-8">
+          {/* Thông tin phòng */}
+          <fieldset className="border border-gray-300 rounded p-4">
+            <legend className="text-lg font-semibold">Thông tin phòng</legend>
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              <input
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Tiêu đề"
+                className="p-3 border rounded"
+              />
+              <input
+                name="price"
+                value={form.price}
+                onChange={handleChange}
+                placeholder="Giá (VND)"
+                type="number"
+                className="p-3 border rounded"
+              />
+              <input
+                name="area"
+                value={form.area}
+                onChange={handleChange}
+                placeholder="Diện tích (m²)"
+                type="number"
+                className="p-3 border rounded"
+              />
+              <input
+                name="genderRequirement"
+                value={form.genderRequirement}
+                onChange={handleChange}
+                placeholder="Yêu cầu giới tính"
+                className="p-3 border rounded"
+              />
+              <input
+                name="deposit"
+                value={form.deposit}
+                onChange={handleChange}
+                placeholder="Tiền cọc"
+                className="p-3 border rounded"
+              />
+            </div>
+          </fieldset>
 
-        {/* Vị trí phòng */}
-        <fieldset className="border border-gray-300 rounded p-4">
-          <legend className="text-lg font-semibold">Vị trí phòng</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <input
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              placeholder="Địa chỉ"
-              className="p-3 border rounded"
-            />
-            <input
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              placeholder="Khu vực (ví dụ: HCM, Hà Nội...)"
-              className="p-3 border rounded"
-            />
-          </div>
-        </fieldset>
+          {/* Vị trí phòng */}
+          <fieldset className="border border-gray-300 rounded p-4">
+            <legend className="text-lg font-semibold">Vị trí phòng</legend>
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              <input
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                placeholder="Địa chỉ"
+                className="p-3 border rounded"
+              />
+              <input
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="Khu vực (ví dụ: HCM, Hà Nội...)"
+                className="p-3 border rounded"
+              />
+            </div>
+          </fieldset>
 
-        {/* Thông tin chi tiết */}
-        <fieldset className="border border-gray-300 rounded p-4">
-          <legend className="text-lg font-semibold">Thông tin chi tiết</legend>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <input
-              name="legalDocuments"
-              value={form.legalDocuments}
-              onChange={handleChange}
-              placeholder="Pháp lý"
-              className="p-3 border rounded"
-            />
-            <input
-              name="utilities"
-              value={form.utilities}
-              onChange={handleChange}
-              placeholder="Tiện ích đi kèm"
-              className="p-3 border rounded"
-            />
-            <input
-              name="furniture"
-              value={form.furniture}
-              onChange={handleChange}
-              placeholder="Nội thất"
-              className="p-3 border rounded"
-            />
-            <input
-              name="interiorCondition"
-              value={form.interiorCondition}
-              onChange={handleChange}
-              placeholder="Tình trạng nội thất"
-              className="p-3 border rounded"
-            />
-            <input
-              name="elevator"
-              value={form.elevator}
-              onChange={handleChange}
-              placeholder="Thang máy"
-              className="p-3 border rounded"
-            />
-            <input
-              name="contact"
-              value={form.contact}
-              onChange={handleChange}
-              placeholder="Thông tin liên hệ (sđt, Zalo...)"
-              className="p-3 border rounded"
-            />
-          </div>
-        </fieldset>
+          {/* Thông tin chi tiết */}
+          <fieldset className="border border-gray-300 rounded p-4">
+            <legend className="text-lg font-semibold">
+              Thông tin chi tiết
+            </legend>
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              <input
+                name="legalDocuments"
+                value={form.legalDocuments}
+                onChange={handleChange}
+                placeholder="Pháp lý"
+                className="p-3 border rounded"
+              />
+              <input
+                name="utilities"
+                value={form.utilities}
+                onChange={handleChange}
+                placeholder="Tiện ích đi kèm"
+                className="p-3 border rounded"
+              />
+              <input
+                name="furniture"
+                value={form.furniture}
+                onChange={handleChange}
+                placeholder="Nội thất"
+                className="p-3 border rounded"
+              />
+              <input
+                name="interiorCondition"
+                value={form.interiorCondition}
+                onChange={handleChange}
+                placeholder="Tình trạng nội thất"
+                className="p-3 border rounded"
+              />
+              <input
+                name="elevator"
+                value={form.elevator}
+                onChange={handleChange}
+                placeholder="Thang máy"
+                className="p-3 border rounded"
+              />
+              <input
+                name="contact"
+                value={form.contact}
+                onChange={handleChange}
+                placeholder="Thông tin liên hệ (sđt, Zalo...)"
+                className="p-3 border rounded"
+              />
+            </div>
+          </fieldset>
+        </div>
 
-        {/* Mô tả */}
-        <fieldset className="border border-gray-300 rounded p-4">
-          <legend className="text-lg font-semibold">Mô tả chi tiết</legend>
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Mô tả chi tiết căn hộ"
-            rows={4}
-            className="w-full p-3 border rounded mt-4"
-          />
-        </fieldset>
+        {/* Cột phải */}
+        <div className="space-y-8">
+          {/* Mô tả */}
+          <fieldset className="border border-gray-300 rounded p-4">
+            <legend className="text-lg font-semibold">Mô tả chi tiết</legend>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Mô tả chi tiết căn hộ"
+              rows={8}
+              className="w-full p-3 border rounded mt-4"
+            />
+          </fieldset>
 
-        {/* Hình ảnh */}
-        <fieldset className="border border-gray-300 rounded p-4">
-          <legend className="text-lg font-semibold">Hình ảnh căn hộ</legend>
-          <div className="space-y-2 mt-4">
-            {form.imageUrls.map((url, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => handleImageChange(e, index)}
-                  placeholder={`Ảnh ${index + 1}`}
-                  className="flex-1 p-2 border rounded"
-                />
-                {form.imageUrls.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeImageField(index)}
-                    className="text-red-500 font-bold"
-                  >
-                    X
-                  </button>
-                )}
-              </div>
-            ))}
+          {/* Hình ảnh */}
+          <fieldset className="border border-gray-300 rounded p-4">
+            <legend className="text-lg font-semibold">Hình ảnh căn hộ</legend>
+            <div className="space-y-2 mt-4">
+              {form.imageUrls.map((url, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => handleImageChange(e, index)}
+                    placeholder={`Ảnh ${index + 1}`}
+                    className="flex-1 p-2 border rounded"
+                  />
+                  {form.imageUrls.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeImageField(index)}
+                      className="text-red-500 font-bold"
+                    >
+                      X
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addImageField}
+                className="text-blue-600 hover:underline text-sm"
+              >
+                + Thêm ảnh
+              </button>
+            </div>
+          </fieldset>
+
+          {/* Nút gửi */}
+          <div>
             <button
-              type="button"
-              onClick={addImageField}
-              className="text-blue-600 hover:underline text-sm"
+              type="submit"
+              disabled={loading}
+              className={`mt-10 w-full py-3 text-white font-semibold rounded ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
+              }`}
             >
-              + Thêm ảnh
+              {loading ? "Đang đăng..." : "Đăng tin ngay"}
             </button>
           </div>
-        </fieldset>
-
-        {/* Nút gửi */}
-        <div>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 text-white font-semibold rounded ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-orange-500 hover:bg-orange-600"
-            }`}
-          >
-            {loading ? "Đang đăng..." : "Đăng tin ngay"}
-          </button>
         </div>
       </form>
     </div>
