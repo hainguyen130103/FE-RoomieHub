@@ -290,16 +290,25 @@ export const getAllRoommatePostsApi = () => {
 };
 
 // Tạo bài đăng mới
-export const createRoommatePostApi = (postData) => {
-  const token = localStorage.getItem("accessToken");
-  return api.post("/api/roommate-posts", postData, {
+// export const createRoommatePostApi = (postData) => {
+//   const token = localStorage.getItem("accessToken");
+//   return api.post("/api/roommate-posts", postData, {
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: token ? `Bearer ${token}` : "",
+//     },
+//   });
+// };
+
+export const createRoommatePostApi = (apartmentData, token) => {
+  console.log("API Request Payload:", apartmentData);
+  return api.post("/api/roommate-posts", apartmentData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
+      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
-
 // Lọc bài đăng
 export const filterRoommatePostsApi = (filterCriteria) => {
   return api.post("/api/roommate-posts/filter", filterCriteria, {

@@ -1,39 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { Modal, Button, Typography, Row, Col, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import {
-  Modal,
-  Button,
-  Input,
-  Upload,
-  message,
-  Form,
-  Typography,
-  Row,
-  Col,
-} from "antd";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import {
-  createRoommatePostApi,
   filterRoommatePostsApi,
   getAllRoommatePostsApi,
   getRoommatePostByIdApi,
   getUserProfileApi,
 } from "../../services/Userservices";
 import { jwtDecode } from "jwt-decode";
-import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import CreateRoommatePostModal from "./CreateRoommatePostModal";
 
 const { Title, Paragraph, Text } = Typography;
-const { TextArea } = Input;
 
 export default function RoommatePosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openModal, setOpenModal] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [form] = Form.useForm();
-  const [imageUrls, setImageUrls] = useState([]);
-  const [userProfile, setUserProfile] = useState(null);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const navigate = useNavigate();
 
   const fetchPosts = async (filterPayload) => {
@@ -56,9 +41,8 @@ export default function RoommatePosts() {
       const profile = await getUserProfileApi(decoded.id);
 
       const payload = {
-        gender: profile.gender || undefined, // MALE, FEMALE, ANY
-        occupation: profile.occupation || undefined, // STUDENT, OFFICE_WORKER, FREELANCER, OTHER
-        // personality: profile.preferredPersonality || undefined, // nếu API có
+        gender: profile.gender || undefined,
+        occupation: profile.occupation || undefined,
         canCook:
           profile.cookFrequency === "OFTEN"
             ? "YES"
@@ -71,12 +55,11 @@ export default function RoommatePosts() {
             : profile.sleepHabit === "EARLY_SLEEPER"
               ? "NO"
               : undefined,
-        hasPet: profile.pets || undefined, // YES, NO
-        smokes: profile.smoking || undefined, // YES, NO
-        bringsFriends: profile.inviteFriends || undefined, // YES, NO
+        hasPet: profile.pets || undefined,
+        smokes: profile.smoking || undefined,
+        bringsFriends: profile.inviteFriends || undefined,
       };
 
-      console.log("Payload filter:", payload);
       await fetchPosts(payload);
     } catch (err) {
       message.error("Không thể lọc theo hồ sơ cá nhân");
@@ -87,59 +70,6 @@ export default function RoommatePosts() {
     fetchFilteredPostsByUserProfile();
   }, []);
 
-  const handleCreatePost = async (values) => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const decoded = jwtDecode(token);
-      const profile = await getUserProfileApi(decoded.id);
-
-      const roommatePreference = {
-        name: profile.userName || "",
-        dateOfBirth: profile.birthYear
-          ? dayjs(`${profile.birthYear}-01-01`).format("YYYY-MM-DD")
-          : null,
-        gender: profile.gender || "ANY",
-        occupation: profile.occupation || "OTHER",
-        description: profile.description || "",
-        preferredPersonality: profile.preferredPersonality || "QUIET",
-        canCook:
-          profile.cookFrequency === "OFTEN"
-            ? "YES"
-            : profile.cookFrequency === "NEVER"
-              ? "NO"
-              : "NO",
-        isNightOwl:
-          profile.sleepHabit === "NIGHT_OWL"
-            ? "YES"
-            : profile.sleepHabit === "EARLY_SLEEPER"
-              ? "NO"
-              : "NO",
-        hasPet: profile.pets || "NO",
-        smokes: profile.smoking || "NO",
-        oftenBringsFriendsOver: profile.inviteFriends || "NO",
-      };
-
-      const payload = {
-        address: values.address,
-        areaSquareMeters: parseFloat(values.areaSquareMeters),
-        monthlyRentPrice: parseFloat(values.monthlyRentPrice),
-        description: values.description,
-        imageUrls: imageUrls,
-        roommatePreferences: [roommatePreference],
-      };
-
-      await createRoommatePostApi(payload); // Không truyền token nữa
-      message.success("Đăng bài thành công");
-      setOpenModal(false);
-      form.resetFields();
-      setImageUrls([]);
-      fetchFilteredPostsByUserProfile();
-    } catch (err) {
-      console.error("Error creating post:", err);
-      message.error("Lỗi khi đăng bài");
-    }
-  };
-
   const openDetailModal = async (postId) => {
     try {
       const res = await getRoommatePostByIdApi(postId);
@@ -147,18 +77,6 @@ export default function RoommatePosts() {
       setOpenDetail(true);
     } catch (err) {
       message.error("Không thể tải chi tiết bài đăng");
-    }
-  };
-
-  const handleOpenCreateModal = async () => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const decoded = jwtDecode(token);
-      const profile = await getUserProfileApi(decoded.id);
-      setUserProfile(profile);
-      setOpenModal(true);
-    } catch (err) {
-      message.error("Không thể lấy thông tin người dùng");
     }
   };
 
@@ -172,7 +90,7 @@ export default function RoommatePosts() {
           type="primary"
           icon={<PlusOutlined />}
           className="bg-orange-500 border-orange-500"
-          onClick={handleOpenCreateModal}
+          onClick={() => setOpenCreateModal(true)}
         >
           Đăng bài tìm bạn
         </Button>
@@ -207,69 +125,7 @@ export default function RoommatePosts() {
         ))}
       </Row>
 
-      <Modal
-        open={openModal}
-        title="Đăng bài tìm bạn ở ghép"
-        onCancel={() => setOpenModal(false)}
-        onOk={() => form.submit()}
-        okText="Đăng bài"
-        cancelText="Hủy"
-        okButtonProps={{ className: "bg-orange-500 border-orange-500" }}
-      >
-        <Form layout="vertical" form={form} onFinish={handleCreatePost}>
-          <Form.Item
-            label="Địa chỉ"
-            name="address"
-            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Diện tích (m²)"
-            name="areaSquareMeters"
-            rules={[{ required: true, message: "Vui lòng nhập diện tích" }]}
-          >
-            <Input type="number" />
-          </Form.Item>
-          <Form.Item
-            label="Giá thuê mỗi tháng"
-            name="monthlyRentPrice"
-            rules={[{ required: true, message: "Vui lòng nhập giá thuê" }]}
-          >
-            <Input type="number" />
-          </Form.Item>
-          <Form.Item
-            label="Mô tả"
-            name="description"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
-          >
-            <TextArea rows={3} />
-          </Form.Item>
-          <Form.Item label="Link ảnh (URL)">
-            <Input
-              placeholder="Nhập URL ảnh và nhấn Enter"
-              onPressEnter={(e) => {
-                const url = e.target.value.trim();
-                if (url) {
-                  setImageUrls((prev) => [...prev, url]);
-                  e.target.value = "";
-                }
-              }}
-            />
-            <div className="mt-2 flex flex-wrap gap-2">
-              {imageUrls.map((url, idx) => (
-                <img
-                  key={idx}
-                  src={url}
-                  alt="preview"
-                  className="w-20 h-20 object-cover rounded"
-                />
-              ))}
-            </div>
-          </Form.Item>
-        </Form>
-      </Modal>
-
+      {/* Modal chi tiết */}
       <Modal
         open={openDetail}
         title="Chi tiết bài đăng"
@@ -291,7 +147,6 @@ export default function RoommatePosts() {
             <br />
             <Paragraph>{selectedPost.description}</Paragraph>
             <Text type="secondary">Ngày đăng: {selectedPost.createdDate}</Text>
-            {/* Thông tin người đăng */}
             {selectedPost.roommatePreferences &&
               selectedPost.roommatePreferences.length > 0 && (
                 <>
@@ -368,6 +223,13 @@ export default function RoommatePosts() {
           </div>
         )}
       </Modal>
+
+      {/* Modal tạo bài đăng */}
+      <CreateRoommatePostModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onSuccess={fetchFilteredPostsByUserProfile}
+      />
     </div>
   );
 }
