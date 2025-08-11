@@ -250,63 +250,64 @@ const Roommates = () => {
         </div>
 
         {/* Hiển thị hình ảnh trong phần thông tin cơ bản */}
-        {selectedPost.imageUrls && selectedPost.imageUrls.length > 0 && (
-          <div style={{ marginBottom: "25px" }}>
-            <div
-              style={{
-                padding: "15px",
-                background: "#fff8f0",
-                borderRadius: "8px",
-                border: "1px solid #ffcc99",
-              }}
-            >
-              <p style={{ margin: "5px 0 15px 0" }}>
-                <strong style={{ color: "#333" }}>Hình ảnh:</strong>
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                {selectedPost.imageUrls
-                  .filter((url) => url && url.trim() !== "")
-                  .map((imageUrl, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                        boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
-                        border: "2px solid #ffcc99",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={imageUrl}
-                        alt={`Hình ảnh ${index + 1}`}
+        {selectedPost.imageBase64List &&
+          selectedPost.imageBase64List.length > 0 && (
+            <div style={{ marginBottom: "25px" }}>
+              <div
+                style={{
+                  padding: "15px",
+                  background: "#fff8f0",
+                  borderRadius: "8px",
+                  border: "1px solid #ffcc99",
+                }}
+              >
+                <p style={{ margin: "5px 0 15px 0" }}>
+                  <strong style={{ color: "#333" }}>Hình ảnh:</strong>
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {selectedPost.imageBase64List
+                    .filter((url) => url && url.trim() !== "")
+                    .map((imageUrl, index) => (
+                      <div
+                        key={index}
                         style={{
-                          width: "100px",
-                          height: "100px",
-                          objectFit: "cover",
-                          transition: "transform 0.3s ease",
-                          cursor: "pointer",
+                          borderRadius: "8px",
+                          overflow: "hidden",
+                          boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
+                          border: "2px solid #ffcc99",
+                          flexShrink: 0,
                         }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "scale(1.1)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "scale(1)";
-                        }}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src =
-                            "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`Hình ảnh ${index + 1}`}
+                          style={{
+                            width: "100px",
+                            height: "100px",
+                            objectFit: "cover",
+                            transition: "transform 0.3s ease",
+                            cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "scale(1.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "scale(1)";
+                          }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
 
-                          e.target.alt = "Không thể tải hình ảnh";
-                        }}
-                      />
-                    </div>
-                  ))}
+                            e.target.alt = "Không thể tải hình ảnh";
+                          }}
+                        />
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {selectedPost.roommatePreferences &&
           selectedPost.roommatePreferences.length > 0 && (
@@ -595,10 +596,10 @@ const Roommates = () => {
                   style={{ display: "flex", gap: "15px", alignItems: "center" }}
                 >
                   {/* Hình ảnh nhỏ ở bên trái */}
-                  {post.imageUrls && post.imageUrls.length > 0 && (
+                  {post.imageBase64List && post.imageBase64List.length > 0 && (
                     <div style={{ flexShrink: 0 }}>
                       <img
-                        src={post.imageUrls[0]}
+                        src={post.imageBase64List[0]}
                         alt="Hình ảnh phòng"
                         style={{
                           width: "80px",

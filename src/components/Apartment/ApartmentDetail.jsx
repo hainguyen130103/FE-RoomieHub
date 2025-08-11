@@ -38,12 +38,12 @@ export default function ApartmentDetail() {
   }, [id]);
 
   const nextImage = () => {
-    const images = propertyData?.imageUrls || [];
+    const images = propertyData?.imageBase64List || [];
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    const images = propertyData?.imageUrls || [];
+    const images = propertyData?.imageBase64List || [];
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
@@ -83,9 +83,10 @@ export default function ApartmentDetail() {
           <div className="lg:col-span-2">
             {/* Ảnh lớn */}
             <div className="relative bg-black rounded-lg shadow-xl overflow-hidden aspect-w-16 aspect-h-9">
-              {propertyData.imageUrls && propertyData.imageUrls.length > 0 ? (
+              {propertyData.imageBase64List &&
+              propertyData.imageBase64List.length > 0 ? (
                 <img
-                  src={propertyData.imageUrls[currentImageIndex]}
+                  src={propertyData.imageBase64List[currentImageIndex]}
                   alt={propertyData.title}
                   className="w-full h-[800px] object-cover rounded-lg"
                 />
@@ -95,7 +96,7 @@ export default function ApartmentDetail() {
                 </div>
               )}
 
-              {propertyData.imageUrls?.length > 1 && (
+              {propertyData.imageBase64List?.length > 1 && (
                 <div className="absolute inset-0 flex items-center justify-between px-4">
                   <button
                     onClick={prevImage}
@@ -130,9 +131,9 @@ export default function ApartmentDetail() {
             </div>
 
             {/* Thumbnails */}
-            {propertyData.imageUrls?.length > 1 && (
+            {propertyData.imageBase64List?.length > 1 && (
               <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
-                {propertyData.imageUrls.map((img, idx) => (
+                {propertyData.imageBase64List.map((img, idx) => (
                   <img
                     key={idx}
                     src={img}

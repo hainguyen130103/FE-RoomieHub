@@ -104,7 +104,7 @@ export default function RoommatePosts() {
               className="bg-white rounded-lg shadow cursor-pointer hover:shadow-lg"
             >
               <img
-                src={post.imageUrls[0] || "/default.jpg"}
+                src={post.imageBase64List[0] || "/default.jpg"}
                 alt="roommate"
                 className="w-full h-48 object-cover rounded-t-lg"
               />
@@ -135,7 +135,7 @@ export default function RoommatePosts() {
         {selectedPost && (
           <div>
             <img
-              src={selectedPost.imageUrls[0] || "/default.jpg"}
+              src={selectedPost.imageBase64List[0] || "/default.jpg"}
               alt="roommate"
               className="w-full h-60 object-cover rounded mb-4"
             />

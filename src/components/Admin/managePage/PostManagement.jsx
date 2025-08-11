@@ -166,7 +166,7 @@ export default function PostManagement() {
                 {/* Image */}
                 <div style={{ height: '200px', position: 'relative', overflow: 'hidden' }}>
                   <img
-                    src={apartment.imageUrls && apartment.imageUrls[0] ? apartment.imageUrls[0] : 'https://via.placeholder.com/350x200?text=No+Image'}
+                    src={apartment.imageBase64List && apartment.imageBase64List[0] ? apartment.imageBase64List[0] : 'https://via.placeholder.com/350x200?text=No+Image'}
                     alt={apartment.title}
                     style={{
                       width: '100%',
@@ -391,14 +391,14 @@ export default function PostManagement() {
             {/* Modal Content */}
             <div style={{ padding: '1.5rem' }}>
               {/* Images */}
-              {selectedApartment.imageUrls && selectedApartment.imageUrls.length > 0 && (
+              {selectedApartment.imageBase64List && selectedApartment.imageBase64List.length > 0 && (
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
                   gap: '1rem',
                   marginBottom: '2rem'
                 }}>
-                  {selectedApartment.imageUrls.map((url, index) => (
+                  {selectedApartment.imageBase64List.map((url, index) => (
                     <img
                       key={index}
                       src={url}

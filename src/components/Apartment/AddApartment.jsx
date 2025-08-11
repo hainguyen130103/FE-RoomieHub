@@ -19,7 +19,7 @@ const PostApartment = () => {
     elevator: "",
     contact: "",
     location: "",
-    imageUrls: [""],
+    imageBase64List: [""],
   });
 
   const [loading, setLoading] = useState(false);
@@ -31,19 +31,22 @@ const PostApartment = () => {
   };
 
   const handleImageChange = (e, index) => {
-    const newImageUrls = [...form.imageUrls];
-    newImageUrls[index] = e.target.value;
-    setForm((prev) => ({ ...prev, imageUrls: newImageUrls }));
+    const newimageBase64List = [...form.imageBase64List];
+    newimageBase64List[index] = e.target.value;
+    setForm((prev) => ({ ...prev, imageBase64List: newimageBase64List }));
   };
 
   const addImageField = () => {
-    setForm((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ""] }));
+    setForm((prev) => ({
+      ...prev,
+      imageBase64List: [...prev.imageBase64List, ""],
+    }));
   };
 
   const removeImageField = (index) => {
-    const newImageUrls = [...form.imageUrls];
-    newImageUrls.splice(index, 1);
-    setForm((prev) => ({ ...prev, imageUrls: newImageUrls }));
+    const newimageBase64List = [...form.imageBase64List];
+    newimageBase64List.splice(index, 1);
+    setForm((prev) => ({ ...prev, imageBase64List: newimageBase64List }));
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +78,7 @@ const PostApartment = () => {
           elevator: "",
           contact: "",
           location: "",
-          imageUrls: [""],
+          imageBase64List: [""],
         });
       } else {
         message.error("Đăng tin thất bại, vui lòng thử lại.");
@@ -251,7 +254,7 @@ const PostApartment = () => {
           <fieldset className="border border-gray-300 rounded p-4">
             <legend className="text-lg font-semibold">Hình ảnh căn hộ</legend>
             <div className="space-y-2 mt-4">
-              {form.imageUrls.map((url, index) => (
+              {form.imageBase64List.map((url, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <input
                     type="text"
@@ -260,7 +263,7 @@ const PostApartment = () => {
                     placeholder={`Ảnh ${index + 1}`}
                     className="flex-1 p-2 border rounded"
                   />
-                  {form.imageUrls.length > 1 && (
+                  {form.imageBase64List.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeImageField(index)}
