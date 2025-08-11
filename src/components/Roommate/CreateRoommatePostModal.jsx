@@ -1,11 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, message } from "antd";
-import { jwtDecode } from "jwt-decode";
-import dayjs from "dayjs";
-import {
-  createRoommatePostApi,
-  getUserProfileApi,
-} from "../../services/Userservices";
+import { Modal, Form, Input, DatePicker, Select, Button, message } from "antd";
+import { createRoommatePostApi } from "../../services/Userservices";
 
 const { TextArea } = Input;
 
@@ -20,34 +15,6 @@ export default function CreateRoommatePostModal({
   const handleCreatePost = async (values) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const decoded = jwtDecode(token);
-      const profile = await getUserProfileApi(decoded.id);
-
-      const roommatePreference = {
-        name: profile.userName || "",
-        dateOfBirth: profile.birthYear
-          ? dayjs(`${profile.birthYear}-01-01`).format("YYYY-MM-DD")
-          : null,
-        gender: profile.gender || "ANY",
-        occupation: profile.occupation || "OTHER",
-        description: profile.description || "",
-        preferredPersonality: profile.preferredPersonality || "QUIET",
-        canCook:
-          profile.cookFrequency === "OFTEN"
-            ? "YES"
-            : profile.cookFrequency === "NEVER"
-              ? "NO"
-              : "NO",
-        isNightOwl:
-          profile.sleepHabit === "NIGHT_OWL"
-            ? "YES"
-            : profile.sleepHabit === "EARLY_SLEEPER"
-              ? "NO"
-              : "NO",
-        hasPet: profile.pets || "NO",
-        smokes: profile.smoking || "NO",
-        oftenBringsFriendsOver: profile.inviteFriends || "NO",
-      };
 
       const payload = {
         address: values.address,
@@ -55,10 +22,10 @@ export default function CreateRoommatePostModal({
         monthlyRentPrice: parseFloat(values.monthlyRentPrice),
         description: values.description,
         imageUrls: imageUrls,
-        roommatePreferences: [roommatePreference],
+        roommatePreferences: values.roommatePreferences || [],
       };
 
-      await createRoommatePostApi(payload, token); // ✅ truyền token vào
+      await createRoommatePostApi(payload, token);
       message.success("Đăng bài thành công");
       form.resetFields();
       setImageUrls([]);
@@ -79,6 +46,7 @@ export default function CreateRoommatePostModal({
       okText="Đăng bài"
       cancelText="Hủy"
       okButtonProps={{ className: "bg-orange-500 border-orange-500" }}
+      width={800}
     >
       <Form layout="vertical" form={form} onFinish={handleCreatePost}>
         <Form.Item
@@ -109,6 +77,7 @@ export default function CreateRoommatePostModal({
         >
           <TextArea rows={3} />
         </Form.Item>
+
         <Form.Item label="Link ảnh (URL)">
           <Input
             placeholder="Nhập URL ảnh và nhấn Enter"
@@ -131,6 +100,162 @@ export default function CreateRoommatePostModal({
             ))}
           </div>
         </Form.Item>
+
+        {/* Form.List cho roommatePreferences */}
+        <Form.List name="roommatePreferences">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <div
+                  key={key}
+                  className="border p-4 rounded mb-4 bg-gray-50 relative"
+                >
+                  <Button
+                    type="text"
+                    danger
+                    onClick={() => remove(name)}
+                    style={{ position: "absolute", top: 8, right: 8 }}
+                  >
+                    Xóa
+                  </Button>
+
+                  <Form.Item
+                    {...restField}
+                    name={[name, "name"]}
+                    label="Tên"
+                    rules={[{ required: true, message: "Nhập tên" }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "dateOfBirth"]}
+                    label="Ngày sinh"
+                  >
+                    <DatePicker style={{ width: "100%" }} />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "gender"]}
+                    label="Giới tính"
+                  >
+                    <Select
+                      options={[
+                        { label: "Nam", value: "MALE" },
+                        { label: "Nữ", value: "FEMALE" },
+                        { label: "Khác", value: "OTHER" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "occupation"]}
+                    label="Nghề nghiệp"
+                  >
+                    <Select
+                      options={[
+                        { label: "Sinh viên", value: "STUDENT" },
+                        {
+                          label: "Nhân viên văn phòng",
+                          value: "OFFICE_WORKER",
+                        },
+                        {
+                          label: "Freelancer",
+                          value: "FREELANCER",
+                        },
+                        { label: "Khác", value: "OTHER" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "description"]}
+                    label="Mô tả"
+                  >
+                    <TextArea rows={2} />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "preferredPersonality"]}
+                    label="Tính cách mong muốn"
+                  >
+                    <Select
+                      options={[
+                        { label: "Yên tĩnh", value: "QUIET" },
+                        { label: "Hòa đồng", value: "SOCIABLE" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "canCook"]}
+                    label="Biết nấu ăn"
+                  >
+                    <Select
+                      options={[
+                        { label: "Không bao giờ", value: "NEVER" },
+                        { label: "Thỉnh thoảng", value: "SOMETIMES" },
+                        { label: "Thường xuyên", value: "OFTEN" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "isNightOwl"]}
+                    label="Giấc ngủ"
+                  >
+                    <Select
+                      options={[
+                        { label: "Ngủ sớm", value: "EARLY_SLEEPER" },
+                        { label: "Cú đêm", value: "NIGHT_OWL" },
+                        { label: "Linh hoạt", value: "FLEXIBLE" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "hasPet"]}
+                    label="Nuôi thú cưng"
+                  >
+                    <Select
+                      options={[
+                        { label: "Có", value: "YES" },
+                        { label: "Không", value: "NO" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "smokes"]}
+                    label="Hút thuốc"
+                  >
+                    <Select
+                      options={[
+                        { label: "Có", value: "YES" },
+                        { label: "Không", value: "NO" },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "oftenBringsFriendsOver"]}
+                    label="Thường xuyên mời bạn bè"
+                  >
+                    <Select
+                      options={[
+                        { label: "Có", value: "YES" },
+                        { label: "Không", value: "NO" },
+                      ]}
+                    />
+                  </Form.Item>
+                </div>
+              ))}
+              <Button type="dashed" onClick={() => add()} block>
+                + Thêm thành viên phòng
+              </Button>
+            </>
+          )}
+        </Form.List>
       </Form>
     </Modal>
   );

@@ -14,18 +14,17 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
 
-    console.group("🚀 API Request");
-    console.log("URL:", `${config.baseURL}${config.url}`);
-    console.log("Method:", config.method?.toUpperCase());
-    console.log("Token found:", !!token);
-
     if (token) {
-      const cleanToken = token.trim();
-      config.headers.Authorization = `Bearer ${cleanToken}`;
-      console.log("Authorization header set");
+      config.headers.Authorization = `Bearer ${token.trim()}`;
     }
 
+    // Debug request
+    console.groupCollapsed("🚀 API Request");
+    console.log("URL:", `${config.baseURL}${config.url}`);
+    console.log("Method:", config.method?.toUpperCase());
+    console.log("Authorization:", !!token ? "Bearer ***" : "None");
     console.groupEnd();
+
     return config;
   },
   (error) => {
@@ -37,24 +36,27 @@ api.interceptors.request.use(
 // ==== RESPONSE INTERCEPTOR ====
 api.interceptors.response.use(
   (response) => {
-    console.group("📩 API Response");
+    // Debug response
+    console.groupCollapsed("📩 API Response");
     console.log("URL:", `${response.config.baseURL}${response.config.url}`);
     console.log("Status:", response.status);
+    console.log("Data:", response.data);
     console.groupEnd();
     return response;
   },
   (error) => {
-    console.group("❌ API Response Error");
+    console.groupCollapsed("❌ API Response Error");
     console.log("URL:", error.config?.url);
     console.log("Status:", error.response?.status);
     console.log("Data:", error.response?.data);
     console.groupEnd();
 
     if (error.response?.status === 401) {
-      console.warn("⚠️ Unauthorized (401) - redirect to login");
-      // Giữ token để debug nếu cần
-      // localStorage.removeItem("accessToken");
-      // window.location.href = "/login";
+      console.warn(
+        "⚠️ Unauthorized (401) - Phiên có thể hết hạn hoặc token không hợp lệ."
+      );
+      // ❌ Không xóa token tự động ở đây
+      // ✅ Xử lý redirect ở tầng cao hơn (App.jsx / Auth wrapper)
     }
 
     return Promise.reject(error);
