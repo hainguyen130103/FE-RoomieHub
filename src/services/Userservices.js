@@ -77,12 +77,17 @@ export const getAllApartmentsApi = () => {
 };
 
 // Tạo một căn hộ mới
-export const createApartmentApi = (apartmentData, token) => {
+export const createApartmentApi = (apartmentData) => {
+  const token = localStorage.getItem("accessToken");
   console.log("API Request Payload:", apartmentData);
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.post("/api/apartments", apartmentData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
@@ -111,11 +116,16 @@ export const getNearbyApartmentsApi = (locationParams) => {
   return api.get("/api/apartments/nearby", { params: locationParams });
 };
 
-export const createSurveyApi = (surveyData, token) => {
+export const createSurveyApi = (surveyData) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.post("/api/surveys", surveyData, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
     },
   });
 };
@@ -251,13 +261,42 @@ export const getPaymentByOrderCodeApi = (orderCode) => {
 
 // ===================== ROOMMATE POST CONTROLLER =====================
 
+export const getAllRoommatePostsApi = () => {
+  return api.get("/api/roommate-posts");
+};
+
 // Lấy bài đăng theo ID
 export const getRoommatePostByIdApi = (id) => {
   return api.get(`/api/roommate-posts/${id}`);
 };
 
+// Tạo bài đăng mới
+export const createRoommatePostApi = (postData) => {
+  const token = localStorage.getItem("accessToken");
+  console.log("API Request Payload:", postData);
+  console.log("Token from localStorage:", token ? "Token exists" : "No token");
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  return api.post("/api/roommate-posts", postData, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // thêm token vào header
+    },
+  });
+};
+
 // Cập nhật bài đăng
 export const updateRoommatePostApi = (id, postData) => {
+  const token = localStorage.getItem("accessToken");
+  console.log("API Update Payload:", postData);
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.put(`/api/roommate-posts/${id}`, postData, {
     headers: {
       "Content-Type": "application/json",
@@ -265,28 +304,20 @@ export const updateRoommatePostApi = (id, postData) => {
   });
 };
 
-// Xoá bài đăng
+// Xóa bài đăng
 export const deleteRoommatePostApi = (id) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.delete(`/api/roommate-posts/${id}`);
-};
-
-// Lấy tất cả bài đăng
-export const getAllRoommatePostsApi = () => {
-  return api.get("/api/roommate-posts");
-};
-
-// Tạo bài đăng mới
-export const createRoommatePostApi = (postData, token) => {
-  return api.post("/api/roommate-posts", postData, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : undefined,
-    },
-  });
 };
 
 // Lọc bài đăng
 export const filterRoommatePostsApi = (filterCriteria) => {
+  console.log("API Filter Payload:", filterCriteria);
   return api.post("/api/roommate-posts/filter", filterCriteria, {
     headers: {
       "Content-Type": "application/json",
@@ -294,9 +325,26 @@ export const filterRoommatePostsApi = (filterCriteria) => {
   });
 };
 
-// Lấy bài đăng của người dùng hiện tại
+// Lấy bài đăng của user hiện tại
 export const getMyRoommatePostsApi = () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.get("/api/roommate-posts/my-posts");
+};
+
+// Lấy số lượng bài đăng của user
+export const getMyRoommatePostsCountApi = () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  return api.get("/api/roommate-posts/my-posts/count");
 };
 
 // ===================== ADMIN PAYMENT STATS APIs =====================
@@ -361,7 +409,7 @@ export const getPaymentStatisticsByPeriodApi = async (month, year) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: { month, year }
+      params: { month, year },
     });
     return response;
   } catch (error) {
@@ -373,7 +421,6 @@ export const getPaymentStatisticsByPeriodApi = async (month, year) => {
     throw error;
   }
 };
-
 
 export const getAllUsersApi = async () => {
   const token = localStorage.getItem("accessToken");
@@ -430,12 +477,16 @@ export const updateUserRoleApi = async (email, role) => {
   }
 
   try {
-    const response = await api.put("/api/admin/payments/user/update-role", null, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: { email, role }
-    });
+    const response = await api.put(
+      "/api/admin/payments/user/update-role",
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { email, role },
+      }
+    );
     return response;
   } catch (error) {
     console.error("Error in updateUserRoleApi:", error);

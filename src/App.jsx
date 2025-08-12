@@ -17,6 +17,7 @@ import Dashboard from "./components/Admin/managePage/Dashboard.jsx";
 import ProtectedAdminRoute from "./components/middleware/ProtectedAdminRoute.jsx";
 import PaymentSuccess from "./components/payment/PaymentSuccess.jsx";
 import PaymentCancel from "./components/payment/PaymentCancel.jsx";
+import Chat from "./pages/Chat.jsx";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/package" element={<Package />} />
                   <Route path="/posts" element={<Posts />} />
                   <Route path="/roommates" element={<Roommates />} />
+                  <Route path="/chat/:id" element={<Chat />} />
                   <Route path="/real-estate" element={<AllApartmentsPage />} />
                   <Route path="/roommates-post" element={<RoommatePosts />} />
                   <Route path="/payment/success" element={<PaymentSuccess />} />

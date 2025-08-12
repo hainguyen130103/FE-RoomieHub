@@ -47,7 +47,7 @@ const AllApartmentsPage = () => {
               onClick={() => navigate(`/real-estate/${apt.id}`)}
             >
               <img
-                src={apt.imageUrls?.[0] || "/default-image.jpg"}
+                src={apt.imageBase64List?.[0] || "/default-image.jpg"}
                 alt={apt.title}
                 className="w-full h-48 object-cover rounded-t-lg"
               />

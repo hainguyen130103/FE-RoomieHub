@@ -5,61 +5,62 @@ const api = axios.create({
   baseURL: "http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
   },
-  withCredentials: true,
+  withCredentials: true, // cho phép gửi cookie nếu backend hỗ trợ
 });
 
-// Thêm interceptor để debug
+// ==== REQUEST INTERCEPTOR ====
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
-    console.log("Request URL:", config.url); // Log URL being called
-    console.log("Current token:", token); // Debug token
 
     if (token) {
-      // Đảm bảo token không có khoảng trắng ở đầu hoặc cuối
-      const cleanToken = token.trim();
-      config.headers["Authorization"] = `Bearer ${cleanToken}`;
-      console.log("Request headers:", JSON.stringify(config.headers, null, 2)); // Pretty print headers
-    } else {
-      console.warn("No token found in localStorage");
+      config.headers.Authorization = `Bearer ${token.trim()}`;
     }
+
+    // Debug request - More detailed
+    console.groupCollapsed("🚀 API Request");
+    console.log("URL:", `${config.baseURL}${config.url}`);
+    console.log("Method:", config.method?.toUpperCase());
+    console.log("Headers:", config.headers);
+    console.log("Data:", config.data);
+    console.log("Token:", token ? `${token.substring(0, 20)}...` : "None");
+    console.groupEnd();
+
     return config;
   },
   (error) => {
-    console.error("Request interceptor error:", error);
+    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
 
-// Add response interceptor
+// ==== RESPONSE INTERCEPTOR ====
 api.interceptors.response.use(
   (response) => {
-    console.log(`Response from ${response.config.url}:`, response.status);
+    // Debug response
+    console.groupCollapsed("📩 API Response");
+    console.log("URL:", `${response.config.baseURL}${response.config.url}`);
+    console.log("Status:", response.status);
+    console.log("Data:", response.data);
+    console.groupEnd();
     return response;
   },
   (error) => {
-    console.error("Response error:", {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data
-    });
+    console.groupCollapsed("❌ API Response Error");
+    console.log("URL:", error.config?.url);
+    console.log("Status:", error.response?.status);
+    console.log("Data:", error.response?.data);
+    console.groupEnd();
 
     if (error.response?.status === 401) {
-      console.warn("Unauthorized request detected");
-      localStorage.removeItem("accessToken"); // Clear invalid token
-      // Có thể thêm logic chuyển hướng về trang login ở đây
+      console.warn(
+        "⚠️ Unauthorized (401) - Phiên có thể hết hạn hoặc token không hợp lệ."
+      );
+      // ❌ Không xóa token tự động ở đây
+      // ✅ Xử lý redirect ở tầng cao hơn (App.jsx / Auth wrapper)
     }
-    return Promise.reject(error);
-  }
-);(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      window.location.href = '/';
-    }
+
     return Promise.reject(error);
   }
 );

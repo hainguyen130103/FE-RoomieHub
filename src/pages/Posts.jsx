@@ -143,10 +143,12 @@ const Posts = () => {
       >
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           {/* Hình ảnh nhỏ ở bên trái */}
+
           {post.imageBase64s && post.imageBase64s.length > 0 && (
             <div style={{ flexShrink: 0 }}>
               <img 
                 src={formatImageUrl(post.imageBase64s[0]) || getFallbackImage(80, 80, "No+Image")} 
+
                 alt="Hình ảnh phòng"
                 style={{ 
                   width: "80px", 
@@ -302,12 +304,16 @@ const Posts = () => {
             </div>
 
             {/* Hiển thị hình ảnh trong phần thông tin cơ bản */}
+
             {selectedPost.imageBase64s && selectedPost.imageBase64s.length > 0 && (
+
               <div style={{ marginBottom: "25px" }}>
                 <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
                   <p style={{ margin: "5px 0 15px 0" }}><strong style={{ color: "#333" }}>Hình ảnh:</strong></p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+
                     {selectedPost.imageBase64s.map((imageUrl, index) => (
+
                       <div key={index} style={{ 
                         borderRadius: "8px", 
                         overflow: "hidden", 

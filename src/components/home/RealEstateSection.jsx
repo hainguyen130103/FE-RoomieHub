@@ -71,7 +71,7 @@ const RealEstateSection = () => {
               >
                 <div className="relative">
                   <img
-                    src={property.imageUrls?.[0] || "/default-image.jpg"}
+                    src={property.imageBase64List?.[0] || "/default-image.jpg"}
                     alt={property.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />

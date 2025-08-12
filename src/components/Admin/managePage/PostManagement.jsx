@@ -167,7 +167,9 @@ export default function PostManagement() {
                 {/* Image */}
                 <div style={{ height: '200px', position: 'relative', overflow: 'hidden' }}>
                   <img
+
                     src={apartment.imageBase64s && apartment.imageBase64s[0] ? (formatImageUrl(apartment.imageBase64s[0]) || getFallbackImage(350, 200)) : getFallbackImage(350, 200)}
+
                     alt={apartment.title}
                     style={{
                       width: '100%',
@@ -431,7 +433,6 @@ export default function PostManagement() {
                   <p style={{ color: "#ff6600", fontWeight: "bold", fontSize: "16px", margin: "5px 0" }}>{formatCurrency(selectedApartment.price)}</p>
                 </div>
               </div>
-
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
                 <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
                   <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Diện tích:</strong></p>
@@ -501,6 +502,7 @@ export default function PostManagement() {
                       ))}
                     </div>
                   </div>
+
                 </div>
               )}
 
