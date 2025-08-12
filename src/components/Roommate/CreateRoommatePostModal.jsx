@@ -10,78 +10,91 @@ export default function CreateRoommatePostModal({
   onPostCreated,
 }) {
   const [form] = Form.useForm();
-  const [imageBase64List, setimageBase64List] = useState([]);
+  const [imageBase64List, setImageBase64List] = useState([""]);
+
+  // Upload ảnh file + convert sang base64
+  const handleImageChange = (e, index) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newList = [...imageBase64List];
+        newList[index] = reader.result;
+        setImageBase64List(newList);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addImageField = () => {
+    setImageBase64List((prev) => [...prev, ""]);
+  };
+
+  const removeImageField = (index) => {
+    const newList = [...imageBase64List];
+    newList.splice(index, 1);
+    setImageBase64List(newList);
+  };
 
   const handleCreatePost = async (values) => {
     try {
       const token = localStorage.getItem("accessToken");
-
-      // Debug token
-      console.log("Token from localStorage:", token);
 
       if (!token) {
         message.error("Vui lòng đăng nhập lại");
         return;
       }
 
-      // Kiểm tra token có hết hạn không
+      // Kiểm tra token hết hạn
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
-        console.log("Token payload:", payload);
-        console.log("Token expires at:", new Date(payload.exp * 1000));
-        console.log("Current time:", new Date());
-
         if (Date.now() > payload.exp * 1000) {
           message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
-          localStorage.removeItem("accessToken");
           return;
         }
       } catch (e) {
-        console.error("Cannot parse token:", e);
         message.error("Token không hợp lệ. Vui lòng đăng nhập lại.");
         return;
       }
 
+      // Chuyển dateOfBirth từ moment sang "YYYY-MM-DD"
+      const formattedRoommatePreferences = (
+        values.roommatePreferences || []
+      ).map((pref) => ({
+        name: pref.name,
+        dateOfBirth: pref.dateOfBirth
+          ? pref.dateOfBirth.format("YYYY-MM-DD")
+          : null,
+        gender: pref.gender,
+        occupation: pref.occupation,
+        description: pref.description || "",
+        preferredPersonality: pref.preferredPersonality || null,
+        canCook: pref.canCook || null,
+        isNightOwl: pref.isNightOwl || null,
+        hasPet: pref.hasPet || null,
+        smokes: pref.smokes || null,
+        oftenBringsFriendsOver: pref.oftenBringsFriendsOver || null,
+      }));
+
       const payload = {
         address: values.address,
-        areaSquareMeters: parseFloat(values.areaSquareMeters),
-        monthlyRentPrice: parseFloat(values.monthlyRentPrice),
+        areaSquareMeters: Number(values.areaSquareMeters),
+        monthlyRentPrice: Number(values.monthlyRentPrice),
         description: values.description,
-        imageBase64List: imageBase64List,
-        roommatePreferences: values.roommatePreferences || [],
+        imageBase64List: imageBase64List.filter((img) => img),
+        roommatePreferences: formattedRoommatePreferences,
       };
 
-      console.log("=== FRONTEND DEBUG ===");
-      console.log("Test payload:", JSON.stringify(payload, null, 2));
-      console.log("Actual payload:", JSON.stringify(payload, null, 2));
-      console.log("Payload keys:", Object.keys(payload));
-      console.log(
-        "roommatePreferences type:",
-        typeof payload.roommatePreferences
-      );
-      console.log(
-        "roommatePreferences length:",
-        payload.roommatePreferences.length
-      );
-      console.log("=== END DEBUG ===");
-
-      // Tạm thời dùng testPayload để debug
-      console.log("Using test payload for debugging...");
       await createRoommatePostApi(payload);
+
       message.success("Đăng bài thành công");
       form.resetFields();
-      setimageBase64List([]);
+      setImageBase64List([""]);
       onClose();
       if (onPostCreated) onPostCreated();
     } catch (err) {
       console.error("Error creating post:", err);
-
-      // Xử lý lỗi cụ thể
       if (err.response) {
-        console.error("Response data:", err.response.data);
-        console.error("Response status:", err.response.status);
-        console.error("Response headers:", err.response.headers);
-
         if (err.response.status === 401) {
           message.error("Không có quyền truy cập. Vui lòng đăng nhập lại.");
           localStorage.removeItem("accessToken");
@@ -139,26 +152,53 @@ export default function CreateRoommatePostModal({
           <TextArea rows={3} />
         </Form.Item>
 
-        <Form.Item label="Link ảnh (URL)">
-          <Input
-            placeholder="Nhập URL ảnh và nhấn Enter"
-            onPressEnter={(e) => {
-              const url = e.target.value.trim();
-              if (url) {
-                setimageBase64List((prev) => [...prev, url]);
-                e.target.value = "";
-              }
-            }}
-          />
-          <div className="mt-2 flex flex-wrap gap-2">
-            {imageBase64List.map((url, idx) => (
-              <img
-                key={idx}
-                src={url}
-                alt="preview"
-                className="w-20 h-20 object-cover rounded"
-              />
+        {/* Upload ảnh file với preview */}
+        <Form.Item label="Hình ảnh phòng">
+          <div className="flex flex-wrap gap-4">
+            {imageBase64List.map((base64, index) => (
+              <div
+                key={index}
+                className="relative w-24 h-24 border border-gray-300 rounded overflow-hidden"
+              >
+                <label
+                  htmlFor={`image-upload-${index}`}
+                  className="w-full h-full flex items-center justify-center cursor-pointer"
+                >
+                  {base64 ? (
+                    <img
+                      src={base64}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-2xl">+</span>
+                  )}
+                </label>
+                <input
+                  id={`image-upload-${index}`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, index)}
+                  className="hidden"
+                />
+                {imageBase64List.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeImageField(index)}
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             ))}
+
+            <div
+              onClick={addImageField}
+              className="w-24 h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-orange-400 transition"
+            >
+              <span className="text-gray-400 text-2xl">+</span>
+            </div>
           </div>
         </Form.Item>
 
@@ -192,6 +232,7 @@ export default function CreateRoommatePostModal({
                     {...restField}
                     name={[name, "dateOfBirth"]}
                     label="Ngày sinh"
+                    rules={[{ required: true, message: "Chọn ngày sinh" }]}
                   >
                     <DatePicker style={{ width: "100%" }} />
                   </Form.Item>
@@ -199,6 +240,7 @@ export default function CreateRoommatePostModal({
                     {...restField}
                     name={[name, "gender"]}
                     label="Giới tính"
+                    rules={[{ required: true, message: "Chọn giới tính" }]}
                   >
                     <Select
                       options={[
@@ -212,6 +254,7 @@ export default function CreateRoommatePostModal({
                     {...restField}
                     name={[name, "occupation"]}
                     label="Nghề nghiệp"
+                    rules={[{ required: true, message: "Chọn nghề nghiệp" }]}
                   >
                     <Select
                       options={[
@@ -220,10 +263,7 @@ export default function CreateRoommatePostModal({
                           label: "Nhân viên văn phòng",
                           value: "OFFICE_WORKER",
                         },
-                        {
-                          label: "Freelancer",
-                          value: "FREELANCER",
-                        },
+                        { label: "Freelancer", value: "FREELANCER" },
                         { label: "Khác", value: "OTHER" },
                       ]}
                     />
