@@ -576,14 +576,14 @@ const Roommates = () => {
             marginBottom: "2rem",
           }}
         >
-          Bài đăng Roommate của tôi
+          Bài đăng tìm bạn cùng phòng của tôi
         </h1>
 
         <div className="p-grid">
           {currentPosts.map((post) => (
             <div key={post.id} className="p-col-12 p-md-6 p-lg-3">
               <Card
-                title={post.ownerPost}
+                // title={post.ownerPost}
                 style={cardStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-5px)";
