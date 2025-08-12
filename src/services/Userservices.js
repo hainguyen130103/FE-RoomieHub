@@ -528,3 +528,49 @@ export const getMyPackagesApi = async () => {
     throw error;
   }
 };
+
+export const getApartmentPostAuto = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Vui lòng đăng nhập để sử dụng tính năng.");
+  }
+
+  try {
+    const response = await api.get("/api/apartment-recommendation/matching", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getApartmentAuto:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};
+
+export const getRoomatePostAuto = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Vui lòng đăng nhập để sử dụng tính năng.");
+  }
+
+  try {
+    const response = await api.get("/api/recommendations/roommate-posts", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error in getRoomatePostAuto:", error);
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    }
+    throw error;
+  }
+};

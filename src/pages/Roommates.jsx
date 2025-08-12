@@ -327,7 +327,7 @@ const Roommates = () => {
                     textAlign: "center",
                   }}
                 >
-                  Thông tin Roommate
+                  Thông tin thành viên phòng
                 </h3>
               </div>
               {selectedPost.roommatePreferences.map((pref) => (
