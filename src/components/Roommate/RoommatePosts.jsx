@@ -37,6 +37,11 @@ export default function RoommatePosts() {
   const fetchFilteredPostsByUserProfile = async () => {
     try {
       const token = localStorage.getItem("accessToken");
+      if (!token) {
+        await fetchPosts();
+        return;
+      }
+
       const decoded = jwtDecode(token);
       const profile = await getUserProfileApi(decoded.id);
 
@@ -212,11 +217,7 @@ export default function RoommatePosts() {
               type="primary"
               className="bg-orange-500 border-orange-500 mt-4"
               block
-              onClick={() =>
-                navigate("/roommates", {
-                  state: { chatWith: selectedPost.userId },
-                })
-              }
+              onClick={() => navigate(`/chat/${selectedPost.userId}`)}
             >
               Liên hệ ngay
             </Button>

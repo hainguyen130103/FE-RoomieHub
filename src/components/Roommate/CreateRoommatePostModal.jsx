@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, DatePicker, Select, Button, message } from "antd";
 import { createRoommatePostApi } from "../../services/Userservices";
+import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
@@ -45,10 +46,10 @@ export default function CreateRoommatePostModal({
         return;
       }
 
-      // Kiểm tra token hết hạn
+      let payloadToken;
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        if (Date.now() > payload.exp * 1000) {
+        payloadToken = JSON.parse(atob(token.split(".")[1]));
+        if (Date.now() > payloadToken.exp * 1000) {
           message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
           return;
         }
@@ -57,7 +58,7 @@ export default function CreateRoommatePostModal({
         return;
       }
 
-      // Chuyển dateOfBirth từ moment sang "YYYY-MM-DD"
+      // Format roommatePreferences
       const formattedRoommatePreferences = (
         values.roommatePreferences || []
       ).map((pref) => ({
@@ -77,12 +78,18 @@ export default function CreateRoommatePostModal({
       }));
 
       const payload = {
+        // Trường id thường do backend tạo, bạn không cần gửi
+        // "id": ...,
+
+        ownerPost: payloadToken.username || payloadToken.email || "unknown", // tùy token bạn có gì
         address: values.address,
         areaSquareMeters: Number(values.areaSquareMeters),
         monthlyRentPrice: Number(values.monthlyRentPrice),
         description: values.description,
         imageBase64List: imageBase64List.filter((img) => img),
+        userId: payloadToken.id, // đây là userId lấy từ token
         roommatePreferences: formattedRoommatePreferences,
+        createdDate: dayjs().format("YYYY-MM-DD"), // ngày hiện tại
       };
 
       await createRoommatePostApi(payload);
@@ -294,22 +301,20 @@ export default function CreateRoommatePostModal({
                   >
                     <Select
                       options={[
-                        { label: "Không bao giờ", value: "NEVER" },
-                        { label: "Thỉnh thoảng", value: "SOMETIMES" },
-                        { label: "Thường xuyên", value: "OFTEN" },
+                        { label: "Có", value: "YES" },
+                        { label: "Không", value: "NO" },
                       ]}
                     />
                   </Form.Item>
                   <Form.Item
                     {...restField}
                     name={[name, "isNightOwl"]}
-                    label="Giấc ngủ"
+                    label="Thức khuya"
                   >
                     <Select
                       options={[
-                        { label: "Ngủ sớm", value: "EARLY_SLEEPER" },
-                        { label: "Cú đêm", value: "NIGHT_OWL" },
-                        { label: "Linh hoạt", value: "FLEXIBLE" },
+                        { label: "Có", value: "YES" },
+                        { label: "Không", value: "NO" },
                       ]}
                     />
                   </Form.Item>
