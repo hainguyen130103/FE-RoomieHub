@@ -48,7 +48,7 @@ function App() {
                   <Route path="/roommates-post" element={<RoommatePosts />} />
                   <Route path="/payment/success" element={<PaymentSuccess />} />
                   <Route path="/payment/cancel" element={<PaymentCancel />} />
-                  <Route path="/chai-ai" element={<ChatBox />} />
+                  <Route path="/chat-ai" element={<ChatBox />} />
                 </Routes>
               </main>
               <Footer />

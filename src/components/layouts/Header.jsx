@@ -56,7 +56,7 @@ const Header = () => {
       label: "Hỗ trợ bằng AI",
       icon: "pi pi-book",
       className: "text-white font-medium",
-      command: () => navigate("/chai-ai"),
+      command: () => navigate("/chat-ai"),
     },
   ];
 
