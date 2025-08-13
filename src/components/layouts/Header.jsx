@@ -53,7 +53,7 @@ const Header = () => {
       command: () => navigate("/roommates-post"),
     },
     {
-      label: "Hỗ trọ bằng AI",
+      label: "Hỗ trợ bằng AI",
       icon: "pi pi-book",
       className: "text-white font-medium",
       command: () => navigate("/chai-ai"),

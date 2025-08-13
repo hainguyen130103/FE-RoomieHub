@@ -150,8 +150,11 @@ const Chat = () => {
                     r.userId === targetUserId ? "bg-green-100" : ""
                   }`}
                   onClick={() =>
-                    navigate("/chat", { state: { chatWith: r.userId } })
+                    navigate(`/chat/${r.userId}`, {
+                      state: { chatWith: r.userId },
+                    })
                   }
+                  $
                 >
                   <div className="font-semibold text-gray-800">
                     Người dùng {r.userId}

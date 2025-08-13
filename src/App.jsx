@@ -43,7 +43,7 @@ function App() {
                   <Route path="/package" element={<Package />} />
                   <Route path="/posts" element={<Posts />} />
                   <Route path="/roommates" element={<Roommates />} />
-                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/chat/:userId" element={<Chat />} />
                   <Route path="/real-estate" element={<AllApartmentsPage />} />
                   <Route path="/roommates-post" element={<RoommatePosts />} />
                   <Route path="/payment/success" element={<PaymentSuccess />} />

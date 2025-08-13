@@ -527,7 +527,11 @@ export default function RoommatePosts() {
                 size="large"
                 className="bg-orange-500 border-orange-500 mt-4"
                 block
-                onClick={() => navigate(`/chat/${selectedPost.userId}`)}
+                onClick={() =>
+                  navigate(`/chat/${selectedPost.userId}`, {
+                    state: { chatWith: selectedPost.userId },
+                  })
+                }
               >
                 Liên hệ ngay
               </Button>
