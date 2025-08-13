@@ -39,6 +39,8 @@ import {
   PlusOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
+import { getAuth } from "firebase/auth";
+import { ensureRooms } from "../../until/chatHelpers";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -525,13 +527,34 @@ export default function RoommatePosts() {
               <Button
                 type="primary"
                 size="large"
-                className="bg-orange-500 border-orange-500 mt-4"
+                className="bg-orange-500"
                 block
-                onClick={() =>
-                  navigate(`/chat/${selectedPost.userId}`, {
-                    state: { chatWith: selectedPost.userId },
-                  })
-                }
+                onClick={async () => {
+                  const token = localStorage.getItem("accessToken");
+                  if (!token) {
+                    navigate("/login");
+                    return;
+                  }
+
+                  let currentUserId;
+                  try {
+                    const decoded = jwtDecode(token);
+                    currentUserId = decoded?.id; // hoặc decoded?.userId
+                  } catch (err) {
+                    console.error("Invalid token:", err);
+                    navigate("/login");
+                    return;
+                  }
+
+                  try {
+                    await ensureRooms(currentUserId, selectedPost.userId);
+                    navigate(`/chat/${selectedPost.userId}`, {
+                      state: { chatWith: selectedPost.userId },
+                    });
+                  } catch (err) {
+                    console.error("Error ensuring room:", err);
+                  }
+                }}
               >
                 Liên hệ ngay
               </Button>

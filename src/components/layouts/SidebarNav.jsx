@@ -22,7 +22,7 @@ const navItems = [
     icon: "pi pi-users",
     path: "/roommates",
   },
-  { id: "chat", label: "Chat", icon: "pi pi-comments", path: "/chat" },
+  { id: "chat", label: "Chat", icon: "pi pi-comments", path: "/chat/:userId" },
 ];
 
 const SidebarNav = ({ children }) => {

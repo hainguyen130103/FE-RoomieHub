@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { jwtDecode } from "jwt-decode";
 import { SendOutlined, MessageOutlined } from "@ant-design/icons";
+import { ensureRooms } from "../until/chatHelpers";
 
 const Chat = () => {
   const location = useLocation();
@@ -79,20 +80,6 @@ const Chat = () => {
 
     return () => unsub();
   }, [roomId]);
-
-  // Tạo room nếu chưa có
-  const ensureRooms = async () => {
-    if (!targetUserId) return;
-    const roomA = doc(db, "chatRooms", currentUserId, "rooms", targetUserId);
-    const roomB = doc(db, "chatRooms", targetUserId, "rooms", currentUserId);
-    if (!(await getDoc(roomA)).exists()) {
-      await setDoc(roomA, { lastMessage: "", updatedAt: serverTimestamp() });
-    }
-    if (!(await getDoc(roomB)).exists()) {
-      await setDoc(roomB, { lastMessage: "", updatedAt: serverTimestamp() });
-    }
-  };
-
   // Gửi tin nhắn
   const sendMessage = async () => {
     if (!input.trim() || !roomId) return;
@@ -137,7 +124,7 @@ const Chat = () => {
             <h3 className="text-lg font-bold">Cuộc trò chuyện</h3>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {chatList.length === 0 ? (
               <p className="text-gray-400 text-center mt-6">
                 Chưa có cuộc trò chuyện
@@ -146,21 +133,31 @@ const Chat = () => {
               chatList.map((r) => (
                 <div
                   key={r.userId}
-                  className={`p-3 cursor-pointer hover:bg-green-50 transition ${
-                    r.userId === targetUserId ? "bg-green-100" : ""
-                  }`}
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border 
+            ${
+              r.userId === targetUserId
+                ? "bg-green-100 border-green-300 shadow-sm"
+                : "bg-white hover:bg-green-50 border-transparent"
+            }`}
                   onClick={() =>
                     navigate(`/chat/${r.userId}`, {
                       state: { chatWith: r.userId },
                     })
                   }
-                  $
                 >
-                  <div className="font-semibold text-gray-800">
-                    Người dùng {r.userId}
+                  {/* Avatar giả lập */}
+                  <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center text-green-700 font-bold">
+                    {r.userId?.toString().charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm text-gray-500 truncate">
-                    {r.lastMessage}
+
+                  {/* Thông tin user */}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-800 truncate">
+                      Người dùng {r.userId}
+                    </div>
+                    <div className="text-sm text-gray-500 truncate">
+                      {r.lastMessage || "Chưa có tin nhắn"}
+                    </div>
                   </div>
                 </div>
               ))

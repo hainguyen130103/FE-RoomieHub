@@ -5,13 +5,19 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 export const ensureRooms = async (currentUserId, targetUserId) => {
   if (!currentUserId || !targetUserId) return;
 
-  const roomA = doc(db, "chatRooms", currentUserId, "rooms", targetUserId);
-  const roomB = doc(db, "chatRooms", targetUserId, "rooms", currentUserId);
+  const cId = String(currentUserId);
+  const tId = String(targetUserId);
 
-  if (!(await getDoc(roomA)).exists()) {
+  const roomA = doc(db, "chatRooms", cId, "rooms", tId);
+  const roomB = doc(db, "chatRooms", tId, "rooms", cId);
+
+  const roomASnap = await getDoc(roomA);
+  if (!roomASnap.exists()) {
     await setDoc(roomA, { lastMessage: "", updatedAt: serverTimestamp() });
   }
-  if (!(await getDoc(roomB)).exists()) {
+
+  const roomBSnap = await getDoc(roomB);
+  if (!roomBSnap.exists()) {
     await setDoc(roomB, { lastMessage: "", updatedAt: serverTimestamp() });
   }
 };
