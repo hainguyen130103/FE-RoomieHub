@@ -10,14 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.7",
     "@vietmap/vietmap-gl-js": "^6.0.0-pre.1",
     "antd": "^5.26.7",
     "axios": "^1.10.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^17.2.1",
     "firebase": "^12.1.0",
     "jwt-decode": "^4.0.0",
+    "marked": "^16.1.2",
+    "marker": "^0.1.2",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.6",
     "react": "^18.3.1",
