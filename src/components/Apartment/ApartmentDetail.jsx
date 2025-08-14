@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   MapPinIcon,
   ClockIcon,
@@ -11,9 +11,12 @@ import {
 } from "@heroicons/react/24/solid";
 import { HeartIcon as HeartIconOutline } from "@heroicons/react/24/outline";
 import { getApartmentByIdApi } from "../../services/Userservices";
+import { jwtDecode } from "jwt-decode";
+import { ensureRooms } from "../../until/chatHelpers";
 
 export default function ApartmentDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [propertyData, setPropertyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -243,9 +246,39 @@ export default function ApartmentDetail() {
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md flex space-x-4">
-              <button className="flex-1 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition">
-                Liên hệ
-              </button>
+              {propertyData.userId && (
+                <button
+                  className="flex-1 bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition"
+                  onClick={async () => {
+                    const token = localStorage.getItem("accessToken");
+                    if (!token) {
+                      navigate("/login");
+                      return;
+                    }
+
+                    let currentUserId;
+                    try {
+                      const decoded = jwtDecode(token);
+                      currentUserId = decoded?.id; // hoặc decoded?.userId tùy payload của API
+                    } catch (err) {
+                      console.error("Token không hợp lệ:", err);
+                      navigate("/login");
+                      return;
+                    }
+
+                    try {
+                      await ensureRooms(currentUserId, propertyData.userId);
+                      navigate(`/chat/${propertyData.userId}`, {
+                        state: { chatWith: propertyData.userId },
+                      });
+                    } catch (err) {
+                      console.error("Không tạo được phòng chat:", err);
+                    }
+                  }}
+                >
+                  Liên hệ
+                </button>
+              )}
               <button className="flex-1 bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 flex items-center justify-center space-x-2">
                 <ShareIcon className="w-5 h-5" />
                 <span>Chia sẻ</span>

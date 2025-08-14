@@ -1,40 +1,47 @@
 import React, { useState, useEffect } from "react";
 import SidebarNav from "../layouts/SidebarNav";
-import { createPaymentApi, getMyPackagesApi } from "../../services/Userservices";
+import {
+  createPaymentApi,
+  getMyPackagesApi,
+} from "../../services/Userservices";
 
 const packageDetails = {
   BASIC: {
     title: "BASIC",
     price: 10000,
-    description: "Đăng tối đa 10 bài. Không hỗ trợ đăng video. Phù hợp cho người dùng mới hoặc đăng thử nghiệm.",
+    description:
+      "Đăng tối đa 10 bài. Không hỗ trợ đăng video. Phù hợp cho người dùng mới hoặc đăng thử nghiệm.",
     icon: "🏠",
     color: "from-blue-400 to-blue-600",
-    buttonColor: "bg-blue-500 hover:bg-blue-600"
+    buttonColor: "bg-blue-500 hover:bg-blue-600",
   },
   PROFESSIONAL: {
-    title: "PROFESSIONAL", 
+    title: "PROFESSIONAL",
     price: 100000,
-    description: "Đăng tối đa 30 bài. Hỗ trợ đăng ảnh và video. Thích hợp cho người tìm kiếm bạn cùng phòng hoặc cho thuê nhiều hơn.",
+    description:
+      "Đăng tối đa 30 bài. Hỗ trợ đăng ảnh và video. Thích hợp cho người tìm kiếm bạn cùng phòng hoặc cho thuê nhiều hơn.",
     icon: "🏢",
     color: "from-green-400 to-green-600",
-    buttonColor: "bg-green-500 hover:bg-green-600"
+    buttonColor: "bg-green-500 hover:bg-green-600",
   },
   VIP: {
     title: "VIP",
     price: 150000,
-    description: "Đăng tối đa 100 bài. Ưu tiên hiển thị bài đăng, hỗ trợ ảnh & video. Lựa chọn tối ưu cho môi giới hoặc người cho thuê chuyên nghiệp.",
+    description:
+      "Đăng tối đa 100 bài. Ưu tiên hiển thị bài đăng, hỗ trợ ảnh & video. Lựa chọn tối ưu cho môi giới hoặc người cho thuê chuyên nghiệp.",
     icon: "👑",
     color: "from-yellow-400 to-yellow-600",
-    buttonColor: "bg-yellow-500 hover:bg-yellow-600"
+    buttonColor: "bg-yellow-500 hover:bg-yellow-600",
   },
   VR: {
     title: "VR",
     price: 200000,
-    description: "Đăng tối đa 3 bài với hỗ trợ VR 360°. Giúp người xem trải nghiệm thực tế không gian phòng trước khi liên hệ.",
+    description:
+      "Đăng tối đa 3 bài với hỗ trợ VR 360°. Giúp người xem trải nghiệm thực tế không gian phòng trước khi liên hệ.",
     icon: "🥽",
     color: "from-purple-400 to-purple-600",
-    buttonColor: "bg-purple-500 hover:bg-purple-600"
-  }
+    buttonColor: "bg-purple-500 hover:bg-purple-600",
+  },
 };
 
 const Package = () => {
@@ -56,7 +63,7 @@ const Package = () => {
       const response = await getMyPackagesApi();
       setUserPackages(response.data || []);
     } catch (err) {
-      console.error('Error fetching user packages:', err);
+      console.error("Error fetching user packages:", err);
       // Don't show error for packages, just keep empty array
     } finally {
       setPackagesLoading(false);
@@ -64,14 +71,14 @@ const Package = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(amount);
   };
 
   const handleBuyPackage = async (packageType) => {
-    setLoading(prev => ({ ...prev, [packageType]: true }));
+    setLoading((prev) => ({ ...prev, [packageType]: true }));
     setError(null);
     setSuccess(null);
 
@@ -80,18 +87,24 @@ const Package = () => {
         packageType: packageType,
         description: `Mua gói ${packageDetails[packageType].title}`,
         returnUrl: `${window.location.origin}/payment/success`,
-        cancelUrl: `${window.location.origin}/payment/cancel`
+        cancelUrl: `${window.location.origin}/payment/cancel`,
       };
 
       const response = await createPaymentApi(paymentData);
-      
-      if (response.data && response.data.data && response.data.data.checkoutUrl) {
-        setSuccess(`Đang chuyển hướng đến trang thanh toán cho gói ${packageType}...`);
+
+      if (
+        response.data &&
+        response.data.data &&
+        response.data.data.checkoutUrl
+      ) {
+        setSuccess(
+          `Đang chuyển hướng đến trang thanh toán cho gói ${packageType}...`
+        );
         setCountdown(3);
-        
+
         // Countdown timer
         const countdownInterval = setInterval(() => {
-          setCountdown(prev => {
+          setCountdown((prev) => {
             if (prev <= 1) {
               clearInterval(countdownInterval);
               window.location.href = response.data.data.checkoutUrl;
@@ -101,14 +114,18 @@ const Package = () => {
           });
         }, 1000);
       } else {
-        throw new Error('Không nhận được URL thanh toán');
+        throw new Error("Không nhận được URL thanh toán");
       }
     } catch (err) {
-      console.error('Payment creation error:', err);
-      setError(err.response?.data?.message || err.message || 'Có lỗi xảy ra khi tạo thanh toán');
+      console.error("Payment creation error:", err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Có lỗi xảy ra khi tạo thanh toán"
+      );
       setCountdown(0);
     } finally {
-      setLoading(prev => ({ ...prev, [packageType]: false }));
+      setLoading((prev) => ({ ...prev, [packageType]: false }));
       // Refresh packages after successful purchase attempt
       setTimeout(() => {
         fetchUserPackages();
@@ -117,17 +134,25 @@ const Package = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
   const getPackageStatus = (expiredAt) => {
     const now = new Date();
     const expireDate = new Date(expiredAt);
     const daysLeft = Math.ceil((expireDate - now) / (1000 * 60 * 60 * 24));
-    
-    if (daysLeft <= 0) return { status: 'Đã hết hạn', color: 'text-red-600 bg-red-100' };
-    if (daysLeft <= 7) return { status: `Còn ${daysLeft} ngày`, color: 'text-yellow-600 bg-yellow-100' };
-    return { status: `Còn ${daysLeft} ngày`, color: 'text-green-600 bg-green-100' };
+
+    if (daysLeft <= 0)
+      return { status: "Đã hết hạn", color: "text-red-600 bg-red-100" };
+    if (daysLeft <= 7)
+      return {
+        status: `Còn ${daysLeft} ngày`,
+        color: "text-yellow-600 bg-yellow-100",
+      };
+    return {
+      status: `Còn ${daysLeft} ngày`,
+      color: "text-green-600 bg-green-100",
+    };
   };
 
   return (
@@ -157,8 +182,6 @@ const Package = () => {
               </div>
             )}
 
-            
-
             {/* Success/Error Messages */}
             {success && (
               <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg max-w-md mx-auto">
@@ -168,12 +191,16 @@ const Package = () => {
                 </div>
                 {countdown > 0 && (
                   <div className="mt-2 text-sm">
-                    Chuyển hướng sau <span className="font-bold text-green-800">{countdown}</span> giây
+                    Chuyển hướng sau{" "}
+                    <span className="font-bold text-green-800">
+                      {countdown}
+                    </span>{" "}
+                    giây
                   </div>
                 )}
               </div>
             )}
-            
+
             {error && (
               <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg max-w-md mx-auto">
                 {error}
@@ -191,7 +218,9 @@ const Package = () => {
                   className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   {/* Header with gradient */}
-                  <div className={`bg-gradient-to-r ${pkg.color} rounded-lg p-4 mb-4 text-white`}>
+                  <div
+                    className={`bg-gradient-to-r ${pkg.color} rounded-lg p-4 mb-4 text-white`}
+                  >
                     <div className="text-4xl mb-2">{pkg.icon}</div>
                     <h3 className="text-xl font-bold">{pkg.title}</h3>
                   </div>
@@ -221,14 +250,14 @@ const Package = () => {
                         Đang xử lý...
                       </div>
                     ) : (
-                      'Mua ngay'
+                      "Mua ngay"
                     )}
                   </button>
 
                   {/* Features based on package type */}
                   <div className="mt-6 pt-4 border-t border-gray-200">
                     <ul className="text-sm text-left text-gray-700 space-y-2">
-                      {packageType === 'BASIC' && (
+                      {packageType === "BASIC" && (
                         <>
                           <li className="flex items-center">
                             <span className="text-green-500 mr-2">✓</span>
@@ -244,7 +273,7 @@ const Package = () => {
                           </li>
                         </>
                       )}
-                      {packageType === 'PROFESSIONAL' && (
+                      {packageType === "PROFESSIONAL" && (
                         <>
                           <li className="flex items-center">
                             <span className="text-green-500 mr-2">✓</span>
@@ -260,7 +289,7 @@ const Package = () => {
                           </li>
                         </>
                       )}
-                      {packageType === 'VIP' && (
+                      {packageType === "VIP" && (
                         <>
                           <li className="flex items-center">
                             <span className="text-green-500 mr-2">✓</span>
@@ -280,7 +309,7 @@ const Package = () => {
                           </li>
                         </>
                       )}
-                      {packageType === 'VR' && (
+                      {packageType === "VR" && (
                         <>
                           <li className="flex items-center">
                             <span className="text-green-500 mr-2">✓</span>
@@ -312,8 +341,9 @@ const Package = () => {
                 💡 Lưu ý quan trọng
               </h3>
               <p className="text-gray-700 text-sm">
-                Tất cả các gói đều hỗ trợ đăng bài tìm bạn cùng phòng và cho thuê phòng. 
-                Thanh toán một lần, sử dụng ngay lập tức. Hỗ trợ khách hàng 24/7.
+                Tất cả các gói đều hỗ trợ đăng bài tìm bạn cùng phòng và cho
+                thuê phòng. Thanh toán một lần, sử dụng ngay lập tức. Hỗ trợ
+                khách hàng 24/7.
               </p>
             </div>
           </div>
@@ -359,7 +389,7 @@ const Package = () => {
                   {userPackages.map((userPackage) => {
                     const status = getPackageStatus(userPackage.expiredAt);
                     const packageInfo = packageDetails[userPackage.packageName];
-                    
+
                     return (
                       <div
                         key={userPackage.packageId}
@@ -369,7 +399,7 @@ const Package = () => {
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center">
                             <span className="text-4xl mr-3">
-                              {packageInfo?.icon || '📦'}
+                              {packageInfo?.icon || "📦"}
                             </span>
                             <div>
                               <h4 className="text-2xl font-bold text-gray-800">
@@ -380,7 +410,9 @@ const Package = () => {
                               </p>
                             </div>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-sm font-bold ${status.color}`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-bold ${status.color}`}
+                          >
                             {status.status}
                           </span>
                         </div>
@@ -389,7 +421,9 @@ const Package = () => {
                         <div className="bg-white rounded-lg p-4 mb-4">
                           <div className="grid grid-cols-1 gap-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600 font-medium">Bài đăng còn lại:</span>
+                              <span className="text-gray-600 font-medium">
+                                Bài đăng còn lại:
+                              </span>
                               <div className="flex items-center">
                                 <span className="text-2xl font-bold text-orange-600 mr-2">
                                   {userPackage.remainingPosts}
@@ -397,16 +431,20 @@ const Package = () => {
                                 <span className="text-orange-500">📝</span>
                               </div>
                             </div>
-                            
+
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600 font-medium">Ngày bắt đầu:</span>
+                              <span className="text-gray-600 font-medium">
+                                Ngày bắt đầu:
+                              </span>
                               <span className="font-bold text-gray-800">
                                 📅 {formatDate(userPackage.startDate)}
                               </span>
                             </div>
-                            
+
                             <div className="flex justify-between items-center">
-                              <span className="text-gray-600 font-medium">Ngày hết hạn:</span>
+                              <span className="text-gray-600 font-medium">
+                                Ngày hết hạn:
+                              </span>
                               <span className="font-bold text-gray-800">
                                 ⏰ {formatDate(userPackage.expiredAt)}
                               </span>

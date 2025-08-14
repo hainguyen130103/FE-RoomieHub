@@ -36,8 +36,9 @@ const HeroSection = () => {
     },
     {
       icon: "pi pi-book",
-      label: "Kho tri thức",
+      label: "Chat hỗ trợ AI",
       color: "linear-gradient(92deg,#5C00FF 0%,#C2A0FF 100%)",
+      command: () => navigate("/chat-ai"),
     },
   ];
 
