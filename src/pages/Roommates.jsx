@@ -288,11 +288,11 @@ const Roommates = () => {
                     />
                   </div>
                 ))}
-
               </div>
             </div>
-          )}
-
+          </div>
+        )}
+        
         {selectedPost.roommatePreferences &&
           selectedPost.roommatePreferences.length > 0 && (
             <div>
@@ -311,7 +311,7 @@ const Roommates = () => {
                     textAlign: "center",
                   }}
                 >
-                  Thông tin thành viên phòng
+                  Thông tin Roommate
                 </h3>
               </div>
               {selectedPost.roommatePreferences.map((pref) => (
@@ -560,14 +560,14 @@ const Roommates = () => {
             marginBottom: "2rem",
           }}
         >
-          Bài đăng tìm bạn cùng phòng của tôi
+          Bài đăng Roommate của tôi
         </h1>
 
         <div className="p-grid">
           {currentPosts.map((post) => (
             <div key={post.id} className="p-col-12 p-md-6 p-lg-3">
               <Card
-                // title={post.ownerPost}
+                title={post.ownerPost}
                 style={cardStyle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-5px)";
