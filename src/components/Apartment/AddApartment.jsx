@@ -3,7 +3,7 @@ import {
   createApartmentApi,
   getMyPackagesApi,
 } from "../../services/Userservices";
-import { message, Modal, Select } from "antd";
+import { Input, message, Modal, Select } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
@@ -15,13 +15,13 @@ const PostApartment = () => {
     address: "",
     price: "",
     area: "",
-    genderRequirement: "",
+    genderRequirement: null,
     deposit: "",
-    legalDocuments: "",
+    legalDocuments: null,
     utilities: "",
-    furniture: "",
+    furniture: null,
     interiorCondition: "",
-    elevator: "",
+    elevator: null,
     contact: "",
     location: "",
     imageBase64s: [""],
@@ -58,6 +58,9 @@ const PostApartment = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleSelectChange = (name, value) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -131,13 +134,13 @@ const PostApartment = () => {
           address: "",
           price: "",
           area: "",
-          genderRequirement: "",
+          genderRequirement: null,
           deposit: "",
-          legalDocuments: "",
+          legalDocuments: null,
           utilities: "",
-          furniture: "",
+          furniture: null,
           interiorCondition: "",
-          elevator: "",
+          elevator: null,
           contact: "",
           location: "",
           imageBase64s: [""],
@@ -204,49 +207,55 @@ const PostApartment = () => {
           <fieldset className="border border-gray-300 rounded p-4">
             <legend className="text-lg font-semibold">Thông tin phòng</legend>
             <div className="grid grid-cols-1 gap-4 mt-4">
-              <input
+              <Input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
                 placeholder="Tiêu đề"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
                 required
               />
-              <input
+              <Input
                 name="price"
                 value={form.price}
                 onChange={handleChange}
                 placeholder="Giá (VND)"
                 type="number"
-                className="p-3 border rounded"
                 min={0}
                 step="0.01"
+                style={{ height: "44px" }}
                 required
               />
-              <input
+              <Input
                 name="area"
                 value={form.area}
                 onChange={handleChange}
                 placeholder="Diện tích (m²)"
                 type="number"
-                className="p-3 border rounded"
                 min={0}
+                style={{ height: "44px" }}
                 step="0.01"
                 required
               />
-              <input
-                name="genderRequirement"
+              <Select
                 value={form.genderRequirement}
-                onChange={handleChange}
+                onChange={(value) =>
+                  handleSelectChange("genderRequirement", value)
+                }
                 placeholder="Yêu cầu giới tính"
-                className="p-3 border rounded"
-              />
-              <input
+                className="w-full"
+                style={{ height: "44px" }}
+              >
+                <Option value="MALE">Nam</Option>
+                <Option value="FEMALE">Nữ</Option>
+                <Option value="OTHER">Khác</Option>
+              </Select>
+              <Input
                 name="deposit"
                 value={form.deposit}
                 onChange={handleChange}
                 placeholder="Tiền cọc"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
               />
             </div>
           </fieldset>
@@ -255,20 +264,20 @@ const PostApartment = () => {
           <fieldset className="border border-gray-300 rounded p-4">
             <legend className="text-lg font-semibold">Vị trí phòng</legend>
             <div className="grid grid-cols-1 gap-4 mt-4">
-              <input
+              <Input
                 name="address"
                 value={form.address}
                 onChange={handleChange}
                 placeholder="Địa chỉ"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
                 required
               />
-              <input
+              <Input
                 name="location"
                 value={form.location}
                 onChange={handleChange}
                 placeholder="Khu vực (ví dụ: HCM, Hà Nội...)"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
               />
             </div>
           </fieldset>
@@ -279,48 +288,59 @@ const PostApartment = () => {
               Thông tin chi tiết
             </legend>
             <div className="grid grid-cols-1 gap-4 mt-4">
-              <input
-                name="legalDocuments"
+              <Select
                 value={form.legalDocuments}
-                onChange={handleChange}
+                onChange={(value) =>
+                  handleSelectChange("legalDocuments", value)
+                }
                 placeholder="Pháp lý"
-                className="p-3 border rounded"
-              />
-              <input
+                className="w-full"
+                style={{ height: "44px" }}
+              >
+                <Option value="YES">Có</Option>
+                <Option value="NO">Không</Option>
+              </Select>
+              <Input
                 name="utilities"
                 value={form.utilities}
                 onChange={handleChange}
                 placeholder="Tiện ích đi kèm"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
               />
-              <input
-                name="furniture"
+              <Select
                 value={form.furniture}
-                onChange={handleChange}
+                onChange={(value) => handleSelectChange("furniture", value)}
                 placeholder="Nội thất"
-                className="p-3 border rounded"
-              />
-              <input
+                className="w-full"
+                style={{ height: "44px" }}
+              >
+                <Option value="YES">Có</Option>
+                <Option value="NO">Không</Option>
+              </Select>
+              <Input
                 name="interiorCondition"
                 value={form.interiorCondition}
                 onChange={handleChange}
                 placeholder="Tình trạng nội thất"
-                className="p-3 border rounded"
+                style={{ height: "44px" }}
               />
-              <input
-                name="elevator"
+              <Select
                 value={form.elevator}
-                onChange={handleChange}
+                onChange={(value) => handleSelectChange("elevator", value)}
                 placeholder="Thang máy"
-                className="p-3 border rounded"
-              />
-              <input
+                className="w-full"
+                style={{ height: "44px" }}
+              >
+                <Option value="YES">Có</Option>
+                <Option value="NO">Không</Option>
+              </Select>
+              <Input
                 name="contact"
                 value={form.contact}
                 onChange={handleChange}
                 placeholder="Thông tin liên hệ (sđt, Zalo...)"
-                className="p-3 border rounded"
                 required
+                style={{ height: "44px" }}
               />
             </div>
           </fieldset>

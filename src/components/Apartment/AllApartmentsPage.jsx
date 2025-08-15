@@ -141,7 +141,7 @@ const AllApartmentsPage = () => {
               className="bg-white rounded-lg border border-gray-200 shadow-md hover:shadow-2xl transition-shadow cursor-pointer flex flex-col overflow-hidden"
               onClick={() => navigate(`/real-estate/${apt.id}`)}
             >
-              {apt.imageBase64List && apt.imageBase64List.length > 0 ? (
+              {apt.imageBase64s && apt.imageBase64s.length > 0 ? (
                 <Carousel
                   autoplay
                   dots={true}
@@ -149,7 +149,7 @@ const AllApartmentsPage = () => {
                   adaptiveHeight={true}
                   effect="scrollx"
                 >
-                  {apt.imageBase64List.map((imgSrc, idx) => (
+                  {apt.imageBase64s.map((imgSrc, idx) => (
                     <div key={idx} className="h-52 overflow-hidden">
                       <img
                         src={imgSrc}
