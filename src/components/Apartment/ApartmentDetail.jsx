@@ -190,7 +190,11 @@ export default function ApartmentDetail() {
                 <div className="flex items-center">
                   <DocumentTextIcon className="h-5 w-5 mr-3 text-gray-400" />
                   <span>
-                    Pháp lý: {propertyData.legalDocuments || "Không rõ"}
+                    Pháp lý:{" "}
+                    {{
+                      YES: "Có",
+                      NO: "Không",
+                    }[propertyData.legalDocuments] || "Không rõ"}
                   </span>
                 </div>
               </div>
@@ -203,7 +207,10 @@ export default function ApartmentDetail() {
               <div className="text-sm space-y-2">
                 <p>
                   <span className="font-semibold">Nội thất:</span>{" "}
-                  {propertyData.furniture || "Không có"}
+                  {{
+                    YES: "Có",
+                    NO: "Không",
+                  }[propertyData.furniture] || "Không rõ"}
                 </p>
                 <p>
                   <span className="font-semibold">Tiện ích:</span>{" "}
@@ -215,7 +222,10 @@ export default function ApartmentDetail() {
                 </p>
                 <p>
                   <span className="font-semibold">Thang máy:</span>{" "}
-                  {propertyData.elevator || "Không có"}
+                  {{
+                    YES: "Có",
+                    NO: "Không",
+                  }[propertyData.elevator] || "Không rõ"}
                 </p>
                 <p>
                   <span className="font-semibold">Tiền cọc:</span>{" "}
@@ -227,7 +237,9 @@ export default function ApartmentDetail() {
                     ? "Nam"
                     : propertyData.genderRequirement === "FEMALE"
                       ? "Nữ"
-                      : "Không yêu cầu"}
+                      : propertyData.genderRequirement === "OTHER"
+                        ? "Không yêu cầu"
+                        : "Không yêu cầu"}
                 </p>
                 <p>
                   <span className="font-semibold">Liên hệ:</span>{" "}
