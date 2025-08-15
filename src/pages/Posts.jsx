@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
 import { Paginator } from "primereact/paginator";
+import { Toast } from "primereact/toast";
 import SidebarNav from "../components/layouts/SidebarNav";
-import { getMyApartmentsApi, getMyApartmentsCountApi } from "../services/Userservices";
+import { getMyApartmentsApi, getMyApartmentsCountApi, deleteApartmentApi } from "../services/Userservices";
 import { formatImageUrl, getFallbackImage } from "../utils/imageUtils";
 
 const Posts = () => {
@@ -15,8 +16,12 @@ const Posts = () => {
   const [error, setError] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
   const [first, setFirst] = useState(0);
   const [rows] = useState(4);
+  const toast = useRef(null);
 
   const onPageChange = (event) => {
     setFirst(event.first);
@@ -49,6 +54,51 @@ const Posts = () => {
   const handleViewDetail = (post) => {
     setSelectedPost(post);
     setShowDetailDialog(true);
+  };
+
+  const handleDeleteClick = (post) => {
+    setPostToDelete(post);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      await deleteApartmentApi(postToDelete.id);
+      
+      // Refresh danh sách bài đăng sau khi xóa thành công
+      await fetchPosts();
+      
+      // Đóng dialog và reset state
+      setShowDeleteConfirm(false);
+      setPostToDelete(null);
+      
+      // Thông báo thành công bằng toast
+      toast.current.show({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: 'Xóa bài đăng thành công!',
+        life: 3000
+      });
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      // Thông báo lỗi bằng toast
+      toast.current.show({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Có lỗi xảy ra khi xóa bài đăng: ' + err.message,
+        life: 5000
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setPostToDelete(null);
   };
 
   const formatPrice = (price) => {
@@ -84,6 +134,20 @@ const Posts = () => {
     boxShadow: "0 4px 15px rgba(255,140,0,0.4)",
     transition: "all 0.3s ease",
     cursor: "pointer"
+  };
+
+  const deleteButtonStyle = {
+    background: "linear-gradient(45deg, #dc3545, #c82333)",
+    border: "none",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    boxShadow: "0 4px 15px rgba(220,53,69,0.4)",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+    marginLeft: "10px"
   };
 
   const dialogStyle = {
@@ -177,8 +241,8 @@ const Posts = () => {
             <p><strong>Diện tích:</strong> {formatArea(post.area)}</p>
           </div>
 
-          {/* Nút chi tiết ở bên phải */}
-          <div style={{ flexShrink: 0 }}>
+          {/* Nút chi tiết và xóa ở bên phải */}
+          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <button
               style={buttonStyle}
               onMouseEnter={(e) => {
@@ -192,6 +256,21 @@ const Posts = () => {
               onClick={() => handleViewDetail(post)}
             >
               Chi tiết
+            </button>
+            
+            <button
+              style={deleteButtonStyle}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.05)";
+                e.target.style.boxShadow = "0 6px 20px rgba(220,53,69,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.boxShadow = "0 4px 15px rgba(220,53,69,0.4)";
+              }}
+              onClick={() => handleDeleteClick(post)}
+            >
+              Xóa
             </button>
           </div>
         </div>
@@ -466,6 +545,182 @@ const Posts = () => {
 
       {/* Detail Dialog */}
       {renderDetailDialog()}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        header={null}
+        visible={showDeleteConfirm}
+        style={{ 
+          width: '500px',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}
+        onHide={handleCancelDelete}
+        modal
+        draggable={false}
+        resizable={false}
+        showHeader={false}
+        contentStyle={{
+          padding: '0',
+          border: 'none',
+          borderRadius: '15px',
+          background: 'linear-gradient(135deg, #fff5f5, #ffe8e8)',
+          boxShadow: '0 10px 40px rgba(220, 53, 69, 0.3)'
+        }}
+        maskStyle={{
+          backgroundColor: 'rgba(0,0,0,0.7)'
+        }}
+      >
+        <div style={{ 
+          background: 'linear-gradient(135deg, #fff5f5, #ffe8e8)',
+          border: '3px solid #dc3545',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}>
+          {/* Header với màu đỏ */}
+          <div style={{ 
+            background: 'linear-gradient(45deg, #dc3545, #c82333)', 
+            color: 'white', 
+            padding: '20px',
+            textAlign: 'center',
+            fontSize: '20px',
+            fontWeight: 'bold'
+          }}>
+            <i className="pi pi-exclamation-triangle" style={{ fontSize: '24px', marginRight: '10px' }} />
+            Xác nhận xóa
+          </div>
+          
+          {/* Nội dung */}
+          <div style={{ 
+            padding: '30px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            margin: '15px',
+            borderRadius: '10px',
+            border: '1px solid #ffcccc'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <i 
+                className="pi pi-trash" 
+                style={{ 
+                  fontSize: '3rem', 
+                  color: '#dc3545',
+                  marginBottom: '15px',
+                  background: '#fff5f5',
+                  padding: '20px',
+                  borderRadius: '50%',
+                  border: '3px solid #dc3545'
+                }}
+              />
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', margin: '10px 0' }}>
+                Bạn có chắc chắn muốn xóa bài đăng này?
+              </h3>
+              {postToDelete && (
+                <div style={{ 
+                  background: '#fff5f5', 
+                  padding: '15px', 
+                  borderRadius: '8px',
+                  border: '1px solid #ffcccc',
+                  marginTop: '15px'
+                }}>
+                  <p style={{ fontSize: '14px', color: '#666', margin: '5px 0' }}>
+                    <strong style={{ color: '#333' }}>Địa chỉ:</strong> {postToDelete.address}
+                  </p>
+                  <p style={{ fontSize: '14px', color: '#666', margin: '5px 0' }}>
+                    <strong style={{ color: '#333' }}>Giá thuê:</strong> {postToDelete.price ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(postToDelete.price) : 'N/A'}
+                  </p>
+                </div>
+              )}
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#dc3545', 
+                fontWeight: 'bold',
+                marginTop: '15px',
+                background: '#fff5f5',
+                padding: '10px',
+                borderRadius: '5px',
+                border: '1px solid #dc3545'
+              }}>
+                ⚠️ Hành động này không thể hoàn tác!
+              </p>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px' }}>
+              <button
+                style={{
+                  background: 'linear-gradient(45deg, #6c757d, #545b62)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: '0 4px 15px rgba(108, 117, 125, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(108, 117, 125, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(108, 117, 125, 0.4)';
+                }}
+                onClick={handleCancelDelete}
+                disabled={deleteLoading}
+              >
+                Hủy bỏ
+              </button>
+              
+              <button
+                style={{
+                  background: deleteLoading ? '#ccc' : 'linear-gradient(45deg, #dc3545, #c82333)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: deleteLoading ? 'none' : '0 4px 15px rgba(220, 53, 69, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!deleteLoading) {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(220, 53, 69, 0.6)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!deleteLoading) {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(220, 53, 69, 0.4)';
+                  }
+                }}
+                onClick={handleConfirmDelete}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <>
+                    <i className="pi pi-spin pi-spinner" style={{ marginRight: '8px' }} />
+                    Đang xóa...
+                  </>
+                ) : (
+                  <>
+                    <i className="pi pi-trash" style={{ marginRight: '8px' }} />
+                    Xác nhận xóa
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Toast for notifications */}
+      <Toast ref={toast} />
     </SidebarNav>
   );
 };
