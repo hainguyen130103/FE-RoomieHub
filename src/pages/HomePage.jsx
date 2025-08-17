@@ -20,7 +20,7 @@ const HomePage = () => {
         type="realestate"
       />
       <RealEstateSection />
-      <TrainingSection />
+      {/* <TrainingSection /> */}
       <NewsSection />
       <TestimonialsSection />
     </div>

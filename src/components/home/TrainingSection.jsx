@@ -7,18 +7,18 @@ const TrainingSection = () => {
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
-          Các chương trình đào tạo tại ROOMIEHUB
+          Các thông tin tại ROOMIEHUB
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           <Card className="shadow-md">
             <div className="p-4">
               <h3 className="text-lg font-bold mb-3">
-                Chinh phục các kỹ năng mới cùng ROOMIEHUB
+                Chinh phục các thông tin về nơi ở mới cùng ROOMIEHUB
               </h3>
               <p className="text-gray-600 mb-4">
-                Truy cập 1000+ khóa học về kinh doanh, Bất động sản, hoàn thiện
-                bản thân và còn nhiều hơn thế nữa
+                Truy cập 1000+ nơi ở từ khắp nơi trên nước, bất động sản, hoàn
+                thiện bản thân và còn nhiều hơn thế nữa
               </p>
               <Button label="Tìm hiểu thêm" className="p-button-outlined" />
             </div>
@@ -27,12 +27,11 @@ const TrainingSection = () => {
           <Card className="shadow-md">
             <div className="p-4">
               <h3 className="text-lg font-bold mb-3">
-                Tăng khả năng tìm được việc làm
+                Tăng khả năng tìm được nơi ở phù hợp
               </h3>
               <p className="text-gray-600 mb-4">
-                Cung cấp các chứng chỉ có giá trị, được công nhận trong ngành,
-                giúp tăng thêm độ tin cậy cho hồ sơ của bạn và gây ấn tượng với
-                các nhà tuyển dụng.
+                Cung cấp các nơi ở đpej và hợp lý về giá cả, được công nhận
+                trong ngành.
               </p>
               <Button label="Tìm hiểu thêm" className="p-button-outlined" />
             </div>
@@ -41,7 +40,8 @@ const TrainingSection = () => {
           <Card className="shadow-md">
             <div className="p-4">
               <h3 className="text-lg font-bold mb-3">
-                Học hỏi từ hơn 1000 các chuyên gia từ khắp nơi trên thế giới
+                Học hỏi từ hơn 1000 các chuyên gia từ khắp nơi trên thế giới về
+                vấn đề nhà ở
               </h3>
               <p className="text-gray-600 mb-4">
                 Nâng kỹ năng của bạn lên một tầm cao mới với các khóa học từ
@@ -59,16 +59,10 @@ const TrainingSection = () => {
                 Cùng ROOMIEHUB học hỏi từ những người giỏi nhất
               </h2>
               <div className="bg-orange-500 text-white inline-block px-4 py-2 rounded-lg mb-4">
-                ĐẦU TƯ SỰ NGHIỆP
+                ĐẦU TƯ BẤT ĐỘNG SẢN
                 <br />
                 VỮNG BƯỚC TƯƠNG LAI
               </div>
-              <p className="text-gray-600 mb-4">
-                <strong>77% người học báo cáo các lợi ích nghề nghiệp</strong>{" "}
-                chẳng hạn như tìm được một công việc mới, thăng chức, đạt được
-                các kỹ năng phù hợp và hơn thế nữa
-              </p>
-              <Button label="Xem thêm khóa học" className="p-button-outlined" />
             </div>
             <div className="md:w-1/3">
               <img

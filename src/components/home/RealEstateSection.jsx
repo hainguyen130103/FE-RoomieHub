@@ -84,7 +84,7 @@ const RealEstateSection = () => {
               >
                 <div className="relative overflow-hidden rounded-t-lg h-48">
                   <img
-                    src={property.imageBase64List?.[0] || "/default-image.jpg"}
+                    src={property.imageBase64s?.[0] || "/default-image.jpg"}
                     alt={property.title}
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                   />
