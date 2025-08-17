@@ -19,7 +19,7 @@ const TestimonialsSection = () => {
       role: "Marketing Specialist",
       rating: 5,
       comment:
-        "ROOMIEHUB cung cấp những thông tin hữu ích và chất lượng cao giúp tôi dex dàng tiếp cận. Tôi đã Tôi đã kiếm được nhiều thông tin về nhà ở trên đây.",
+        "ROOMIEHUB cung cấp những thông tin hữu ích và chất lượng cao giúp tôi dễ dàng tiếp cận. Tôi đã Tôi đã kiếm được nhiều thông tin về nhà ở trên đây.",
       image: "https://ext.same-assets.com/662425795/3305391905.png",
     },
     {

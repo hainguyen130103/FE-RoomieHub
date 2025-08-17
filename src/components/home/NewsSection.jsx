@@ -75,16 +75,14 @@ const NewsSection = () => {
               <div className="md:w-2/3 mb-6 md:mb-0 md:pr-8">
                 <div className="font-bold text-orange-500 mb-2">ROOMIEHUB</div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  NHẬN CÚ ĐÚP
-                  <br />
-                  THƯƠNG HIỆU
+                  NHẬN ĐƯỢC SỰ QUÂN TÂM TỪ SINH VIÊN FPT
                 </h2>
                 <div className="text-gray-700 mb-4">
                   <p className="mb-2">
-                    <strong>TOP 10</strong> thương hiệu dẫn đầu 2025
+                    <strong>TOP</strong> thương hiệu có khả năng dẫn đầu 2025
                   </p>
                   <p>
-                    <strong>TOP</strong> môi trường làm việc tốt nhất
+                    <strong>TOP</strong> môi trường tìm kiếm tốt nhất
                   </p>
                 </div>
                 <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">
