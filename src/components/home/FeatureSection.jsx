@@ -25,13 +25,13 @@ const FeatureSection = ({ title, type }) => {
 
   const realEstateFeatures = [
     {
-      icon: "/src/assets/images/icon-vr.png",
+      icon: "https://tse1.mm.bing.net/th/id/OIP.y30gPFCdEwACRCUHy0Cy-AHaGk?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
       title: "Xem nhà nhanh chóng",
       description:
         "Thay vì phải xem lần lượt từng hình ảnh hoặc video, ROOMIEHUB giúp người dùng có thể quan sát toàn bộ không gian chỉ trong một lần chạm",
     },
     {
-      icon: "/src/assets/images/icon-filter.png",
+      icon: "https://ext.same-assets.com/662425795/3382098666.png",
       title: "Bộ lọc đa dạng",
       description:
         "Với hơn 40+ bộ lọc và từ khóa tùy chỉnh, ROOMIEHUB có thể giúp bạn dễ dàng tìm được căn hộ cho thuê dành cho bạn",
