@@ -10,7 +10,7 @@ const TestimonialsSection = () => {
       role: "Developer",
       rating: 5,
       comment:
-        "Tôi đã tìm được công việc mơ ước qua ROOMIEHUB. Nền tảng rất dễ sử dụng và có nhiều cơ hội việc làm tốt.",
+        "Tôi đã tìm được nơi ở mơ ước qua ROOMIEHUB. Nền tảng rất dễ sử dụng và có nhiều cơ hội tìm nhà tốt.",
       image: "https://ext.same-assets.com/662425795/8720322.png",
     },
     {
@@ -19,7 +19,7 @@ const TestimonialsSection = () => {
       role: "Marketing Specialist",
       rating: 5,
       comment:
-        "ROOMIEHUB cung cấp những khóa học chất lượng cao giúp tôi phát triển sự nghiệp. Tôi đã học được nhiều kỹ năng mới.",
+        "ROOMIEHUB cung cấp những thông tin hữu ích và chất lượng cao giúp tôi dex dàng tiếp cận. Tôi đã Tôi đã kiếm được nhiều thông tin về nhà ở trên đây.",
       image: "https://ext.same-assets.com/662425795/3305391905.png",
     },
     {

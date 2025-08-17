@@ -8,7 +8,7 @@ const NewsSection = () => {
       title:
         "Toyar và Realsee hợp tác chiến lược số hóa không gian tại Việt Nam thông qua ROOMIEHUB",
       source: "Thanh Niên",
-      date: "19/11/2024",
+      date: "19/07/2025",
       time: "16:30 GMT+7",
       link: "https://thanhnien.vn/",
     },
@@ -17,7 +17,7 @@ const NewsSection = () => {
       title:
         "Công nghệ 5.0 mở ra cơ hội số hóa bất động sản và nhân lực tại Thủ Đức Innovation Fest 2024",
       source: "HTV",
-      date: "18/11/2024",
+      date: "18/07/2025",
       time: "11:43 GMT+7",
       link: "https://www.htv.com.vn/",
     },
@@ -26,7 +26,7 @@ const NewsSection = () => {
       title:
         "Toyar hợp tác Realsee, số hóa không gian tại VN qua nền tảng ROOMIEHUB",
       source: "Znews",
-      date: "19/11/2024",
+      date: "19/18/2025",
       time: "17:00 GMT+7",
       link: "https://znews.vn/",
     },
