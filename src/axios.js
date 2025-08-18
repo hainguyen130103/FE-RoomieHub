@@ -3,7 +3,7 @@ import axios from "axios";
 
 const api = axios.create({
   // baseURL: "http://localhost:8080",
-  baseURL: "https://roomiehub.onrender.com", // Thay đổi URL này nếu cần
+  baseURL: "https://roomiehub-production-1bcb.up.railway.app", // Thay đổi URL này nếu cần
   headers: {
     "Content-Type": "application/json",
   },
