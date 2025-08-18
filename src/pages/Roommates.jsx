@@ -67,7 +67,19 @@ const Roommates = () => {
       monthlyRentPrice: post.monthlyRentPrice || '',
       description: post.description || '',
       imageBase64List: post.imageBase64List || [''],
-      roommatePreferences: post.roommatePreferences || []
+      roommatePreferences: post.roommatePreferences ? post.roommatePreferences.map(pref => ({
+        name: pref.name || '',
+        dateOfBirth: pref.dateOfBirth || '',
+        gender: pref.gender || 'MALE',
+        occupation: pref.occupation || 'STUDENT',
+        description: pref.description || '',
+        preferredPersonality: pref.preferredPersonality || 'QUIET',
+        canCook: pref.canCook || 'NO',
+        isNightOwl: pref.isNightOwl || 'NO',
+        hasPet: pref.hasPet || 'NO',
+        smokes: pref.smokes || 'NO',
+        oftenBringsFriendsOver: pref.oftenBringsFriendsOver || 'NO'
+      })) : []
     });
     setShowUpdateDialog(true);
   };
@@ -86,15 +98,15 @@ const Roommates = () => {
     const newPreference = {
       name: '',
       dateOfBirth: '',
-      gender: '',
-      occupation: '',
+      gender: 'MALE',
+      occupation: 'STUDENT',
       description: '',
-      preferredPersonality: '',
-      canCook: '',
-      isNightOwl: '',
-      hasPet: '',
-      smokes: '',
-      oftenBringsFriendsOver: ''
+      preferredPersonality: 'QUIET',
+      canCook: 'NO',
+      isNightOwl: 'NO',
+      hasPet: 'NO',
+      smokes: 'NO',
+      oftenBringsFriendsOver: 'NO'
     };
     setUpdateForm(prev => ({
       ...prev,
@@ -162,10 +174,21 @@ const Roommates = () => {
         description: updateForm.description,
         imageBase64List: updateForm.imageBase64List ? updateForm.imageBase64List.filter(img => img) : [],
         roommatePreferences: updateForm.roommatePreferences ? updateForm.roommatePreferences.map(pref => ({
-          ...pref,
-          areaSquareMeters: pref.areaSquareMeters ? parseFloat(pref.areaSquareMeters) : undefined
+          name: pref.name || "",
+          dateOfBirth: pref.dateOfBirth || "",
+          gender: pref.gender || "MALE",
+          occupation: pref.occupation || "STUDENT",
+          description: pref.description || "",
+          preferredPersonality: pref.preferredPersonality || "QUIET",
+          canCook: pref.canCook || "NO",
+          isNightOwl: pref.isNightOwl || "NO",
+          hasPet: pref.hasPet || "NO",
+          smokes: pref.smokes || "NO",
+          oftenBringsFriendsOver: pref.oftenBringsFriendsOver || "NO"
         })) : []
       };
+
+      console.log("Payload gửi lên API:", JSON.stringify(payload, null, 2));
 
       await updateRoommatePostApi(postToUpdate.id, payload);
       
@@ -1839,6 +1862,7 @@ const occupationOptions = [
 ];
 
 const personalityOptions = [
+  { label: 'Yên tĩnh', value: 'QUIET' },
   { label: 'Hướng ngoại', value: 'EXTROVERT' },
   { label: 'Hướng nội', value: 'INTROVERT' },
   { label: 'Cân bằng', value: 'AMBIVERT' }

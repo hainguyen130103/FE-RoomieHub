@@ -58,17 +58,34 @@ export const getApartmentByIdApi = (id) => {
 
 // Cập nhật thông tin một căn hộ theo ID
 export const updateApartmentApi = (id, apartmentData) => {
+  const token = localStorage.getItem("accessToken");
   console.log("API Request Payload:", apartmentData);
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
   return api.put(`/api/apartments/${id}`, apartmentData, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 };
 
 // Xóa một căn hộ theo ID
 export const deleteApartmentApi = (id) => {
-  return api.delete(`/api/apartments/${id}`);
+  const token = localStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
+  }
+
+  return api.delete(`/api/apartments/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // Lấy danh sách tất cả các căn hộ
@@ -300,6 +317,7 @@ export const updateRoommatePostApi = (id, postData) => {
   return api.put(`/api/roommate-posts/${id}`, postData, {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 };
@@ -312,7 +330,11 @@ export const deleteRoommatePostApi = (id) => {
     throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
   }
 
-  return api.delete(`/api/roommate-posts/${id}`);
+  return api.delete(`/api/roommate-posts/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // Lọc bài đăng
@@ -333,7 +355,11 @@ export const getMyRoommatePostsApi = () => {
     throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
   }
 
-  return api.get("/api/roommate-posts/my-posts");
+  return api.get("/api/roommate-posts/my-posts", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // Lấy số lượng bài đăng của user
@@ -344,7 +370,11 @@ export const getMyRoommatePostsCountApi = () => {
     throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
   }
 
-  return api.get("/api/roommate-posts/my-posts/count");
+  return api.get("/api/roommate-posts/my-posts/count", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 // ===================== ADMIN PAYMENT STATS APIs =====================
