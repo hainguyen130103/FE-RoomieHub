@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllApartmentsApi, getApartmentsCountApi } from '../../../services/Userservices';
+import { formatImageUrl, getFallbackImage } from '../../../utils/imageUtils';
 
 export default function PostManagement() {
   const [apartments, setApartments] = useState([]);
@@ -166,7 +167,9 @@ export default function PostManagement() {
                 {/* Image */}
                 <div style={{ height: '200px', position: 'relative', overflow: 'hidden' }}>
                   <img
-                    src={apartment.imageBase64List && apartment.imageBase64List[0] ? apartment.imageBase64List[0] : 'https://via.placeholder.com/350x200?text=No+Image'}
+
+                    src={apartment.imageBase64s && apartment.imageBase64s[0] ? (formatImageUrl(apartment.imageBase64s[0]) || getFallbackImage(350, 200)) : getFallbackImage(350, 200)}
+
                     alt={apartment.title}
                     style={{
                       width: '100%',
@@ -174,7 +177,11 @@ export default function PostManagement() {
                       objectFit: 'cover'
                     }}
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/350x200?text=No+Image';
+                      console.error('Admin card image failed to load:', apartment.imageBase64s?.[0]);
+                      e.target.src = getFallbackImage(350, 200);
+                    }}
+                    onLoad={(e) => {
+                      console.log('Admin card image loaded successfully');
                     }}
                   />
                   
@@ -332,7 +339,7 @@ export default function PostManagement() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
+          background: 'rgba(0, 0, 0, 0.6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -340,138 +347,228 @@ export default function PostManagement() {
           padding: '20px'
         }}>
           <div style={{
-            background: 'white',
-            borderRadius: '15px',
-            maxWidth: '800px',
-            width: '100%',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            position: 'relative'
+            width: "85vw",
+            maxWidth: "1200px",
+            maxHeight: "90vh",
+            background: "linear-gradient(135deg, #fff5f0, #ffe4d6)",
+            borderRadius: "20px",
+            border: "3px solid #ff8c00",
+            boxShadow: "0 10px 40px rgba(255,140,0,0.4)",
+            overflow: "hidden",
+            position: "relative"
           }}>
-            {/* Modal Header */}
-            <div style={{
-              background: 'linear-gradient(90deg, #ff8c00, #ff6600)',
-              color: 'white',
-              padding: '1rem',
-              borderRadius: '15px 15px 0 0',
-              position: 'sticky',
-              top: 0,
-              zIndex: 10
+            {/* Header tùy chỉnh với nút đóng */}
+            <div style={{ 
+              background: "linear-gradient(45deg, #ff8c00, #ff6600)", 
+              color: "white", 
+              padding: "25px 70px 25px 25px",
+              margin: "0",
+              borderRadius: "20px 20px 0 0",
+              textAlign: "center",
+              fontSize: "22px",
+              fontWeight: "bold",
+              position: "relative",
+              boxShadow: "0 2px 10px rgba(255,140,0,0.3)"
             }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                margin: 0
-              }}>
-                Chi tiết bài đăng #{selectedApartment.id}
-              </h2>
+              Chi tiết bài đăng
+              
+              {/* Nút đóng tùy chỉnh */}
               <button
-                onClick={closeModal}
                 style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '35px',
-                  height: '35px',
-                  color: 'white',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  position: "absolute",
+                  top: "20px",
+                  right: "20px",
+                  background: "rgba(255, 0, 0, 0.8)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "40px",
+                  height: "40px",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                  transition: "all 0.3s ease",
+                  zIndex: 1000
                 }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "rgba(255, 0, 0, 1)";
+                  e.target.style.transform = "scale(1.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "rgba(255, 0, 0, 0.8)";
+                  e.target.style.transform = "scale(1)";
+                }}
+                onClick={closeModal}
               >
-                ×
+                ✕
               </button>
             </div>
+            
+            <div style={{
+              padding: "30px",
+              background: "rgba(255, 255, 255, 0.95)",
+              borderRadius: "15px",
+              margin: "20px",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+              maxHeight: "75vh",
+              overflowY: "auto",
+              border: "1px solid #ffcc99"
+            }}>
+              <div style={{ borderBottom: "3px solid #ff8c00", paddingBottom: "20px", marginBottom: "25px" }}>
+                <h3 style={{ color: "#ff8c00", margin: "0", fontSize: "20px", textAlign: "center" }}>Thông tin cơ bản</h3>
+              </div>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Tiêu đề:</strong></p>
+                  <p style={{ color: "#ff6600", fontWeight: "bold", margin: "5px 0" }}>{selectedApartment.title}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Giá thuê:</strong></p>
+                  <p style={{ color: "#ff6600", fontWeight: "bold", fontSize: "16px", margin: "5px 0" }}>{formatCurrency(selectedApartment.price)}</p>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Diện tích:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{formatArea(selectedApartment.area)}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Đặt cọc:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.deposit || 'Không yêu cầu'}</p>
+                </div>
+              </div>
 
-            {/* Modal Content */}
-            <div style={{ padding: '1.5rem' }}>
-              {/* Images */}
-              {selectedApartment.imageBase64List && selectedApartment.imageBase64List.length > 0 && (
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                  gap: '1rem',
-                  marginBottom: '2rem'
-                }}>
-                  {selectedApartment.imageBase64List.map((url, index) => (
-                    <img
-                      key={index}
-                      src={url}
-                      alt={`${selectedApartment.title} - ${index + 1}`}
-                      style={{
-                        width: '100%',
-                        height: '200px',
-                        objectFit: 'cover',
-                        borderRadius: '10px',
-                        border: '2px solid #ffcc99'
-                      }}
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/250x200?text=No+Image';
-                      }}
-                    />
-                  ))}
+              <div style={{ marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Địa chỉ:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.address}</p>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Mô tả:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0", lineHeight: "1.5" }}>{selectedApartment.description}</p>
+                </div>
+              </div>
+
+              {/* Hiển thị hình ảnh trong phần thông tin cơ bản */}
+              {selectedApartment.imageBase64s && selectedApartment.imageBase64s.length > 0 && (
+                <div style={{ marginBottom: "25px" }}>
+                  <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                    <p style={{ margin: "5px 0 15px 0" }}><strong style={{ color: "#333" }}>Hình ảnh:</strong></p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                      {selectedApartment.imageBase64s.map((imageUrl, index) => (
+                        <div key={index} style={{ 
+                          borderRadius: "8px", 
+                          overflow: "hidden", 
+                          boxShadow: "0 2px 8px rgba(255,140,0,0.3)",
+                          border: "2px solid #ffcc99",
+                          flexShrink: 0
+                        }}>
+                          <img 
+                            src={formatImageUrl(imageUrl) || getFallbackImage(100, 100, "No+Image")} 
+                            alt={`Hình ảnh ${index + 1}`}
+                            style={{ 
+                              width: "100px", 
+                              height: "100px", 
+                              objectFit: "cover",
+                              transition: "transform 0.3s ease",
+                              cursor: "pointer"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.transform = "scale(1.1)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.transform = "scale(1)";
+                            }}
+                            onError={(e) => {
+                              console.error('Admin modal image failed to load:', imageUrl);
+                              e.target.src = getFallbackImage(100, 100, "No+Image");
+                              e.target.alt = "Không thể tải hình ảnh";
+                            }}
+                            onLoad={(e) => {
+                              console.log('Admin modal image loaded successfully');
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
               )}
 
-              {/* Details Grid */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                gap: '1rem'
-              }}>
-                <DetailItem label="Tiêu đề" value={selectedApartment.title} />
-                <DetailItem label="Mô tả" value={selectedApartment.description} />
-                <DetailItem label="Địa chỉ" value={selectedApartment.address} />
-                <DetailItem label="Giá" value={formatCurrency(selectedApartment.price)} />
-                <DetailItem label="Diện tích" value={formatArea(selectedApartment.area)} />
-                <DetailItem label="Yêu cầu giới tính" value={selectedApartment.genderRequirement} />
-                <DetailItem label="Tiền cọc" value={selectedApartment.deposit} />
-                <DetailItem label="Giấy tờ pháp lý" value={selectedApartment.legalDocuments} />
-                <DetailItem label="Tiện ích" value={selectedApartment.utilities} />
-                <DetailItem label="Nội thất" value={selectedApartment.furniture} />
-                <DetailItem label="Tình trạng nội thất" value={selectedApartment.interiorCondition} />
-                <DetailItem label="Thang máy" value={selectedApartment.elevator} />
-                <DetailItem label="Liên hệ" value={selectedApartment.contact} />
-                <DetailItem label="Vị trí" value={selectedApartment.location} />
-                <DetailItem label="User ID" value={selectedApartment.userId} />
+              {/* Thông tin bổ sung */}
+              <div style={{ borderBottom: "3px solid #ff8c00", paddingBottom: "20px", marginBottom: "25px" }}>
+                <h3 style={{ color: "#ff8c00", margin: "0", fontSize: "20px", textAlign: "center" }}>Thông tin bổ sung</h3>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Yêu cầu giới tính:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.genderRequirement || 'Không yêu cầu'}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Thang máy:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.elevator || 'Không có'}</p>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Tiện ích:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.utilities || 'Không có'}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Nội thất:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.furniture || 'Không có'}</p>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Giấy tờ pháp lý:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.legalDocuments || 'Không có'}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Tình trạng nội thất:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.interiorCondition || 'Không có'}</p>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Thông tin liên hệ:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.contact || 'Không có'}</p>
+                </div>
+                
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>Vị trí:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.location || 'Không có'}</p>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: "25px" }}>
+                <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
+                  <p style={{ margin: "5px 0" }}><strong style={{ color: "#333" }}>User ID:</strong></p>
+                  <p style={{ color: "#333", margin: "5px 0" }}>{selectedApartment.userId || 'Không có'}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// Detail Item Component
-function DetailItem({ label, value }) {
-  return (
-    <div style={{
-      background: 'rgba(255, 140, 0, 0.1)',
-      padding: '1rem',
-      borderRadius: '10px',
-      border: '1px solid #ffcc99'
-    }}>
-      <div style={{
-        fontSize: '0.9rem',
-        fontWeight: '600',
-        color: '#ff6600',
-        marginBottom: '0.5rem'
-      }}>
-        {label}
-      </div>
-      <div style={{
-        fontSize: '1rem',
-        color: '#333',
-        wordBreak: 'break-word'
-      }}>
-        {value || 'Không có thông tin'}
-      </div>
     </div>
   );
 }

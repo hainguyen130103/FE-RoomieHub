@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
 import { Paginator } from "primereact/paginator";
+import { Toast } from "primereact/toast";
 import SidebarNav from "../components/layouts/SidebarNav";
-import { getMyApartmentsApi, getMyApartmentsCountApi } from "../services/Userservices";
+import { getMyApartmentsApi, getMyApartmentsCountApi, deleteApartmentApi, updateApartmentApi } from "../services/Userservices";
+import { formatImageUrl, getFallbackImage } from "../utils/imageUtils";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -14,8 +16,16 @@ const Posts = () => {
   const [error, setError] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [postToUpdate, setPostToUpdate] = useState(null);
+  const [updateForm, setUpdateForm] = useState({});
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows] = useState(4);
+  const toast = useRef(null);
 
   const onPageChange = (event) => {
     setFirst(event.first);
@@ -48,6 +58,153 @@ const Posts = () => {
   const handleViewDetail = (post) => {
     setSelectedPost(post);
     setShowDetailDialog(true);
+  };
+
+  const handleDeleteClick = (post) => {
+    setPostToDelete(post);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      await deleteApartmentApi(postToDelete.id);
+      
+      // Refresh danh sách bài đăng sau khi xóa thành công
+      await fetchPosts();
+      
+      // Đóng dialog và reset state
+      setShowDeleteConfirm(false);
+      setPostToDelete(null);
+      
+      // Thông báo thành công bằng toast
+      toast.current.show({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: 'Xóa bài đăng thành công!',
+        life: 3000
+      });
+    } catch (err) {
+      console.error('Error deleting post:', err);
+      // Thông báo lỗi bằng toast
+      toast.current.show({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Có lỗi xảy ra khi xóa bài đăng: ' + err.message,
+        life: 5000
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setPostToDelete(null);
+  };
+
+  const handleUpdateClick = (post) => {
+    setPostToUpdate(post);
+    setUpdateForm({
+      title: post.title || '',
+      description: post.description || '',
+      address: post.address || '',
+      price: post.price || '',
+      area: post.area || '',
+      genderRequirement: post.genderRequirement || '',
+      deposit: post.deposit || '',
+      legalDocuments: post.legalDocuments || '',
+      utilities: post.utilities || '',
+      furniture: post.furniture || '',
+      interiorCondition: post.interiorCondition || '',
+      elevator: post.elevator || '',
+      contact: post.contact || '',
+      location: post.location || '',
+      imageBase64s: post.imageBase64s || []
+    });
+    setShowUpdateDialog(true);
+  };
+
+  const handleUpdateFormChange = (field, value) => {
+    setUpdateForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpdate = (e, index) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newImageList = [...updateForm.imageBase64s];
+        newImageList[index] = reader.result;
+        setUpdateForm(prev => ({ ...prev, imageBase64s: newImageList }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const addImageField = () => {
+    setUpdateForm(prev => ({
+      ...prev,
+      imageBase64s: [...prev.imageBase64s, '']
+    }));
+  };
+
+  const removeImageField = (index) => {
+    const newImageList = [...updateForm.imageBase64s];
+    newImageList.splice(index, 1);
+    setUpdateForm(prev => ({ ...prev, imageBase64s: newImageList }));
+  };
+
+  const handleConfirmUpdate = async () => {
+    if (!postToUpdate) return;
+    
+    try {
+      setUpdateLoading(true);
+      
+      const payload = {
+        ...updateForm,
+        price: parseFloat(updateForm.price),
+        area: parseFloat(updateForm.area),
+        packageId: postToUpdate.packageId || 1 // Giữ nguyên packageId cũ hoặc default
+      };
+
+      await updateApartmentApi(postToUpdate.id, payload);
+      
+      // Refresh danh sách bài đăng sau khi cập nhật thành công
+      await fetchPosts();
+      
+      // Đóng dialog và reset state
+      setShowUpdateDialog(false);
+      setPostToUpdate(null);
+      setUpdateForm({});
+      
+      // Thông báo thành công bằng toast
+      toast.current.show({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: 'Cập nhật bài đăng thành công!',
+        life: 3000
+      });
+    } catch (err) {
+      console.error('Error updating post:', err);
+      // Thông báo lỗi bằng toast
+      toast.current.show({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Có lỗi xảy ra khi cập nhật bài đăng: ' + err.message,
+        life: 5000
+      });
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const handleCancelUpdate = () => {
+    setShowUpdateDialog(false);
+    setPostToUpdate(null);
+    setUpdateForm({});
   };
 
   const formatPrice = (price) => {
@@ -83,6 +240,34 @@ const Posts = () => {
     boxShadow: "0 4px 15px rgba(255,140,0,0.4)",
     transition: "all 0.3s ease",
     cursor: "pointer"
+  };
+
+  const deleteButtonStyle = {
+    background: "linear-gradient(45deg, #dc3545, #c82333)",
+    border: "none",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    boxShadow: "0 4px 15px rgba(220,53,69,0.4)",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+    marginLeft: "10px"
+  };
+
+  const updateButtonStyle = {
+    background: "linear-gradient(45deg, #28a745, #218838)",
+    border: "none",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    boxShadow: "0 4px 15px rgba(40,167,69,0.4)",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+    marginLeft: "10px"
   };
 
   const dialogStyle = {
@@ -142,10 +327,12 @@ const Posts = () => {
       >
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
           {/* Hình ảnh nhỏ ở bên trái */}
-          {post.imageBase64List && post.imageBase64List.length > 0 && (
+
+          {post.imageBase64s && post.imageBase64s.length > 0 && (
             <div style={{ flexShrink: 0 }}>
               <img 
-                src={post.imageBase64List[0]} 
+                src={formatImageUrl(post.imageBase64s[0]) || getFallbackImage(80, 80, "No+Image")} 
+
                 alt="Hình ảnh phòng"
                 style={{ 
                   width: "80px", 
@@ -156,8 +343,12 @@ const Posts = () => {
                   boxShadow: "0 2px 8px rgba(255,140,0,0.3)"
                 }}
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/80x80/fff5f0/ff8c00?text=No+Image";
+                  console.error('Image failed to load:', post.imageBase64s[0]);
+                  e.target.src = getFallbackImage(80, 80, "No+Image");
                   e.target.alt = "Không có hình ảnh";
+                }}
+                onLoad={(e) => {
+                  console.log('Image loaded successfully');
                 }}
               />
             </div>
@@ -170,8 +361,8 @@ const Posts = () => {
             <p><strong>Diện tích:</strong> {formatArea(post.area)}</p>
           </div>
 
-          {/* Nút chi tiết ở bên phải */}
-          <div style={{ flexShrink: 0 }}>
+          {/* Nút chi tiết, sửa và xóa ở bên phải */}
+          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               style={buttonStyle}
               onMouseEnter={(e) => {
@@ -185,6 +376,36 @@ const Posts = () => {
               onClick={() => handleViewDetail(post)}
             >
               Chi tiết
+            </button>
+            
+            <button
+              style={updateButtonStyle}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.05)";
+                e.target.style.boxShadow = "0 6px 20px rgba(40,167,69,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.boxShadow = "0 4px 15px rgba(40,167,69,0.4)";
+              }}
+              onClick={() => handleUpdateClick(post)}
+            >
+              Sửa
+            </button>
+            
+            <button
+              style={deleteButtonStyle}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "scale(1.05)";
+                e.target.style.boxShadow = "0 6px 20px rgba(220,53,69,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "scale(1)";
+                e.target.style.boxShadow = "0 4px 15px rgba(220,53,69,0.4)";
+              }}
+              onClick={() => handleDeleteClick(post)}
+            >
+              Xóa
             </button>
           </div>
         </div>
@@ -297,12 +518,16 @@ const Posts = () => {
             </div>
 
             {/* Hiển thị hình ảnh trong phần thông tin cơ bản */}
-            {selectedPost.imageBase64List && selectedPost.imageBase64List.length > 0 && (
+
+            {selectedPost.imageBase64s && selectedPost.imageBase64s.length > 0 && (
+
               <div style={{ marginBottom: "25px" }}>
                 <div style={{ padding: "15px", background: "#fff8f0", borderRadius: "8px", border: "1px solid #ffcc99" }}>
                   <p style={{ margin: "5px 0 15px 0" }}><strong style={{ color: "#333" }}>Hình ảnh:</strong></p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                    {selectedPost.imageBase64List.map((imageUrl, index) => (
+
+                    {selectedPost.imageBase64s.map((imageUrl, index) => (
+
                       <div key={index} style={{ 
                         borderRadius: "8px", 
                         overflow: "hidden", 
@@ -311,7 +536,7 @@ const Posts = () => {
                         flexShrink: 0
                       }}>
                         <img 
-                          src={imageUrl} 
+                          src={formatImageUrl(imageUrl) || getFallbackImage(100, 100, "No+Image")} 
                           alt={`Hình ảnh ${index + 1}`}
                           style={{ 
                             width: "100px", 
@@ -327,8 +552,12 @@ const Posts = () => {
                             e.target.style.transform = "scale(1)";
                           }}
                           onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/100x100/fff5f0/ff8c00?text=No+Image";
+                            console.error('Modal image failed to load:', imageUrl);
+                            e.target.src = getFallbackImage(100, 100, "No+Image");
                             e.target.alt = "Không thể tải hình ảnh";
+                          }}
+                          onLoad={(e) => {
+                            console.log('Modal image loaded successfully');
                           }}
                         />
                       </div>
@@ -451,6 +680,511 @@ const Posts = () => {
 
       {/* Detail Dialog */}
       {renderDetailDialog()}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        header={null}
+        visible={showDeleteConfirm}
+        style={{ 
+          width: '500px',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}
+        onHide={handleCancelDelete}
+        modal
+        draggable={false}
+        resizable={false}
+        showHeader={false}
+        contentStyle={{
+          padding: '0',
+          border: 'none',
+          borderRadius: '15px',
+          background: 'linear-gradient(135deg, #fff5f5, #ffe8e8)',
+          boxShadow: '0 10px 40px rgba(220, 53, 69, 0.3)'
+        }}
+        maskStyle={{
+          backgroundColor: 'rgba(0,0,0,0.7)'
+        }}
+      >
+        <div style={{ 
+          background: 'linear-gradient(135deg, #fff5f5, #ffe8e8)',
+          border: '3px solid #dc3545',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}>
+          {/* Header với màu đỏ */}
+          <div style={{ 
+            background: 'linear-gradient(45deg, #dc3545, #c82333)', 
+            color: 'white', 
+            padding: '20px',
+            textAlign: 'center',
+            fontSize: '20px',
+            fontWeight: 'bold'
+          }}>
+            <i className="pi pi-exclamation-triangle" style={{ fontSize: '24px', marginRight: '10px' }} />
+            Xác nhận xóa
+          </div>
+          
+          {/* Nội dung */}
+          <div style={{ 
+            padding: '30px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            margin: '15px',
+            borderRadius: '10px',
+            border: '1px solid #ffcccc'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <i 
+                className="pi pi-trash" 
+                style={{ 
+                  fontSize: '3rem', 
+                  color: '#dc3545',
+                  marginBottom: '15px',
+                  background: '#fff5f5',
+                  padding: '20px',
+                  borderRadius: '50%',
+                  border: '3px solid #dc3545'
+                }}
+              />
+              <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#333', margin: '10px 0' }}>
+                Bạn có chắc chắn muốn xóa bài đăng này?
+              </h3>
+              {postToDelete && (
+                <div style={{ 
+                  background: '#fff5f5', 
+                  padding: '15px', 
+                  borderRadius: '8px',
+                  border: '1px solid #ffcccc',
+                  marginTop: '15px'
+                }}>
+                  <p style={{ fontSize: '14px', color: '#666', margin: '5px 0' }}>
+                    <strong style={{ color: '#333' }}>Địa chỉ:</strong> {postToDelete.address}
+                  </p>
+                  <p style={{ fontSize: '14px', color: '#666', margin: '5px 0' }}>
+                    <strong style={{ color: '#333' }}>Giá thuê:</strong> {postToDelete.price ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(postToDelete.price) : 'N/A'}
+                  </p>
+                </div>
+              )}
+              <p style={{ 
+                fontSize: '14px', 
+                color: '#dc3545', 
+                fontWeight: 'bold',
+                marginTop: '15px',
+                background: '#fff5f5',
+                padding: '10px',
+                borderRadius: '5px',
+                border: '1px solid #dc3545'
+              }}>
+                ⚠️ Hành động này không thể hoàn tác!
+              </p>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px' }}>
+              <button
+                style={{
+                  background: 'linear-gradient(45deg, #6c757d, #545b62)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: '0 4px 15px rgba(108, 117, 125, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(108, 117, 125, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(108, 117, 125, 0.4)';
+                }}
+                onClick={handleCancelDelete}
+                disabled={deleteLoading}
+              >
+                Hủy bỏ
+              </button>
+              
+              <button
+                style={{
+                  background: deleteLoading ? '#ccc' : 'linear-gradient(45deg, #dc3545, #c82333)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: deleteLoading ? 'none' : '0 4px 15px rgba(220, 53, 69, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!deleteLoading) {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(220, 53, 69, 0.6)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!deleteLoading) {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(220, 53, 69, 0.4)';
+                  }
+                }}
+                onClick={handleConfirmDelete}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <>
+                    <i className="pi pi-spin pi-spinner" style={{ marginRight: '8px' }} />
+                    Đang xóa...
+                  </>
+                ) : (
+                  <>
+                    <i className="pi pi-trash" style={{ marginRight: '8px' }} />
+                    Xác nhận xóa
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Update Dialog */}
+      <Dialog
+        header={null}
+        visible={showUpdateDialog}
+        style={{ 
+          width: '90vw',
+          maxWidth: '800px',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}
+        onHide={handleCancelUpdate}
+        modal
+        draggable={false}
+        resizable={false}
+        showHeader={false}
+        contentStyle={{
+          padding: '0',
+          border: 'none',
+          borderRadius: '15px',
+          background: 'linear-gradient(135deg, #f0fff4, #e8f5e8)',
+          boxShadow: '0 10px 40px rgba(40, 167, 69, 0.3)'
+        }}
+        maskStyle={{
+          backgroundColor: 'rgba(0,0,0,0.7)'
+        }}
+      >
+        <div style={{ 
+          background: 'linear-gradient(135deg, #f0fff4, #e8f5e8)',
+          border: '3px solid #28a745',
+          borderRadius: '15px',
+          overflow: 'hidden'
+        }}>
+          {/* Header */}
+          <div style={{ 
+            background: 'linear-gradient(45deg, #28a745, #218838)', 
+            color: 'white', 
+            padding: '20px',
+            textAlign: 'center',
+            fontSize: '20px',
+            fontWeight: 'bold'
+          }}>
+            <i className="pi pi-pencil" style={{ fontSize: '24px', marginRight: '10px' }} />
+            Cập nhật bài đăng
+          </div>
+          
+          {/* Content */}
+          <div style={{ 
+            padding: '30px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            margin: '15px',
+            borderRadius: '10px',
+            border: '1px solid #c3e6cb',
+            maxHeight: '70vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+              {/* Cột trái */}
+              <div>
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Tiêu đề:</label>
+                  <input
+                    type="text"
+                    value={updateForm.title || ''}
+                    onChange={(e) => handleUpdateFormChange('title', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Địa chỉ:</label>
+                  <input
+                    type="text"
+                    value={updateForm.address || ''}
+                    onChange={(e) => handleUpdateFormChange('address', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Giá thuê:</label>
+                    <input
+                      type="number"
+                      value={updateForm.price || ''}
+                      onChange={(e) => handleUpdateFormChange('price', e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        border: '2px solid #c3e6cb',
+                        borderRadius: '8px',
+                        fontSize: '14px'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Diện tích:</label>
+                    <input
+                      type="number"
+                      value={updateForm.area || ''}
+                      onChange={(e) => handleUpdateFormChange('area', e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        border: '2px solid #c3e6cb',
+                        borderRadius: '8px',
+                        fontSize: '14px'
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Liên hệ:</label>
+                  <input
+                    type="text"
+                    value={updateForm.contact || ''}
+                    onChange={(e) => handleUpdateFormChange('contact', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Cột phải */}
+              <div>
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Mô tả:</label>
+                  <textarea
+                    value={updateForm.description || ''}
+                    onChange={(e) => handleUpdateFormChange('description', e.target.value)}
+                    rows={4}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Tiện ích:</label>
+                  <input
+                    type="text"
+                    value={updateForm.utilities || ''}
+                    onChange={(e) => handleUpdateFormChange('utilities', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>Nội thất:</label>
+                  <input
+                    type="text"
+                    value={updateForm.furniture || ''}
+                    onChange={(e) => handleUpdateFormChange('furniture', e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #c3e6cb',
+                      borderRadius: '8px',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Hình ảnh */}
+            <div style={{ marginBottom: '25px' }}>
+              <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', color: '#333' }}>Hình ảnh:</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {updateForm.imageBase64s && updateForm.imageBase64s.map((base64, index) => (
+                  <div key={index} style={{ position: 'relative', width: '100px', height: '100px' }}>
+                    <label
+                      htmlFor={`update-image-${index}`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px dashed #c3e6cb',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        background: '#f8f9fa'
+                      }}
+                    >
+                      {base64 ? (
+                        <img
+                          src={formatImageUrl(base64) || getFallbackImage(100, 100, "Image")}
+                          alt={`Preview ${index + 1}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <span style={{ color: '#28a745', fontSize: '24px' }}>+</span>
+                      )}
+                    </label>
+                    <input
+                      id={`update-image-${index}`}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpdate(e, index)}
+                      style={{ display: 'none' }}
+                    />
+                    {updateForm.imageBase64s.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeImageField(index)}
+                        style={{
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-5px',
+                          background: '#dc3545',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          fontSize: '12px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+                
+                <div
+                  onClick={addImageField}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px dashed #c3e6cb',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    background: '#f8f9fa'
+                  }}
+                >
+                  <span style={{ color: '#28a745', fontSize: '24px' }}>+</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px' }}>
+              <button
+                style={{
+                  background: 'linear-gradient(45deg, #6c757d, #545b62)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: '0 4px 15px rgba(108, 117, 125, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={handleCancelUpdate}
+                disabled={updateLoading}
+              >
+                Hủy bỏ
+              </button>
+              
+              <button
+                style={{
+                  background: updateLoading ? '#ccc' : 'linear-gradient(45deg, #28a745, #218838)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '12px 25px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: updateLoading ? 'not-allowed' : 'pointer',
+                  flex: 1,
+                  fontSize: '16px',
+                  boxShadow: updateLoading ? 'none' : '0 4px 15px rgba(40, 167, 69, 0.4)',
+                  transition: 'all 0.3s ease'
+                }}
+                onClick={handleConfirmUpdate}
+                disabled={updateLoading}
+              >
+                {updateLoading ? (
+                  <>
+                    <i className="pi pi-spin pi-spinner" style={{ marginRight: '8px' }} />
+                    Đang cập nhật...
+                  </>
+                ) : (
+                  <>
+                    <i className="pi pi-check" style={{ marginRight: '8px' }} />
+                    Cập nhật
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
+      
+      <Toast ref={toast} />
     </SidebarNav>
   );
 };
