@@ -14,6 +14,7 @@ const Register = ({ visible, onHide }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false); // ✅ State cho checkbox
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -23,11 +24,7 @@ const Register = ({ visible, onHide }) => {
 
     try {
       setLoading(true);
-      const res = await registerApi(
-        email.trim(),
-        password.trim(),
-        fullname.trim()
-      );
+      await registerApi(email.trim(), password.trim(), fullname.trim());
 
       message.success("Đăng ký thành công!", 3);
       onHide?.(); // Ẩn modal sau đăng ký
@@ -134,23 +131,44 @@ const Register = ({ visible, onHide }) => {
               }}
             />
 
-            <div className="text-center text-sm mt-4 mb-5">
-              <p>Bằng việc đăng ký bạn đã đồng ý với</p>
-              <a href="#" className="text-orange-500 font-semibold">
-                Điều khoản và điều kiện
-              </a>{" "}
-              và{" "}
-              <a href="#" className="text-orange-500 font-semibold">
-                Chính sách bảo mật
-              </a>
+            {/* ✅ Checkbox Điều khoản */}
+            <div className="flex items-start mt-4 mb-5 gap-2 text-sm">
+              <input
+                type="checkbox"
+                id="agree"
+                checked={isAgreed}
+                onChange={(e) => setIsAgreed(e.target.checked)}
+                className="mt-1 w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="agree" className="cursor-pointer">
+                Bằng việc đăng ký bạn đã đồng ý với{" "}
+                <a href="#" className="text-orange-500 font-semibold">
+                  Điều khoản và điều kiện
+                </a>{" "}
+                và{" "}
+                <a href="#" className="text-orange-500 font-semibold">
+                  Chính sách bảo mật
+                </a>
+              </label>
             </div>
 
             <Button
               label={loading ? "Đang xử lý..." : "Tiếp theo"}
               onClick={handleRegister}
-              className="w-full bg-orange-500 border-orange-500 text-white font-semibold h-12 rounded-xl"
+              className={`w-full text-white font-semibold h-12 rounded-xl 
+    ${
+      !isAgreed || loading
+        ? "bg-orange-300 border-orange-300 cursor-not-allowed" // ✅ màu nhạt hơn
+        : "bg-orange-500 border-orange-500 hover:bg-orange-600"
+    } // ✅ màu bình thường
+  `}
               disabled={
-                !email || !fullname || !password || !confirmPassword || loading
+                !email ||
+                !fullname ||
+                !password ||
+                !confirmPassword ||
+                loading ||
+                !isAgreed
               }
             />
           </TabPanel>
