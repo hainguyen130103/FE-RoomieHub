@@ -19,6 +19,7 @@ import PaymentSuccess from "./components/payment/PaymentSuccess.jsx";
 import PaymentCancel from "./components/payment/PaymentCancel.jsx";
 import Chat from "./pages/Chat.jsx";
 import ChatBox from "./components/chatAI/chatBox.jsx";
+import OAuth2Callback from "./components/AutherModel/OAuth2Callback.jsx";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                   <Route path="/payment/success" element={<PaymentSuccess />} />
                   <Route path="/payment/cancel" element={<PaymentCancel />} />
                   <Route path="/chat-ai" element={<ChatBox />} />
+                  <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                 </Routes>
               </main>
               <Footer />

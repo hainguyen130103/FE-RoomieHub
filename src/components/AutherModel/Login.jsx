@@ -6,7 +6,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import Register from "./Register";
-import { loginApi } from "../../services/Userservices";
+import { loginApi, loginWithGoogleApi } from "../../services/Userservices";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -183,7 +183,12 @@ const Login = ({ visible, onHide, onLoginSuccess }) => {
             label="Google"
             iconPos="left"
             className="border border-gray-300 w-[160px] h-11 rounded-xl pl-3 gap-2"
+            onClick={() => {
+              window.location.href =
+                "http://localhost:8080/oauth2/authorization/google";
+            }}
           />
+
           <Button
             icon="pi pi-facebook"
             label="Facebook"

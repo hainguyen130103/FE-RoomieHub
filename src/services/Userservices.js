@@ -60,7 +60,7 @@ export const getApartmentByIdApi = (id) => {
 export const updateApartmentApi = (id, apartmentData) => {
   const token = localStorage.getItem("accessToken");
   console.log("API Request Payload:", apartmentData);
-  
+
   if (!token) {
     throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
   }
@@ -76,7 +76,7 @@ export const updateApartmentApi = (id, apartmentData) => {
 // Xóa một căn hộ theo ID
 export const deleteApartmentApi = (id) => {
   const token = localStorage.getItem("accessToken");
-  
+
   if (!token) {
     throw new Error("Không tìm thấy token. Vui lòng đăng nhập lại.");
   }
@@ -601,6 +601,36 @@ export const getRoomatePostAuto = async () => {
       localStorage.removeItem("accessToken");
       throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
     }
+    throw error;
+  }
+};
+
+export const loginWithGoogleApi = async () => {
+  try {
+    // Xóa token cũ
+    localStorage.removeItem("accessToken");
+
+    // Gọi API login Google
+    const response = await api.get("/oauth2/authorization/google", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true, // để browser giữ cookie nếu backend set
+    });
+
+    console.log("Google Login response:", response.data);
+
+    const token = response.data.token;
+    if (!token) {
+      throw new Error("Token không được tìm thấy trong response");
+    }
+
+    // Lưu token mới
+    localStorage.setItem("accessToken", token);
+
+    return response;
+  } catch (error) {
+    console.error("Google Login error:", error);
     throw error;
   }
 };

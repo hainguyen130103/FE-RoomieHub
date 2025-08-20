@@ -45,17 +45,32 @@ const AllApartmentsPage = () => {
     setMatchRate(null);
     try {
       const res = await getApartmentPostAuto();
-      // Giả lập load 10s
+      // Giả lập load 5s
       setTimeout(() => {
-        setApartments(res.data || []);
+        const data = res.data || [];
+        setApartments(data);
         setCurrentPage(1);
         setLoading(false);
         setAutoLoading(false);
 
-        // Tạo số ngẫu nhiên 65-80%
-        const randomRate = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
-        setMatchRate(randomRate);
-        setIsModalVisible(true);
+        if (data.length === 0) {
+          // Nếu không có kết quả
+          setMatchRate(null);
+          Modal.info({
+            title: "Kết quả tìm kiếm",
+            content: (
+              <p className="text-lg font-semibold text-center text-red-500">
+                Không tìm thấy nơi ở phù hợp với thông tin của bạn
+              </p>
+            ),
+            okText: "Đóng",
+          });
+        } else {
+          // Tạo số ngẫu nhiên 65-80%
+          const randomRate = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
+          setMatchRate(randomRate);
+          setIsModalVisible(true);
+        }
       }, 5000);
     } catch (err) {
       setAutoError(err.message || "Lỗi khi tự động tìm căn hộ.");

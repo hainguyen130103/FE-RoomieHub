@@ -84,24 +84,35 @@ export default function RoommatePosts() {
     try {
       const res = await getRoomatePostAuto();
 
-      // Nếu API trả về dữ liệu
-      if (res && res.data) {
-        setPosts(res.data);
+      // Giả lập load 5s
+      setTimeout(() => {
+        const data = res.data || [];
+        setPosts(data);
         setCurrentPage(1);
+        setLoading(false);
+        setAutoLoading(false);
 
-        // Tạo số ngẫu nhiên 65-80%
-        const randomRate = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
-        setMatchRate(randomRate);
-
-        // Hiện modal thông báo kết quả match
-        setIsModalVisible(true);
-      } else {
-        setPosts([]);
-        setAutoError("Không tìm thấy bài đăng phù hợp.");
-      }
+        if (data.length === 0) {
+          // Nếu không có kết quả
+          setMatchRate(null);
+          Modal.info({
+            title: "Kết quả tìm kiếm",
+            content: (
+              <p className="text-lg font-semibold text-center text-red-500">
+                Không tìm thấy nơi ở phù hợp với thông tin của bạn
+              </p>
+            ),
+            okText: "Đóng",
+          });
+        } else {
+          // Tạo số ngẫu nhiên 65-80%
+          const randomRate = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
+          setMatchRate(randomRate);
+          setIsModalVisible(true);
+        }
+      }, 5000);
     } catch (err) {
-      setAutoError(err.message || "Lỗi khi tự động tìm bài ở ghép.");
-    } finally {
+      setAutoError(err.message || "Lỗi khi tự động tìm căn hộ.");
       setLoading(false);
       setAutoLoading(false);
     }
